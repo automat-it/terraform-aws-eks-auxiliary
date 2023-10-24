@@ -1,0 +1,26 @@
+containerMain:
+  image: quay.io/argoproj/argocd:v2.5.0
+  pullPolicy: IfNotPresent
+
+containerInit:
+  image: public.ecr.aws/aws-cli/aws-cli
+  pullPolicy: IfNotPresent
+
+ttlSecondsAfterFinished: 40
+
+serviceAccount:
+  create: false
+  annotations: {}
+  name: riverside-mgmt-argocd-sa
+
+aws:
+  s3:
+    name: "your-s3-name"
+    prefix: "your-s3-prefix"
+
+file:
+  fileprefix: "argocd_full_backup"
+  datetimeformat: "%d-%m-%Y-%H-%M-%S"
+
+cronJobsSchedule:
+  period: "0 1 * * *" # Once a minute by the default

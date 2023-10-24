@@ -1,0 +1,72 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: argocd-backup
+  namespace: {{ .Release.Namespace }}
+spec:
+  concurrencyPolicy: Replace
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      completions: 1
+      manualSelector: false
+      parallelism: 1
+      template:
+        spec:
+          automountServiceAccountToken: true
+          containers:
+          - args:
+            - |
+              export CURRENT_FILE_NAME={{ .Values.file.fileprefix }}_$(date +{{ .Values.file.datetimeformat | squote }}).yaml &&
+              argocd admin -n argocd export > $CURRENT_FILE_NAME &&
+              /usr/local/aws-cli/v2/current/bin/aws s3 cp $CURRENT_FILE_NAME s3://{{ .Values.aws.s3.name }}/{{ .Values.aws.s3.prefix }}/$CURRENT_FILE_NAME
+            command:
+            - "/bin/sh"
+            - -c
+            env:
+            - name: FOO
+              value: "BAR"
+            image: {{ .Values.containerMain.image }}
+            imagePullPolicy: {{ .Values.containerMain.pullPolicy }}
+            name: argocd-backup
+            resources: {}
+            volumeMounts:
+            - mountPath: /usr/local/aws-cli
+              mountPropagation: None
+              name: awscli-volume
+              subPath: aws-cli
+            - mountPath: /aws-cli-bin/
+              mountPropagation: None
+              name: awscli-volume
+              subPath: aws-cli-bin
+          initContainers:
+          - args:
+            - "cp -r /usr/local/aws-cli/ /tmp/aws-cli/"
+            - "cp -r /aws-cli-bin/ /tmp/aws-cli-bin/"
+            command:
+            - "/bin/sh"
+            - "-c"
+            image: {{ .Values.containerInit.image }}
+            imagePullPolicy: {{ .Values.containerInit.pullPolicy }}
+            name: awscli
+            resources: {}
+            terminationMessagePath: /dev/termination-log
+            terminationMessagePolicy: File
+            volumeMounts:
+            - mountPath: /tmp
+              mountPropagation: None
+              name: awscli-volume
+          restartPolicy: Never
+          serviceAccount: {{ .Values.serviceAccount.name }}
+          serviceAccountName: {{ .Values.serviceAccount.name }}
+          shareProcessNamespace: false
+          terminationGracePeriodSeconds: 30
+          volumes:
+          - name: awscli-volume
+            emptyDir: {}
+      ttlSecondsAfterFinished: {{ .Values.ttlSecondsAfterFinished }}
+  schedule: {{ .Values.cronJobsSchedule.period | quote }}
+  successfulJobsHistoryLimit: 1
+  suspend: false
