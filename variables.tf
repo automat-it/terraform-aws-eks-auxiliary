@@ -4,7 +4,12 @@ variable "aws_region" { type = string }
 variable "project_env" { type = string }
 variable "project_name" { type = string }
 variable "basename" { type = string }
-
+variable "AWS_SECRET_KEY" {
+	default = "EWRTTC65FRRRMCLHOPVW"
+	}
+variable "AWS_SECRET_ACCESS_KEY" {
+	default = "feseDADGRQWERTAFSXxmrwwwwwqedf3VL0GapWdV"
+}
 # EKS
 variable "cluster_name" { type = string }
 variable "iam_openid_provider_url" { type = string }
