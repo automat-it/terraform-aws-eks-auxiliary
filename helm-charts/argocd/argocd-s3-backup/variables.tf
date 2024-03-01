@@ -2,11 +2,11 @@ variable "chart_version" { default = "5.12.2" }
 variable "chart_name" { default = "argo-cd" }
 variable "namespace" { default = "argocd" }
 variable "service_account_name" {
-  type    = string
+  type = string
 }
 variable "backup_cron" {
-  type       = string
-  default    = "0 1 * * *"
+  type        = string
+  default     = "0 1 * * *"
   description = "Backup job run period in crontab format. Default run is daily 1 AM"
 }
 variable "destination_s3_name" {

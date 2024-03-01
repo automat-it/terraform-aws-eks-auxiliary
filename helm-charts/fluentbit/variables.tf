@@ -9,12 +9,12 @@ variable "helm_version" {
 }
 
 variable "fluentbit_tag" {
-  type = string
+  type    = string
   default = "2.31.2"
 }
 
 variable "helm_namespace" {
-  type = string
+  type    = string
   default = "logging"
 }
 

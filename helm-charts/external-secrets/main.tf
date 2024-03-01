@@ -3,9 +3,9 @@ variable "aws_region" { type = string }
 variable "eks_cluster_name" { type = string }
 variable "helm_version" { default = "0.8.1" }
 variable "namespace" { default = "general" }
-variable "external_secrets_service_account_name" { 
-  type = string
-  default = "external-secrets-sa" 
+variable "external_secrets_service_account_name" {
+  type    = string
+  default = "external-secrets-sa"
 }
 variable "iam_openid_provider_url" { type = string }
 variable "iam_openid_provider_arn" { type = string }

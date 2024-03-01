@@ -1,8 +1,8 @@
 ### Installing helm
 resource "helm_release" "argocd-backup" {
-  name             = "argocd-backup"
-  chart            = "${path.module}/chart"
-  namespace        = var.namespace
+  name      = "argocd-backup"
+  chart     = "${path.module}/chart"
+  namespace = var.namespace
   values = [<<EOF
     containerMain:
       image: quay.io/argoproj/argocd:v2.5.0

@@ -227,8 +227,8 @@ module "fluentbit" {
 
 ### DataDog
 module "datadog" {
-  count  = var.has_datadog ? 1 : 0
-  source = "./helm-charts/datadog"
+  count                  = var.has_datadog ? 1 : 0
+  source                 = "./helm-charts/datadog"
   datadog_api_key_secret = var.datadog_api_key_secret_name
   datadog_app_key_secret = var.datadog_app_key_secret_name
   settings = {

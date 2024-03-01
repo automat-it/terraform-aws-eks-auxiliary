@@ -1,36 +1,36 @@
 variable "name" {
-  type    = string
-  default = "datadog"
+  type        = string
+  default     = "datadog"
   description = "Helm release name"
 }
 
 variable "namespace" {
-  type    = string
-  default = "monitoring"
+  type        = string
+  default     = "monitoring"
   description = "Have helm_resource create the namespace, default true"
 }
 
 variable "create_namespace" {
-  type    = bool
-  default = true
+  type        = bool
+  default     = true
   description = "Have helm_resource create the namespace, default true"
 }
 
 variable "helm_chart_version" {
-  type    = string
-  default = "3.33.8"
+  type        = string
+  default     = "3.33.8"
   description = "Version of the Datadog Helm chart to use"
 }
 
 variable "helm_chart_name" {
-  type    = string
-  default = "datadog"
+  type        = string
+  default     = "datadog"
   description = "Helm chart name to be installed"
 }
 
 variable "helm_repo_url" {
-  type    = string
-  default = "https://helm.datadoghq.com"
+  type        = string
+  default     = "https://helm.datadoghq.com"
   description = "Helm repository for datadog chart"
 }
 

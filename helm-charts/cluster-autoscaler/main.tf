@@ -7,10 +7,10 @@ variable "namespace" { default = "general" }
 variable "iam_openid_provider_url" { type = string }
 variable "iam_openid_provider_arn" { type = string }
 variable "irsa_iam_role_name" { type = string }
-variable "autoscaler_service_account_name" { 
-  type = string 
+variable "autoscaler_service_account_name" {
+  type    = string
   default = "autoscaler-sa"
-  }
+}
 data "aws_iam_policy_document" "oidc_assume_role_policy" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]

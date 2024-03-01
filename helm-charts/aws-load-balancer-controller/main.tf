@@ -2,9 +2,9 @@
 variable "eks_cluster_name" { type = string }
 variable "helm_version" { default = "1.4.1" }
 variable "namespace" { default = "general" }
-variable "ingress_service_account_name" { 
-    type = string
-    default = "load-balancer-sa" 
+variable "ingress_service_account_name" {
+  type    = string
+  default = "load-balancer-sa"
 }
 variable "iam_openid_provider_url" { type = string }
 variable "iam_openid_provider_arn" { type = string }
