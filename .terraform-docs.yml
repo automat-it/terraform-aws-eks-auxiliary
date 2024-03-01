@@ -1,0 +1,30 @@
+formatter: markdown
+
+header-from: docs/header.md
+footer-from: docs/footer.md
+
+sort:
+  enabled: true
+  by: required
+
+sections:
+  hide:
+    - providers
+
+settings:
+  anchor: false
+  color: true
+  default: true
+  description: false
+  escape: false
+  hide-empty: true
+  html: false
+  indent: 2
+  lockfile: true
+  read-comments: false
+  required: true
+  sensitive: true
+  type: true
+
+output:
+  mode: inject
