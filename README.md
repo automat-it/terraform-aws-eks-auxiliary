@@ -36,7 +36,6 @@ Reference values could be found at [examples directory](examples).
 | [aws_iam_role.eks-admin](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [kubernetes_namespace_v1.general](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.security](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
-| [kubernetes_all_namespaces.allns](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/data-sources/all_namespaces) | data source |
 
 ## Inputs
 
@@ -56,7 +55,7 @@ Reference values could be found at [examples directory](examples).
 | has_external_secrets | Whether the Kubernetes Metrics Server will be installed. | `bool` | `false` | no |
 | has_metrics_server | Whether the External Secrets controller will be installed. | `bool` | `true` | no |
 | has_monitoring | Whether monitoring components will be installed. | `bool` | `false` | no |
-| monitoring_config | Configuration map for the monitoring will be installed. | `map` | `{}` | no |
+| monitoring_config | Configuration map for the monitoring will be installed. | `any` | `{}` | no |
 | r53_zone_id | The ID of the Route 53 hosted zone, if DNS records are managed by Route 53. | `string` | `""` | no |
 
 ## Outputs
