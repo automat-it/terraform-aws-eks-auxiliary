@@ -1,47 +1,30 @@
-### Variables
-variable "eks_cluster_name" { type = string }
-variable "helm_version" { default = "1.4.1" }
-variable "namespace" { default = "general" }
-variable "ingress_service_account_name" { 
-    type = string
-    default = "load-balancer-sa" 
-}
-variable "iam_openid_provider_url" { type = string }
-variable "iam_openid_provider_arn" { type = string }
-variable "vpcId" { type = string }
-variable "irsa_iam_role_name" { type = string }
-
-data "aws_iam_policy_document" "oidc_assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRoleWithWebIdentity"]
-    effect  = "Allow"
-
-    condition {
-      test     = "StringEquals"
-      variable = "${var.iam_openid_provider_url}:sub"
-      values   = ["system:serviceaccount:${var.namespace}:${var.ingress_service_account_name}"]
-    }
-
-    principals {
-      identifiers = [var.iam_openid_provider_arn]
-      type        = "Federated"
-    }
-  }
-}
-
-resource "aws_iam_role" "irsa_role" {
-  assume_role_policy = data.aws_iam_policy_document.oidc_assume_role_policy.json
-  name               = var.irsa_iam_role_name
-}
-
-### Inline IAM Policy: Allow ALB Ingress Controller to work
-resource "aws_iam_role_policy" "eks-system-alb-ingress" {
-  name = "alb-ingress-policy"
-  role = aws_iam_role.irsa_role.id
-
-  # Retrieved from:
-  # https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
-  policy = <<-EOF
+# AWS Load Balancer controller
+locals {
+  # Helm versions
+  aws_lb_controller_helm_version = "1.4.1"
+  # K8s namespace to deploy
+  aws_lb_controller_namespace = "general"
+  # K8S Service Account Name
+  aws_lb_controller_service_account_name = "load-balancer-sa"
+  # Helm ovveride values
+  aws_lb_controller_helm_values = [<<EOF
+    clusterName: ${var.cluster_name}
+    nodeSelector:
+      pool: system
+    tolerations:
+      - key: dedicated
+        operator: Equal
+        value: system
+        effect: NoSchedule
+    serviceAccount:
+      create: false
+      name: ${local.aws_lb_controller_service_account_name}
+    vpcId: ${var.vpc_id}
+    EOF
+  ]
+  # AWS IAM IRSA
+  aws_lb_controller_irsa_iam_role_name = "${var.cluster_name}-aws-alb-ingress-controller-iam-role"
+  aws_lb_controller_irsa_policy_json   = <<-EOF
     {
         "Version": "2012-10-17",
         "Statement": [
@@ -258,43 +241,20 @@ resource "aws_iam_role_policy" "eks-system-alb-ingress" {
     EOF
 }
 
-### AWS-ALB-ingress-controller helm
-resource "helm_release" "aws-alb-ingress-controller" {
-  name             = "aws-load-balancer-controller"
-  repository       = "https://aws.github.io/eks-charts"
-  chart            = "aws-load-balancer-controller"
-  namespace        = var.namespace
-  create_namespace = true
+module "aws-alb-ingress-controller" {
+  source                  = "./modules/helm-chart"
+  count                   = var.has_aws_lb_controller ? 1 : 0
+  name                    = "aws-alb-ingress-controller"
+  repository              = "https://aws.github.io/eks-charts"
+  chart                   = "aws-load-balancer-controller"
+  namespace               = local.aws_lb_controller_namespace
+  helm_version            = local.aws_lb_controller_helm_version
+  service_account_name    = local.aws_lb_controller_service_account_name
+  irsa_iam_role_name      = local.aws_lb_controller_irsa_iam_role_name
+  irsa_policy_json        = local.aws_lb_controller_irsa_policy_json
+  iam_openid_provider_url = var.iam_openid_provider_url
+  iam_openid_provider_arn = var.iam_openid_provider_arn
+  values                  = local.aws_lb_controller_helm_values
 
-  version = var.helm_version
-
-  dependency_update = true
-
-  values = [<<EOF
-    clusterName: ${var.eks_cluster_name}
-    nodeSelector:
-      pool: system
-    tolerations:
-      - key: dedicated
-        operator: Equal
-        value: system
-        effect: NoSchedule
-    serviceAccount:
-      create: true
-      name: ${var.ingress_service_account_name}
-      annotations:
-        eks.amazonaws.com/role-arn: ${aws_iam_role.irsa_role.arn}
-    vpcId: ${var.vpcId}
-    EOF
-  ]
+  depends_on = [kubernetes_namespace_v1.general]
 }
-
-output "irsa_role_arn" {
-  value = aws_iam_role.irsa_role.arn
-}
-
-output "irsa_role_name" {
-  value = aws_iam_role.irsa_role.name
-}
-
-# vim:filetype=terraform ts=2 sw=2 et:
