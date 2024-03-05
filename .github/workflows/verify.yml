@@ -2,10 +2,7 @@
 name: Verify
 
 on:
-  push:
-    branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 
   workflow_dispatch:
 
@@ -84,4 +81,4 @@ jobs:
           owner: automat-it
           repo: test-deleteme
           workflow_file_name: blank.yml
-          github_token: ${{ github.token }}
+          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
