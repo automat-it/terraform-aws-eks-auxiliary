@@ -1,4 +1,5 @@
 name: Generate terraform docs
+
 on:
   push:
   pull_request:

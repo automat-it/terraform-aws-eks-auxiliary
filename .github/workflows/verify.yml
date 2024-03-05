@@ -20,7 +20,6 @@ jobs:
 
       - name: terraform fmt
         run: terraform fmt -check -recursive -diff
-        continue-on-error: true
 
       - name: terraform init
         run: terraform init
@@ -67,3 +66,22 @@ jobs:
           scan-type: 'fs'
           scan-ref: '.'
           trivy-config: trivy.yaml
+
+      - name: TFSec PR commenter
+        uses: aquasecurity/tfsec-pr-commenter-action@v1.3.1
+        with:
+          github_token: ${{ github.token }}
+          soft_fail_commenter: true
+          tfsec_args: --concise-output
+
+  test:
+    name: "Test"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Test"
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
+        with:
+          owner: automat-it
+          repo: test-deleteme
+          workflow_file_name: blank.yml
+          github_token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
