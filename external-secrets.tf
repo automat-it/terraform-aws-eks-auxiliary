@@ -49,3 +49,4 @@ module "external-secrets" {
 
   depends_on = [kubernetes_namespace_v1.general]
 }
+
