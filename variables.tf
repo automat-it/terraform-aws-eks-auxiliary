@@ -4,6 +4,10 @@ variable "aws_account" {
   description = "The AWS account ID where resources will be provisioned."
 }
 
+variable "aws_account_test" {
+  type        = string
+}
+
 variable "aws_region" {
   type        = string
   description = "The AWS region where resources will be provisioned."
