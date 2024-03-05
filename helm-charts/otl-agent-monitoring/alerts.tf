@@ -135,8 +135,8 @@ resource "aws_cloudwatch_metric_alarm" "number_of_container_restarts" {
 
   metric_query {
     id          = "m1"
-    #period      = 0
     return_data = true
+    #period      = 0
 
     metric {
       dimensions = {
@@ -152,8 +152,8 @@ resource "aws_cloudwatch_metric_alarm" "number_of_container_restarts" {
     expression  = "ANOMALY_DETECTION_BAND(m1, 2)"
     id          = "ad1"
     label       = "number_of_container_restarts (expected)"
-    #period      = 0
     return_data = true
+    #period      = 0
   }
 }
 

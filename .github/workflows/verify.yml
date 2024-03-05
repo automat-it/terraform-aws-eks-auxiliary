@@ -84,4 +84,4 @@ jobs:
           owner: automat-it
           repo: test-deleteme
           workflow_file_name: blank.yml
-          github_token: ${{ secrets.GITHUB_PERSONAL_ACCESS_TOKEN }}
+          github_token: ${{ github.token }}
