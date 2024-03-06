@@ -71,14 +71,15 @@ jobs:
           soft_fail_commenter: true
           tfsec_args: --concise-output
 
-  test:
-    name: "Test"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Test"
-        uses: convictional/trigger-workflow-and-wait@v1.6.5
-        with:
-          owner: automat-it
-          repo: test-deleteme
-          workflow_file_name: blank.yml
-          github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+  # test:
+  #   name: "Test"
+  #   runs-on: ubuntu-latest
+  #       needs: [terraform_validate, tflint, tfsec]
+  #   steps:
+  #     - name: "Test"
+  #       uses: convictional/trigger-workflow-and-wait@v1.6.5
+  #       with:
+  #         owner: ${{ secrets.TESTING_ORGANIZATION }}
+  #         repo: ${{ secrets.TESTING_REPO }}
+  #         workflow_file_name: ${{ secrets.TESTING_WORKFLOW_FILE }}
+  #         github_token: ${{ secrets.TESTING_PAT }}
