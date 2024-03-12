@@ -74,7 +74,7 @@ jobs:
 
   test:
     name: "Test"
-    if: github.event.review.state == 'APPROVED'
+#    if: github.event.review.state == 'APPROVED'
     runs-on: ubuntu-latest
     needs: [terraform_validate, tflint, tfsec]
     steps:
