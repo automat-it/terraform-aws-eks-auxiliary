@@ -72,16 +72,16 @@ jobs:
           soft_fail_commenter: true
           tfsec_args: --concise-output
 
-  # test:
-  #   name: "Test"
-  #   if: github.event.review.state == 'APPROVED'
-  #   runs-on: ubuntu-latest
-  #       needs: [terraform_validate, tflint, tfsec]
-  #   steps:
-  #     - name: "Test"
-  #       uses: convictional/trigger-workflow-and-wait@v1.6.5
-  #       with:
-  #         owner: ${{ secrets.TESTING_ORGANIZATION }}
-  #         repo: ${{ secrets.TESTING_REPO }}
-  #         workflow_file_name: ${{ secrets.TESTING_WORKFLOW_FILE }}
-  #         github_token: ${{ secrets.TESTING_PAT }}
+  test:
+    name: "Test"
+    if: github.event.review.state == 'APPROVED'
+    runs-on: ubuntu-latest
+        needs: [terraform_validate, tflint, tfsec]
+    steps:
+      - name: "Test"
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
+        with:
+          owner: ${{ secrets.TESTING_ORGANIZATION }}
+          repo: ${{ secrets.TESTING_REPO }}
+          workflow_file_name: ${{ secrets.TESTING_WORKFLOW_FILE }}
+          github_token: ${{ secrets.TESTING_PAT }}
