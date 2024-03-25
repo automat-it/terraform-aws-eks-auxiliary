@@ -11,9 +11,9 @@ module "secure-eks" {
   has_monitoring        = true
 
   # AWS
-  aws_account  = local.aws_account
-  aws_region   = local.aws_region
-  basename     = local.basename
+  aws_account = local.aws_account
+  aws_region  = local.aws_region
+  basename    = local.basename
 
   # EKS
   cluster_name            = module.eks.cluster_name
@@ -36,16 +36,16 @@ module "secure-eks" {
     k8s_metrics_interval      = "5m"
   }
 
-#  depends_on = [
-#    module.eks,
-#    module.vpc,
-#    module.private-subnets,
-#    module.isolated-subnets,
-#    module.public-subnets,
-#    module.tgw-attachment,
-#    module.tgw-sharing-attachment,
-#    module.tgw-peering-attachment,
-#    module.tgw-peering,
-#    module.tgw
-#  ]
+  #  depends_on = [
+  #    module.eks,
+  #    module.vpc,
+  #    module.private-subnets,
+  #    module.isolated-subnets,
+  #    module.public-subnets,
+  #    module.tgw-attachment,
+  #    module.tgw-sharing-attachment,
+  #    module.tgw-peering-attachment,
+  #    module.tgw-peering,
+  #    module.tgw
+  #  ]
 }

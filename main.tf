@@ -67,7 +67,7 @@ module "monitoring" {
 ### Kubernetes namespaces
 
 # general
-resource "kubernetes_namespace_v1" "general" {
+resource "kubernetes_namespace" "general" {
   metadata {
     annotations = {
       name = "general"
@@ -77,7 +77,7 @@ resource "kubernetes_namespace_v1" "general" {
 }
 
 # security
-resource "kubernetes_namespace_v1" "security" {
+resource "kubernetes_namespace" "security" {
   metadata {
     annotations = {
       name = "security"
