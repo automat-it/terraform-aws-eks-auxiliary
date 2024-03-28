@@ -19,7 +19,7 @@ locals {
       create: true
       name: "${local.external_secrets_service_account_name}"
       annotations:
-        eks.amazonaws.com/role-arn: ${module.external-secrets[0].irsa_role_arn}
+        eks.amazonaws.com/role-arn: ${try(module.external-secrets[0].irsa_role_arn, "")}
     nodeSelector:
       pool: system
     tolerations:
