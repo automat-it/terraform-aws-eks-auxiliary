@@ -81,7 +81,7 @@ module "eks" {
       most_recent = true
     }
     vpc-cni = {
-      most_recent = true
+      most_recent    = true
       before_compute = true
     }
     aws-ebs-csi-driver = {
@@ -145,7 +145,7 @@ module "eks" {
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
-    ami_type       = var.eks_ami_type # "AL2_x86_64"
+    ami_type       = var.eks_ami_type       # "AL2_x86_64"
     instance_types = var.eks_instance_types # ["t3.medium"]
 
     attach_cluster_primary_security_group = var.eks_attach_cluster_primary_security_group # true

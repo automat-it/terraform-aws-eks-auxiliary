@@ -19,14 +19,7 @@ locals {
       - key: dedicated
         operator: Equal
         value: system
-        effect: NoSchedule
-    rbac:
-      serviceAccount:
-        create: true
-        name: ${local.cluster_autoscaler_service_account_name}
-        annotations:
-          eks.amazonaws.com/role-arn: ${module.cluster-autoscaler[0].irsa_role_arn}
-          
+        effect: NoSchedule      
     EOF
   ]
   # AWS IAM IRSA
