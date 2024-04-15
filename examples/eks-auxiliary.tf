@@ -1,6 +1,6 @@
 module "secure-eks" {
 
-  source = "git@bitbucket.org:automatitdevops/terraform-aws-ait-eks-auxiliary.git"
+  source = "https://bitbucket.org:automatitdevops/terraform-aws-ait-eks-auxiliary.git"
 
   # Components
   has_autoscaler        = true
