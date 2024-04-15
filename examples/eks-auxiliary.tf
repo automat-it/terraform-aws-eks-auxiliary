@@ -1,6 +1,6 @@
 module "secure-eks" {
 
-  source = "git::https://bitbucket.org:automatitdevops/terraform-aws-ait-eks-auxiliary.git"
+  source = "../"
 
   # Components
   has_autoscaler        = true
@@ -14,8 +14,6 @@ module "secure-eks" {
   aws_account  = local.aws_account
   aws_region   = local.aws_region
   basename     = local.project_name
-  project_env  = local.project_name
-  project_name = local.project_name
 
   # EKS
   cluster_name            = local.cluster_name
