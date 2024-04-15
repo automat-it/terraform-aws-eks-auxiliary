@@ -24,7 +24,7 @@ resource "aws_iam_role" "eks-admin" {
 
 locals {
   # Helm versions
-  otl_helm_version = "0.53.0"
+  otl_helm_version = "0.87.0"
 
   # IAM IRSA roles
   otl_irsa_iam_role_name = "${var.cluster_name}-otl-iam-role"

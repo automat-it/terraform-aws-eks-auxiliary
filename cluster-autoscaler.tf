@@ -1,7 +1,7 @@
 # Cluster Autoscaler
 locals {
   # Helm versions
-  cluster_autoscaler_helm_version = "9.18.1"
+  cluster_autoscaler_helm_version = "9.36.0"
   # K8s namespace to deploy
   cluster_autoscaler_namespace = "general"
   # K8S Service Account Name

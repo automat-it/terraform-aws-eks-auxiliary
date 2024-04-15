@@ -1,7 +1,7 @@
 # External Secrets
 locals {
   # Helm versions
-  external_secrets_helm_version = "0.8.1"
+  external_secrets_helm_version = "0.9.14"
   # K8s namespace to deploy
   external_secrets_namespace = "general"
   # K8S Service Account Name
