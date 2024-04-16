@@ -101,12 +101,14 @@ variable "domain_zone" {
 
 ### Notifications
 variable "notification_slack_token_secret" {
+  type = string
   default     = ""
   description = "AWS Secret manager key to keep a slack token"
 }
 
 ### Backup ###
 variable "enable_backup" {
+  type = bool
   default     = false
   description = "Enable backup for the ArgoCD"
 }
