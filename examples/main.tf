@@ -40,42 +40,42 @@ provider "aws" {
 }
 
 provider "kubernetes" {
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  host                   = local.cluster_endpoint
+  cluster_ca_certificate = base64decode(local.cluster_ca_certificate)
 
   exec {
     api_version = "client.authentication.k8s.io/v1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--role-arn", local.deploy_role]
+    args = ["eks", "get-token", "--cluster-name", local.cluster_name, "--role-arn", local.deploy_role]
   }
 }
 
 provider "helm" {
   kubernetes {
-    host                   = module.eks.cluster_endpoint
-    cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+    host                   = local.cluster_endpoint
+    cluster_ca_certificate = base64decode(local.cluster_ca_certificate)
 
     exec {
       api_version = "client.authentication.k8s.io/v1"
       command     = "aws"
       # This requires the awscli to be installed locally where Terraform is executed
-      args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--role-arn", local.deploy_role]
+      args = ["eks", "get-token", "--cluster-name", local.cluster_name, "--role-arn", local.deploy_role]
     }
   }
 }
 
 provider "kubectl" {
   apply_retry_count      = 5
-  host                   = module.eks.cluster_endpoint
-  cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
+  host                   = local.cluster_endpoint
+  cluster_ca_certificate = base64decode(local.cluster_ca_certificate)
   load_config_file       = false
 
   exec {
     api_version = "client.authentication.k8s.io/v1"
     command     = "aws"
     # This requires the awscli to be installed locally where Terraform is executed
-    args = ["eks", "get-token", "--cluster-name", module.eks.cluster_name, "--role-arn", local.deploy_role]
+    args = ["eks", "get-token", "--cluster-name", local.cluster_name, "--role-arn", local.deploy_role]
   }
 }
 
@@ -87,9 +87,11 @@ locals {
   project_name            = "Terraform-CI"
   vpc_id                  = data.terraform_remote_state.vpc.outputs.vpc_id
   cluster_name            = data.terraform_remote_state.eks.outputs.cluster_name
+  cluster_endpoint        = data.terraform_remote_state.eks.outputs.cluster_endpoint
+  cluster_ca_certificate  = data.terraform_remote_state.eks.outputs.cluster_certificate_authority_data
   cluster_oidc_issuer_url = data.terraform_remote_state.eks.outputs.cluster_oidc_issuer_url
   iam_openid_provider_arn = data.terraform_remote_state.eks.outputs.oidc_provider_arn
-  deploy_role       = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/GitHub_runner_role"
+  deploy_role             = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/GitHub_runner_role"
 
 
   base_tags = {
