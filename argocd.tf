@@ -281,7 +281,3 @@ module "argocd-backup" {
     module.argocd
   ]
 }
-
-output "irsa_role_name" {
-  value = module.argocd[0].irsa_role_arn
-}
