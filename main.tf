@@ -85,3 +85,14 @@ resource "kubernetes_namespace_v1" "security" {
     name = "security"
   }
 }
+
+# argocd
+resource "kubernetes_namespace_v1" "argocd" {
+  count = var.has_argocd == true ? 1 : 0
+  metadata {
+    annotations = {
+      name = "argocd"
+    }
+    name = "argocd"
+  }
+}

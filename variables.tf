@@ -67,6 +67,13 @@ variable "has_external_secrets" {
   description = "Whether the Kubernetes Metrics Server will be installed."
 }
 
+
+variable "has_argocd" {
+  type        = bool
+  default     = false
+  description = "Whether argocd will be installed."
+}
+
 variable "has_monitoring" {
   type        = bool
   default     = false
@@ -90,4 +97,31 @@ variable "domain_zone" {
   type        = string
   default     = ""
   description = "The domain zone associated with the Route 53 hosted zone."
+}
+
+### Notifications
+variable "notification_slack_token_secret" {
+  default     = ""
+  description = "AWS Secret manager key to keep a slack token"
+}
+
+### Backup ###
+variable "enable_backup" {
+  default     = false
+  description = "Enable backup for the ArgoCD"
+}
+
+variable "backup_cron" {
+  type        = string
+  default     = "0 1 * * *"
+  description = "Backup job run period in crontab format. Default run is daily 1 AM"
+}
+variable "destination_s3_name" {
+  type    = string
+  default = ""
+}
+
+variable "destination_s3_name_prefix" {
+  type    = string
+  default = "argocd"
 }

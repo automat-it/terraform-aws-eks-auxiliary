@@ -3,7 +3,7 @@ locals {
   # Helm versions
   external_dns_helm_version = "1.14.4"
   # K8s namespace to deploy
-  external_dns_namespace = "general"
+  external_dns_namespace = kubernetes_namespace_v1.general.id
   # K8S Service Account Name
   external_dns_service_account_name = "external-dns-sa"
   # Helm ovveride values
@@ -26,7 +26,7 @@ locals {
       create: true
       name: ${local.external_dns_service_account_name}
       annotations:
-        eks.amazonaws.com/role-arn: ${module.external-dns[0].irsa_role_arn}
+        eks.amazonaws.com/role-arn: ${try(module.external-dns[0].irsa_role_arn, "")}
     EOF
   ]
   # AWS IAM IRSA

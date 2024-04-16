@@ -3,7 +3,7 @@ locals {
   # Helm versions
   external_secrets_helm_version = "0.9.14"
   # K8s namespace to deploy
-  external_secrets_namespace = "general"
+  external_secrets_namespace = kubernetes_namespace_v1.general.id
   # K8S Service Account Name
   external_secrets_service_account_name = "external-secrets-sa"
   # Helm ovveride values
@@ -19,7 +19,7 @@ locals {
       create: true
       name: "${local.external_secrets_service_account_name}"
       annotations:
-        eks.amazonaws.com/role-arn: ${module.external-secrets[0].irsa_role_arn}
+        eks.amazonaws.com/role-arn: ${try(module.external-secrets[0].irsa_role_arn, "")}
     nodeSelector:
       pool: system
     tolerations:
