@@ -11,17 +11,17 @@ module "secure-eks" {
   has_monitoring        = true
 
   # AWS
-  aws_account  = local.aws_account
-  aws_region   = local.aws_region
-  basename     = local.basename
+  aws_account = local.aws_account
+  aws_region  = local.aws_region
+  basename    = local.project_name
 
   # EKS
-  cluster_name            = module.eks.cluster_name
-  iam_openid_provider_url = module.eks.oidc_provider
-  iam_openid_provider_arn = module.eks.oidc_provider_arn
+  cluster_name            = local.cluster_name
+  iam_openid_provider_url = local.cluster_oidc_issuer_url
+  iam_openid_provider_arn = local.iam_openid_provider_arn
 
   # VPC
-  vpc_id = module.vpc.vpc.id
+  vpc_id = local.vpc_id
 
   # Monitoring
   monitoring_config = {
