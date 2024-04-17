@@ -1,69 +1,93 @@
 ---
-name: Verify
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-  workflow_dispatch:
-
-jobs:
-  terraform_validate:
-    name: "Format and Validate Code"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: hashicorp/setup-terraform@v2.0.3
-
-      - name: terraform fmt
-        run: terraform fmt -check -recursive -diff
-        continue-on-error: true
-
-      - name: terraform init
-        run: terraform init
-
-      - name: terraform validate
-        run: terraform validate
-
-  tflint:
-    name: "Lint Code"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/cache@v4
-        name: Cache plugin dir
-        with:
-          path: ~/.tflint.d/plugins
-          key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
-
-      - uses: terraform-linters/setup-tflint@v4
-        name: Setup TFLint
-        with:
-          tflint_version: v0.50.3
-
-      - name: Init TFLint
-        run: tflint --init
-        env:
-          # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Run TFLint
-        run: tflint -f compact
-
-  tfsec:
-    name: "Security Scan"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repo
-        uses: actions/checkout@v4
-
-      - name: Run Trivy vulnerability scanner in fs mode
-        uses: aquasecurity/trivy-action@0.17.0
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          trivy-config: trivy.yaml
+  name: Verify
+  
+  on:
+    pull_request_review:
+      types: [submitted]
+  
+    workflow_dispatch:
+  
+  jobs:
+    terraform_validate:
+      name: "Format and Validate Code"
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+  
+        - uses: hashicorp/setup-terraform@v2.0.3
+  
+        - name: terraform fmt
+          run: terraform fmt -check -recursive -diff
+  
+        - name: terraform init
+          run: terraform init
+  
+        - name: terraform validate
+          run: terraform validate
+  
+    tflint:
+      name: "Lint Code"
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+  
+        - uses: actions/cache@v4
+          name: Cache plugin dir
+          with:
+            path: ~/.tflint.d/plugins
+            key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
+  
+        - uses: terraform-linters/setup-tflint@v4
+          name: Setup TFLint
+          with:
+            tflint_version: v0.50.3
+  
+        - name: Init TFLint
+          run: tflint --init
+          env:
+            # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+            GITHUB_TOKEN: ${{ github.token }}
+  
+        - name: Run TFLint
+          run: tflint -f compact
+  
+    tfsec:
+      name: "Security Scan"
+      runs-on: ubuntu-latest
+      steps:
+        - name: Clone repo
+          uses: actions/checkout@v4
+  
+        - name: Run Trivy vulnerability scanner in fs mode
+          uses: aquasecurity/trivy-action@0.17.0
+          with:
+            scan-type: 'fs'
+            scan-ref: '.'
+            trivy-config: trivy.yaml
+  
+        - name: TFSec PR commenter
+          uses: aquasecurity/tfsec-pr-commenter-action@v1.3.1
+          with:
+            github_token: ${{ github.token }}
+            soft_fail_commenter: true
+            tfsec_args: --concise-output
+  
+    trigger_test:
+      name: "Trigger Terraform code deployment"
+      if: github.event.review.state == 'APPROVED'
+      runs-on: ubuntu-latest
+      needs: [terraform_validate, tflint, tfsec]
+      env:
+        BRANCH: feature/eks
+      steps:
+        - name: "Trigger Test"
+          uses: convictional/trigger-workflow-and-wait@v1.6.5
+          with:
+            owner: ${{ secrets.TESTING_ORGANIZATION }}
+            repo: ${{ secrets.TESTING_REPO }}
+            workflow_file_name: ${{ secrets.TESTING_WORKFLOW_FILE }}
+            github_token: ${{ secrets.TESTING_PAT }}
+            ref: ${{ env.BRANCH }}
+            trigger_workflow: true
+            wait_workflow: true
+            propagate_failure: false
