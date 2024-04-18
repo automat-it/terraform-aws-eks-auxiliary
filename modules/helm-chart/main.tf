@@ -9,10 +9,6 @@ resource "helm_release" "this" {
   force_update      = var.force_update
 
   values = var.values
-
-  depends_on = [
-    kubernetes_service_account.irsa
-  ]
 }
 
 resource "aws_iam_role_policy" "eks-system-external-dns" {
@@ -27,18 +23,6 @@ resource "aws_iam_role" "irsa" {
   assume_role_policy = data.aws_iam_policy_document.oidc_assume_role_policy[0].json
   name               = var.irsa_iam_role_name
 }
-
-resource "kubernetes_service_account" "irsa" {
-  count = var.irsa_policy_json != null ? 1 : 0
-  metadata {
-    name      = var.service_account_name
-    namespace = var.namespace
-    annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.irsa[0].arn
-    }
-  }
-}
-
 
 # EKS Pod Identity template
 # Important! Currently works with metadata manifests v1 only

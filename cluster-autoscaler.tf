@@ -1,9 +1,9 @@
 # Cluster Autoscaler
 locals {
   # Helm versions
-  cluster_autoscaler_helm_version = "9.18.1"
+  cluster_autoscaler_helm_version = "9.36.0"
   # K8s namespace to deploy
-  cluster_autoscaler_namespace = "general"
+  cluster_autoscaler_namespace = kubernetes_namespace_v1.general.id
   # K8S Service Account Name
   cluster_autoscaler_service_account_name = "autoscaler-sa"
   # Helm ovveride values
@@ -25,7 +25,7 @@ locals {
         create: true
         name: ${local.cluster_autoscaler_service_account_name}
         annotations:
-          eks.amazonaws.com/role-arn: ${module.cluster-autoscaler[0].irsa_role_arn}
+          eks.amazonaws.com/role-arn: ${try(module.cluster-autoscaler[0].irsa_role_arn, "")}
           
     EOF
   ]

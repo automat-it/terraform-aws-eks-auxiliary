@@ -24,7 +24,7 @@ resource "aws_iam_role" "eks-admin" {
 
 locals {
   # Helm versions
-  otl_helm_version = "0.53.0"
+  otl_helm_version = "0.87.0"
 
   # IAM IRSA roles
   otl_irsa_iam_role_name = "${var.cluster_name}-otl-iam-role"
@@ -83,5 +83,16 @@ resource "kubernetes_namespace_v1" "security" {
       name = "security"
     }
     name = "security"
+  }
+}
+
+# argocd
+resource "kubernetes_namespace_v1" "argocd" {
+  count = var.has_argocd == true ? 1 : 0
+  metadata {
+    annotations = {
+      name = "argocd"
+    }
+    name = "argocd"
   }
 }

@@ -236,7 +236,7 @@ resource "helm_release" "agents" {
         value: ${var.toleration_pool}
         effect: NoSchedule
     affinity: {}
-    topologySpreadConstraints: {}
+    topologySpreadConstraints: []
 
     extraEnvs:
     - name: KUBE_NODE_NAME
@@ -408,7 +408,7 @@ resource "helm_release" "deployment" {
         value: ${var.toleration_pool}
         effect: NoSchedule
     affinity: {}
-    topologySpreadConstraints: {}
+    topologySpreadConstraints: []
 
     ports:
       otlp:

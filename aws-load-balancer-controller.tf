@@ -1,9 +1,9 @@
 # AWS Load Balancer controller
 locals {
   # Helm versions
-  aws_lb_controller_helm_version = "1.4.1"
+  aws_lb_controller_helm_version = "1.7.2"
   # K8s namespace to deploy
-  aws_lb_controller_namespace = "general"
+  aws_lb_controller_namespace = kubernetes_namespace_v1.general.id
   # K8S Service Account Name
   aws_lb_controller_service_account_name = "load-balancer-sa"
   # Helm ovveride values
@@ -17,8 +17,10 @@ locals {
         value: system
         effect: NoSchedule
     serviceAccount:
-      create: false
+      create: true
       name: ${local.aws_lb_controller_service_account_name}
+      annotations:
+        eks.amazonaws.com/role-arn: ${try(module.aws-alb-ingress-controller[0].irsa_role_arn, "")}
     vpcId: ${var.vpc_id}
     EOF
   ]
@@ -65,7 +67,8 @@ locals {
                     "elasticloadbalancing:DescribeTargetGroups",
                     "elasticloadbalancing:DescribeTargetGroupAttributes",
                     "elasticloadbalancing:DescribeTargetHealth",
-                    "elasticloadbalancing:DescribeTags"
+                    "elasticloadbalancing:DescribeTags",
+                    "elasticloadbalancing:AddTags"
                 ],
                 "Resource": "*"
             },
