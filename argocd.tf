@@ -8,7 +8,8 @@ locals {
   # K8S Service Account Name
   argocd_service_account_name = "argocd-sa"
   argocd_irsa_iam_role_name   = "${var.cluster_name}-argo-cd"
-  argocd_ingress              = var.has_custom_argocd_ingress == true && var.argocd_ingress != "" ? var.argocd_ingress : <<EOF
+  argocd_ingress              = var.argocd_custom_ingress != "" ? var.argocd_custom_ingress : local.argocd_default_ingress
+  argocd_default_ingress      = <<EOF
   enabled: true
   hosts:
     - "argocd.${var.domain_zone}"
@@ -53,10 +54,8 @@ locals {
         name: ${local.argocd_service_account_name}
         annotations:
           eks.amazonaws.com/role-arn: ${try(module.argocd[0].irsa_role_arn, "")}
-      %{~if local.argocd_ingress != ""~}
       ingress:
       ${indent(6, local.argocd_ingress)}
-      %{~endif~}
       config:
         statusbadge.enabled: "true"
         exec.enabled: "true"

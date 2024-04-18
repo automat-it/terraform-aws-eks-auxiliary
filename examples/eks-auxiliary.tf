@@ -3,14 +3,13 @@ module "secure-eks" {
   source = "git@github.com:automat-it/terraform-aws-eks-auxiliary.git"
 
   # Components
-  has_autoscaler            = true
-  has_aws_lb_controller     = true
-  has_external_dns          = false
-  has_metrics_server        = true
-  has_external_secrets      = true
-  has_monitoring            = true
-  has_argocd                = true
-  has_custom_argocd_ingress = false
+  has_autoscaler        = true
+  has_aws_lb_controller = true
+  has_external_dns      = false
+  has_metrics_server    = true
+  has_external_secrets  = true
+  has_monitoring        = true
+  has_argocd            = true
 
   # AWS
   aws_account = local.aws_account
@@ -47,7 +46,7 @@ module "secure-eks" {
   project_name = "eks_aux"
 
   # Argocd 
-  # argocd_ingress = <<EOF
+  # argocd_custom_ingress = <<EOF
   # enabled: true
   # hosts:
   #   - "argocd.${var.domain_zone}"

@@ -73,13 +73,7 @@ variable "has_argocd" {
   description = "Whether argocd will be installed."
 }
 
-variable "has_custom_argocd_ingress" {
-  type        = bool
-  default     = false
-  description = "Custom configured ingress"
-}
-
-variable "argocd_ingress" {
+variable "argocd_custom_ingress" {
   type    = string
   default = ""
 }
