@@ -75,7 +75,7 @@ locals {
   cluster_ca_certificate  = data.terraform_remote_state.eks.outputs.cluster_certificate_authority_data
   cluster_oidc_issuer_url = data.terraform_remote_state.eks.outputs.cluster_oidc_issuer_url
   iam_openid_provider_arn = data.terraform_remote_state.eks.outputs.oidc_provider_arn
-  deploy_role             = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/Terraform_CI"
+  deploy_role             = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/GitHub_runner_role"
 
 
   base_tags = {
