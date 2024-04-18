@@ -36,16 +36,16 @@ module "secure-eks" {
     k8s_metrics_interval      = "5m"
   }
 
-#  depends_on = [
-#    module.eks,
-#    module.vpc,
-#    module.private-subnets,
-#    module.isolated-subnets,
-#    module.public-subnets,
-#    module.tgw-attachment,
-#    module.tgw-sharing-attachment,
-#    module.tgw-peering-attachment,
-#    module.tgw-peering,
-#    module.tgw
-#  ]
+  #  depends_on = [
+  #    module.eks,
+  #    module.vpc,
+  #    module.private-subnets,
+  #    module.isolated-subnets,
+  #    module.public-subnets,
+  #    module.tgw-attachment,
+  #    module.tgw-sharing-attachment,
+  #    module.tgw-peering-attachment,
+  #    module.tgw-peering,
+  #    module.tgw
+  #  ]
 }
