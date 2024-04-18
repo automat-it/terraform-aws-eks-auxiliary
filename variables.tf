@@ -74,13 +74,13 @@ variable "has_argocd" {
 }
 
 variable "has_custom_argocd_ingress" {
-  type = bool
-  default = false
-  description = "Custom configured ingress" 
+  type        = bool
+  default     = false
+  description = "Custom configured ingress"
 }
 
 variable "argocd_ingress" {
-  type = string
+  type    = string
   default = ""
 }
 
@@ -116,8 +116,8 @@ variable "project_env" {
 }
 
 variable "project_name" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "Project name"
 }
 

@@ -43,7 +43,7 @@ module "secure-eks" {
   }
 
   # Tagging
-  project_env = "test"
+  project_env  = "test"
   project_name = "eks_aux"
 
   # Argocd 

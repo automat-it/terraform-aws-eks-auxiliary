@@ -8,7 +8,7 @@ locals {
   # K8S Service Account Name
   argocd_service_account_name = "argocd-sa"
   argocd_irsa_iam_role_name   = "${var.cluster_name}-argo-cd"
-  argocd_ingress               = has_custom_argocd_ingress == true && var.argocd_ingress !="" ? var.argocd_ingress : <<EOF
+  argocd_ingress              = var.has_custom_argocd_ingress == true && var.argocd_ingress != "" ? var.argocd_ingress : <<EOF
   enabled: true
   hosts:
     - "argocd.${var.domain_zone}"
