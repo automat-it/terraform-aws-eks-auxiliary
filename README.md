@@ -52,6 +52,7 @@ Reference values could be found at [examples directory](examples).
 | iam_openid_provider_arn | The ARN of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
 | iam_openid_provider_url | The URL of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
 | vpc_id | The ID of the Virtual Private Cloud (VPC) where resources will be deployed. | `string` | n/a | yes |
+| argocd_ingress | n/a | `string` | `""` | no |
 | backup_cron | Backup job run period in crontab format. Default run is daily 1 AM | `string` | `"0 1 * * *"` | no |
 | destination_s3_name | n/a | `string` | `""` | no |
 | destination_s3_name_prefix | n/a | `string` | `"argocd"` | no |
@@ -60,12 +61,15 @@ Reference values could be found at [examples directory](examples).
 | has_argocd | Whether argocd will be installed. | `bool` | `false` | no |
 | has_autoscaler | Whether the cluster autoscaler will be installed. | `bool` | `false` | no |
 | has_aws_lb_controller | Whether the AWS Load Balancer Controller will be installed. | `bool` | `false` | no |
+| has_custom_argocd_ingress | Custom configured ingress | `bool` | `false` | no |
 | has_external_dns | Whether the External DNS controller will be installed. | `bool` | `false` | no |
 | has_external_secrets | Whether the Kubernetes Metrics Server will be installed. | `bool` | `false` | no |
 | has_metrics_server | Whether the External Secrets controller will be installed. | `bool` | `true` | no |
 | has_monitoring | Whether monitoring components will be installed. | `bool` | `false` | no |
 | monitoring_config | Configuration map for the monitoring will be installed. | `any` | `{}` | no |
 | notification_slack_token_secret | AWS Secret manager key to keep a slack token | `string` | `""` | no |
+| project_env | Project environment | `string` | `""` | no |
+| project_name | Project name | `string` | `""` | no |
 | r53_zone_id | The ID of the Route 53 hosted zone, if DNS records are managed by Route 53. | `string` | `""` | no |
 
 ## Outputs
