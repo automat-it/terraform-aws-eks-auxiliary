@@ -11,6 +11,7 @@ locals {
   argocd_ingress              = var.argocd_custom_ingress != "" ? var.argocd_custom_ingress : local.argocd_default_ingress
   argocd_default_ingress      = <<EOF
   enabled: true
+  domain: argocd.${var.domain_zone}
   hosts:
     - "argocd.${var.domain_zone}"
   rules:
