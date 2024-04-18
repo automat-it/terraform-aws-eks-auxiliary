@@ -67,11 +67,21 @@ variable "has_external_secrets" {
   description = "Whether the Kubernetes Metrics Server will be installed."
 }
 
-
 variable "has_argocd" {
   type        = bool
   default     = false
   description = "Whether argocd will be installed."
+}
+
+variable "has_custom_argocd_ingress" {
+  type = bool
+  default = false
+  description = "Custom configured ingress" 
+}
+
+variable "argocd_ingress" {
+  type = string
+  default = ""
 }
 
 variable "has_monitoring" {
@@ -97,6 +107,18 @@ variable "domain_zone" {
   type        = string
   default     = ""
   description = "The domain zone associated with the Route 53 hosted zone."
+}
+
+variable "project_env" {
+  type        = string
+  default     = ""
+  description = "Project environment"
+}
+
+variable "project_name" {
+  type = string
+  default = ""
+  description = "Project name"
 }
 
 ### Notifications

@@ -1,6 +1,6 @@
 ### ArgoCD helm
 locals {
-  argocd_url = try("https://argocd.${var.domain_zone}", "https://argocd.test.com")
+  argocd_url = "https://argocd.${var.domain_zone}"
   # Helm versions
   argocd_helm_version = "6.7.12"
   # K8s namespace to deploy
@@ -8,7 +8,31 @@ locals {
   # K8S Service Account Name
   argocd_service_account_name = "argocd-sa"
   argocd_irsa_iam_role_name   = "${var.cluster_name}-argo-cd"
-  argocd_ingres               = ""
+  argocd_ingress               = has_custom_argocd_ingress == true && var.argocd_ingress !="" ? var.argocd_ingress : <<EOF
+  enabled: true
+  hosts:
+    - "argocd.${var.domain_zone}"
+  rules:
+    - https:
+        paths:
+          - backend:
+              serviceName: ssl-redirect
+              servicePort: use-annotation
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/load-balancer-name: "${lower(var.basename)}-argocd-alb"
+    alb.ingress.kubernetes.io/group.name: "internal"
+    alb.ingress.kubernetes.io/ip-address-type: ipv4
+    alb.ingress.kubernetes.io/scheme: "internal"
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/success-codes: 200-399
+    alb.ingress.kubernetes.io/backend-protocol: HTTPS
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/tags: 'Environment=${var.project_env}, Managed_by=helm, Project=${var.project_name}'
+    alb.ingress.kubernetes.io/ssl-redirect: '443'
+  EOF
   argocd_irsa_policy_json     = null
   argocd_helm_values = [<<EOF
     nodeSelector:
@@ -29,9 +53,9 @@ locals {
         name: ${local.argocd_service_account_name}
         annotations:
           eks.amazonaws.com/role-arn: ${try(module.argocd[0].irsa_role_arn, "")}
-      %{~if local.argocd_ingres != ""~}
+      %{~if local.argocd_ingress != ""~}
       ingress:
-      ${indent(6, local.argocd_ingres)}
+      ${indent(6, local.argocd_ingress)}
       %{~endif~}
       config:
         statusbadge.enabled: "true"
