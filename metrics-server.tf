@@ -3,7 +3,7 @@ locals {
   # Helm versions
   metrics_server_helm_version = "3.12.1"
   # K8s namespace to deploy
-  metrics_server_namespace = kubernetes_namespace_v1.general.metadata
+  metrics_server_namespace = kubernetes_namespace_v1.general.metadata.name
   # Helm ovveride values
   metrics_server_helm_values = [<<EOF
     nodeSelector:
