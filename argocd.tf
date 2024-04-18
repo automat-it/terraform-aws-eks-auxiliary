@@ -21,7 +21,7 @@ locals {
               servicePort: use-annotation
   annotations:
     kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/load-balancer-name: "${lower(var.basename)}-argocd-alb"
+    alb.ingress.kubernetes.io/load-balancer-name: "${lower(var.cluster_name)}-argocd-alb"
     alb.ingress.kubernetes.io/group.name: "internal"
     alb.ingress.kubernetes.io/ip-address-type: ipv4
     alb.ingress.kubernetes.io/scheme: "internal"
