@@ -59,8 +59,9 @@ locals {
       ingress:
       ${indent(6, local.argocd_ingress)}
       config:
+        cm:
+          exec.enabled: "true"
         statusbadge.enabled: "true"
-        exec.enabled: "true"
         url: ${local.argocd_url}
       service:
         type: NodePort
