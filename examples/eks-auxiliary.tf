@@ -4,7 +4,7 @@ module "secure-eks" {
 
   # Components
   has_autoscaler        = true
-  has_aws_lb_controller = true
+  has_aws_lb_controller = false
   has_external_dns      = false
   has_metrics_server    = true
   has_external_secrets  = true
