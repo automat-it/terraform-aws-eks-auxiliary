@@ -13,7 +13,7 @@ module "secure-eks" {
   # AWS
   aws_account = local.aws_account
   aws_region  = local.aws_region
-  basename    = local.project_name
+  basename    = var.project_name
 
   # EKS
   cluster_name            = local.cluster_name

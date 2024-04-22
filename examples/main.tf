@@ -66,21 +66,20 @@ provider "helm" {
 locals {
   aws_account             = data.aws_caller_identity.current.id
   aws_region              = "ca-central-1"
-  project_name            = "Terraform-CI"
   vpc_id                  = data.terraform_remote_state.vpc.outputs.vpc_id
   cluster_name            = data.terraform_remote_state.eks.outputs.cluster_name
   cluster_endpoint        = data.terraform_remote_state.eks.outputs.cluster_endpoint
   cluster_ca_certificate  = data.terraform_remote_state.eks.outputs.cluster_certificate_authority_data
   cluster_oidc_issuer_url = data.terraform_remote_state.eks.outputs.cluster_oidc_issuer_url
   iam_openid_provider_arn = data.terraform_remote_state.eks.outputs.oidc_provider_arn
-  deploy_role             = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/GitHub_runner_role"
+  deploy_role             = data.terraform_remote_state.vpc.outputs.github_runner_role
 
 
   base_tags = {
   }
   # Base resource-independent tags
   provider_base_tags = {
-    Project    = local.project_name
+    Project    = var.project_name
     Managed_by = "terraform"
     Name       = ""
   }
