@@ -9,6 +9,9 @@ locals {
   # Helm ovveride values
   aws_lb_controller_helm_values = [<<EOF
     clusterName: ${var.cluster_name}
+    %{~if var.aws_lb_controller_sg_id != ""~}
+    backendSecurityGroup: ${var.aws_lb_controller_sg_id}
+    %{~endif~}
     nodeSelector:
       pool: system
     tolerations:
