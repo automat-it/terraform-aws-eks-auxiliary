@@ -49,6 +49,12 @@ variable "has_aws_lb_controller" {
   description = "Whether the AWS Load Balancer Controller will be installed."
 }
 
+variable "aws_lb_controller_sg_id" {
+  type        = string
+  default     = ""
+  description = "Explicitly mention the AWS SG ID to work with. If not mentioned, the controller creates the one automatically."
+}
+
 variable "has_external_dns" {
   type        = bool
   default     = false
