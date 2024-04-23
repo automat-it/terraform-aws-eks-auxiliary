@@ -20,6 +20,12 @@ variable "cluster_name" {
   description = "The name of the Amazon EKS cluster."
 }
 
+variable "cluster_nodepool_name" {
+  type        = string
+  default     = "system"
+  description = "The nodepool name in the Amazon EKS cluster to install all the controllers."
+}
+
 variable "iam_openid_provider_url" {
   type        = string
   description = "The URL of the IAM OIDC identity provider for the cluster."
@@ -97,8 +103,8 @@ variable "monitoring_config" {
 }
 
 variable "has_keda" {
-  type = bool
-  default = false
+  type        = bool
+  default     = false
   description = "Whether keda controller will be installed."
 }
 

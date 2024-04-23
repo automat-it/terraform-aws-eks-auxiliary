@@ -6,15 +6,14 @@ locals {
   keda_namespace = kubernetes_namespace_v1.general.id
   # K8S Service Account Name
   keda_service_account_name = "keda-sa"
-  keda_toleration_pool = "system"
   # Helm ovveride values
   keda_helm_values = [<<EOF
     nodeSelector:
-      pool: ${local.keda_toleration_pool}
+      pool: ${var.cluster_nodepool_name}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${local.keda_toleration_pool}
+        value: ${var.cluster_nodepool_name}
         effect: NoSchedule
     rbac:
       create: true

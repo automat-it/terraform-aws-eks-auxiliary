@@ -21,11 +21,11 @@ locals {
       annotations:
         eks.amazonaws.com/role-arn: ${try(module.external-secrets[0].irsa_role_arn, "")}
     nodeSelector:
-      pool: system
+      pool: ${var.cluster_nodepool_name}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: system
+        value: ${var.cluster_nodepool_name}
         effect: NoSchedule
     EOF
   ]

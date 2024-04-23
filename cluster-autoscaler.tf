@@ -14,11 +14,11 @@ locals {
     rbac:
       create : true
     nodeSelector:
-      pool: system
+      pool: ${var.cluster_nodepool_name}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: system
+        value: ${var.cluster_nodepool_name}
         effect: NoSchedule
     rbac:
       serviceAccount:

@@ -55,6 +55,7 @@ Reference values could be found at [examples directory](examples).
 | argocd_custom_ingress | n/a | `string` | `""` | no |
 | aws_lb_controller_sg_id | Explicitly mention the AWS SG ID to work with. If not mentioned, the controller creates the one automatically. | `string` | `""` | no |
 | backup_cron | Backup job run period in crontab format. Default run is daily 1 AM | `string` | `"0 1 * * *"` | no |
+| cluster_nodepool_name | The nodepool name in the Amazon EKS cluster to install all the controllers. | `string` | `"system"` | no |
 | destination_s3_name | n/a | `string` | `""` | no |
 | destination_s3_name_prefix | n/a | `string` | `"argocd"` | no |
 | domain_zone | The domain zone associated with the Route 53 hosted zone. | `string` | `""` | no |
