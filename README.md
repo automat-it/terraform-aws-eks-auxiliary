@@ -47,7 +47,6 @@ Reference values could be found at [examples directory](examples).
 |------|-------------|------|---------|:--------:|
 | aws_account | The AWS account ID where resources will be provisioned. | `string` | n/a | yes |
 | aws_region | The AWS region where resources will be provisioned. | `string` | n/a | yes |
-| basename | The base name used for creating resource names or identifiers. | `string` | n/a | yes |
 | cluster_name | The name of the Amazon EKS cluster. | `string` | n/a | yes |
 | iam_openid_provider_arn | The ARN of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
 | iam_openid_provider_url | The URL of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
