@@ -28,6 +28,7 @@ Reference values could be found at [examples directory](examples).
 | cluster-autoscaler | ./modules/helm-chart | n/a |
 | external-dns | ./modules/helm-chart | n/a |
 | external-secrets | ./modules/helm-chart | n/a |
+| keda | ./modules/helm-chart | n/a |
 | metrics-server | ./modules/helm-chart | n/a |
 | monitoring | ./helm-charts/otl-agent-monitoring | n/a |
 | slack-notifications | ./modules/argocd-slack-notification | n/a |
@@ -36,7 +37,6 @@ Reference values could be found at [examples directory](examples).
 
 | Name | Type |
 |------|------|
-| [aws_iam_role.eks-admin](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [kubernetes_namespace_v1.argocd](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.general](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.security](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
@@ -47,13 +47,14 @@ Reference values could be found at [examples directory](examples).
 |------|-------------|------|---------|:--------:|
 | aws_account | The AWS account ID where resources will be provisioned. | `string` | n/a | yes |
 | aws_region | The AWS region where resources will be provisioned. | `string` | n/a | yes |
-| basename | The base name used for creating resource names or identifiers. | `string` | n/a | yes |
 | cluster_name | The name of the Amazon EKS cluster. | `string` | n/a | yes |
 | iam_openid_provider_arn | The ARN of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
 | iam_openid_provider_url | The URL of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
 | vpc_id | The ID of the Virtual Private Cloud (VPC) where resources will be deployed. | `string` | n/a | yes |
 | argocd_custom_ingress | n/a | `string` | `""` | no |
+| aws_lb_controller_sg_id | Explicitly mention the AWS SG ID to work with. If not mentioned, the controller creates the one automatically. | `string` | `""` | no |
 | backup_cron | Backup job run period in crontab format. Default run is daily 1 AM | `string` | `"0 1 * * *"` | no |
+| cluster_nodepool_name | The nodepool name in the Amazon EKS cluster to install all the controllers. | `string` | `"system"` | no |
 | destination_s3_name | n/a | `string` | `""` | no |
 | destination_s3_name_prefix | n/a | `string` | `"argocd"` | no |
 | domain_zone | The domain zone associated with the Route 53 hosted zone. | `string` | `""` | no |
@@ -63,6 +64,7 @@ Reference values could be found at [examples directory](examples).
 | has_aws_lb_controller | Whether the AWS Load Balancer Controller will be installed. | `bool` | `false` | no |
 | has_external_dns | Whether the External DNS controller will be installed. | `bool` | `false` | no |
 | has_external_secrets | Whether the Kubernetes Metrics Server will be installed. | `bool` | `false` | no |
+| has_keda | Whether keda controller will be installed. | `bool` | `false` | no |
 | has_metrics_server | Whether the External Secrets controller will be installed. | `bool` | `true` | no |
 | has_monitoring | Whether monitoring components will be installed. | `bool` | `false` | no |
 | monitoring_config | Configuration map for the monitoring will be installed. | `any` | `{}` | no |
@@ -85,6 +87,8 @@ Reference values could be found at [examples directory](examples).
 | external_dns_irsa_role_id | The ID of the IAM role used by the External DNS controller for IRSA (IAM Roles for Service Accounts). |
 | external_secrets_irsa_role_arn | The ARN of the IAM role used by the External Secrets controller for IRSA (IAM Roles for Service Accounts). |
 | external_secrets_irsa_role_id | The ID of the IAM role used by the External Secrets controller for IRSA (IAM Roles for Service Accounts). |
+| keda_irsa_role_arn | The ARN of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
+| keda_irsa_role_id | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
 | metrics_server_irsa_role_arn | The ARN of the IAM role used by the Metrics Server for IRSA (IAM Roles for Service Accounts). |
 | metrics_server_irsa_role_id | The ID of the IAM role used by the Metrics Server for IRSA (IAM Roles for Service Accounts). |
 

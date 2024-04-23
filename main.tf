@@ -1,27 +1,3 @@
-# Please note aws-auth CM was updated by EKS TF module. Now just need to create it on IAM.
-resource "aws_iam_role" "eks-admin" {
-  name = "${var.basename}-EKS-Admin-ROLE"
-
-  # Allow EC2 instances and users to assume the role
-  assume_role_policy = <<-POLICY
-    {
-      "Version": "2012-10-17",
-      "Statement": [
-        {
-          "Effect": "Allow",
-          "Action": "sts:AssumeRole",
-          "Principal": {"Service": "ec2.amazonaws.com"}
-        },
-        {
-          "Effect": "Allow",
-          "Action": "sts:AssumeRole",
-          "Principal": {"AWS": "arn:aws:iam::${var.aws_account}:root"}
-        }
-      ]
-    }
-    POLICY
-}
-
 locals {
   # Helm versions
   otl_helm_version = "0.87.0"
@@ -44,7 +20,7 @@ module "monitoring" {
 
   helm_version = local.otl_helm_version
 
-  toleration_pool = "system"
+  toleration_pool = var.cluster_nodepool_name
   namespace       = "monitoring"
 
   create_cw_alerts = lookup(var.monitoring_config, "create_alerts", false)

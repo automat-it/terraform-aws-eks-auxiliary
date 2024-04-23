@@ -21,16 +21,33 @@ locals {
       annotations:
         eks.amazonaws.com/role-arn: ${try(module.external-secrets[0].irsa_role_arn, "")}
     nodeSelector:
-      pool: system
+      pool: ${var.cluster_nodepool_name}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: system
+        value: ${var.cluster_nodepool_name}
         effect: NoSchedule
     EOF
   ]
   # AWS IAM IRSA
   external_secrets_irsa_iam_role_name = "${var.cluster_name}-external-secrets-iam-role"
+  external_secrets_irsa_policy_json   = <<-POLICY
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Action": [
+                  "secretsmanager:GetResourcePolicy",
+                  "secretsmanager:GetSecretValue",
+                  "secretsmanager:DescribeSecret",
+                  "secretsmanager:ListSecretVersionIds"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+          }
+      ]
+    }
+  POLICY
 }
 
 module "external-secrets" {
@@ -43,6 +60,7 @@ module "external-secrets" {
   helm_version            = local.external_secrets_helm_version
   service_account_name    = local.external_secrets_service_account_name
   irsa_iam_role_name      = local.external_secrets_irsa_iam_role_name
+  irsa_policy_json        = local.external_secrets_irsa_policy_json
   iam_openid_provider_url = var.iam_openid_provider_url
   iam_openid_provider_arn = var.iam_openid_provider_arn
   values                  = local.external_secrets_helm_values

@@ -21,7 +21,7 @@ locals {
               servicePort: use-annotation
   annotations:
     kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/load-balancer-name: "${lower(var.basename)}-argocd-alb"
+    alb.ingress.kubernetes.io/load-balancer-name: "${lower(var.cluster_name)}-argocd-alb"
     alb.ingress.kubernetes.io/group.name: "internal"
     alb.ingress.kubernetes.io/ip-address-type: ipv4
     alb.ingress.kubernetes.io/scheme: "internal"
@@ -37,11 +37,11 @@ locals {
   argocd_irsa_policy_json     = null
   argocd_helm_values = [<<EOF
     nodeSelector:
-      pool: system
+      pool: ${var.cluster_nodepool_name}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: system
+        value: ${var.cluster_nodepool_name}
         effect: NoSchedule
     controller:
       args:
@@ -49,6 +49,8 @@ locals {
       serviceAccount:
         create: false
         name: ${local.argocd_service_account_name}
+    global:
+      domain: argocd.${var.domain_zone}
     server:
       serviceAccount:
         name: ${local.argocd_service_account_name}
@@ -56,10 +58,9 @@ locals {
           eks.amazonaws.com/role-arn: ${try(module.argocd[0].irsa_role_arn, "")}
       ingress:
       ${indent(6, local.argocd_ingress)}
-      config:
-        statusbadge.enabled: "true"
+    configs:
+      cm:
         exec.enabled: "true"
-        url: ${local.argocd_url}
       service:
         type: NodePort
     notifications:
@@ -262,7 +263,11 @@ module "argocd" {
   iam_openid_provider_arn = var.iam_openid_provider_arn
   values                  = local.argocd_helm_values
 
-  depends_on = [kubernetes_namespace_v1.general]
+  depends_on = [
+    kubernetes_namespace_v1.general,
+    module.aws-alb-ingress-controller
+  ]
+
 }
 
 ### Notifications

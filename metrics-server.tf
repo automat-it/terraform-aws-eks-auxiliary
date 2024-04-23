@@ -3,15 +3,15 @@ locals {
   # Helm versions
   metrics_server_helm_version = "3.12.1"
   # K8s namespace to deploy
-  metrics_server_namespace = kubernetes_namespace_v1.general.metadata
+  metrics_server_namespace = kubernetes_namespace_v1.general.id
   # Helm ovveride values
   metrics_server_helm_values = [<<EOF
     nodeSelector:
-      pool: system
+      pool: ${var.cluster_nodepool_name}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: system
+        value: ${var.cluster_nodepool_name}
         effect: NoSchedule
     EOF
   ]

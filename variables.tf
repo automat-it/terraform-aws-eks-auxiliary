@@ -9,15 +9,16 @@ variable "aws_region" {
   description = "The AWS region where resources will be provisioned."
 }
 
-variable "basename" {
-  type        = string
-  description = "The base name used for creating resource names or identifiers."
-}
-
 # EKS
 variable "cluster_name" {
   type        = string
   description = "The name of the Amazon EKS cluster."
+}
+
+variable "cluster_nodepool_name" {
+  type        = string
+  default     = "system"
+  description = "The nodepool name in the Amazon EKS cluster to install all the controllers."
 }
 
 variable "iam_openid_provider_url" {
@@ -47,6 +48,12 @@ variable "has_aws_lb_controller" {
   type        = bool
   default     = false
   description = "Whether the AWS Load Balancer Controller will be installed."
+}
+
+variable "aws_lb_controller_sg_id" {
+  type        = string
+  default     = ""
+  description = "Explicitly mention the AWS SG ID to work with. If not mentioned, the controller creates the one automatically."
 }
 
 variable "has_external_dns" {
@@ -88,6 +95,12 @@ variable "monitoring_config" {
   type        = any
   default     = {}
   description = "Configuration map for the monitoring will be installed."
+}
+
+variable "has_keda" {
+  type        = bool
+  default     = false
+  description = "Whether keda controller will be installed."
 }
 
 # Route53

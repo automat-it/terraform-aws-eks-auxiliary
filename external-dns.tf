@@ -15,11 +15,11 @@ locals {
     domainFilters:
       - ${var.domain_zone}
     nodeSelector:
-      pool: system
+      pool: ${var.cluster_nodepool_name}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: system
+        value: ${var.cluster_nodepool_name}
         effect: NoSchedule
     policy: upsert-only
     serviceAccount:
