@@ -96,6 +96,12 @@ variable "monitoring_config" {
   description = "Configuration map for the monitoring will be installed."
 }
 
+variable "has_keda" {
+  type = bool
+  default = false
+  description = "Whether keda controller will be installed."
+}
+
 # Route53
 variable "r53_zone_id" {
   type        = string

@@ -57,3 +57,13 @@ output "argocd_irsa_role_id" {
   description = "The ID of the IAM role used by the ArgoCD for IRSA (IAM Roles for Service Accounts)."
   value       = var.has_argocd ? module.argocd[0].irsa_role_id : "Not Installed"
 }
+
+output "keda_irsa_role_arn" {
+  description = "The ARN of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts)."
+  value       = var.has_keda ? module.keda[0].irsa_role_arn : "Not Installed"
+}
+
+output "keda_irsa_role_id" {
+  description = "The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts)."
+  value       = var.has_keda ? module.keda[0].irsa_role_id : "Not Installed"
+}
