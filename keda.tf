@@ -22,7 +22,7 @@ locals {
       create: true
       name: ${local.keda_service_account_name}
       annotations:
-        eks.amazonaws.com/role-arn: ${aws_iam_role.irsa_role.arn}
+        eks.amazonaws.com/role-arn: ${try(module.keda[0].irsa_role_arn, "")}
     prometheus:
       metricServer:
         enabled: true
