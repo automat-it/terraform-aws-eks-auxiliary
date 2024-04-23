@@ -58,9 +58,9 @@ locals {
           eks.amazonaws.com/role-arn: ${try(module.argocd[0].irsa_role_arn, "")}
       ingress:
       ${indent(6, local.argocd_ingress)}
-      configs:
-        cm:
-          exec.enabled: "true"
+    configs:
+      cm:
+        exec.enabled: "true"
       service:
         type: NodePort
     notifications:
