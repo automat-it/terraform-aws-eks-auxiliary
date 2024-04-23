@@ -28,6 +28,7 @@ Reference values could be found at [examples directory](examples).
 | cluster-autoscaler | ./modules/helm-chart | n/a |
 | external-dns | ./modules/helm-chart | n/a |
 | external-secrets | ./modules/helm-chart | n/a |
+| keda | ./modules/helm-chart | n/a |
 | metrics-server | ./modules/helm-chart | n/a |
 | monitoring | ./helm-charts/otl-agent-monitoring | n/a |
 | slack-notifications | ./modules/argocd-slack-notification | n/a |
@@ -63,6 +64,7 @@ Reference values could be found at [examples directory](examples).
 | has_aws_lb_controller | Whether the AWS Load Balancer Controller will be installed. | `bool` | `false` | no |
 | has_external_dns | Whether the External DNS controller will be installed. | `bool` | `false` | no |
 | has_external_secrets | Whether the Kubernetes Metrics Server will be installed. | `bool` | `false` | no |
+| has_keda | Whether keda controller will be installed. | `bool` | `false` | no |
 | has_metrics_server | Whether the External Secrets controller will be installed. | `bool` | `true` | no |
 | has_monitoring | Whether monitoring components will be installed. | `bool` | `false` | no |
 | monitoring_config | Configuration map for the monitoring will be installed. | `any` | `{}` | no |
@@ -85,6 +87,8 @@ Reference values could be found at [examples directory](examples).
 | external_dns_irsa_role_id | The ID of the IAM role used by the External DNS controller for IRSA (IAM Roles for Service Accounts). |
 | external_secrets_irsa_role_arn | The ARN of the IAM role used by the External Secrets controller for IRSA (IAM Roles for Service Accounts). |
 | external_secrets_irsa_role_id | The ID of the IAM role used by the External Secrets controller for IRSA (IAM Roles for Service Accounts). |
+| keda_irsa_role_arn | The ARN of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
+| keda_irsa_role_id | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
 | metrics_server_irsa_role_arn | The ARN of the IAM role used by the Metrics Server for IRSA (IAM Roles for Service Accounts). |
 | metrics_server_irsa_role_id | The ID of the IAM role used by the Metrics Server for IRSA (IAM Roles for Service Accounts). |
 
