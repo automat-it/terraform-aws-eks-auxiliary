@@ -37,11 +37,11 @@ locals {
   argocd_irsa_policy_json     = null
   argocd_helm_values = [<<EOF
     nodeSelector:
-      pool: system
+      pool: ${var.cluster_nodepool_name}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: system
+        value: ${var.cluster_nodepool_name}
         effect: NoSchedule
     controller:
       args:
@@ -266,8 +266,8 @@ module "argocd" {
   depends_on = [
     kubernetes_namespace_v1.general,
     module.aws-alb-ingress-controller
-    ]
-  
+  ]
+
 }
 
 ### Notifications

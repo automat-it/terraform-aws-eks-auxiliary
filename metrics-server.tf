@@ -7,11 +7,11 @@ locals {
   # Helm ovveride values
   metrics_server_helm_values = [<<EOF
     nodeSelector:
-      pool: system
+      pool: ${var.cluster_nodepool_name}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: system
+        value: ${var.cluster_nodepool_name}
         effect: NoSchedule
     EOF
   ]

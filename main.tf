@@ -20,7 +20,7 @@ module "monitoring" {
 
   helm_version = local.otl_helm_version
 
-  toleration_pool = "system"
+  toleration_pool = var.cluster_nodepool_name
   namespace       = "monitoring"
 
   create_cw_alerts = lookup(var.monitoring_config, "create_alerts", false)
