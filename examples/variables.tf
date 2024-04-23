@@ -1,10 +1,10 @@
 variable "tfstate_region" {
   type    = string
-  default = "ca-central-1"
+  default = "us-east-1"
 }
 variable "tfstate_bucket" {
   type    = string
-  default = "tfstate.ca-central-1.terraform-ci"
+  default = "tfstate.us-east-1.terraform-ci"
 }
 
 variable "project_name" {

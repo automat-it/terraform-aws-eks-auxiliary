@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    region         = "ca-central-1"
-    bucket         = "tfstate.ca-central-1.terraform-ci"
+    region         = "us-east-1"
+    bucket         = "tfstate.us-east-1.terraform-ci"
     key            = "environments/terraform-ci/eks-auxiliary/terraform.tfstate"
-    dynamodb_table = "tfstate-locks.ca-central-1.terraform-ci"
+    dynamodb_table = "tfstate-locks.us-east-1.terraform-ci"
   }
   required_providers {
     aws = {
@@ -65,7 +65,7 @@ provider "helm" {
 
 locals {
   aws_account             = data.aws_caller_identity.current.id
-  aws_region              = "ca-central-1"
+  aws_region              = data.terraform_remote_state.vpc.outputs.aws_region
   vpc_id                  = data.terraform_remote_state.vpc.outputs.vpc_id
   cluster_name            = data.terraform_remote_state.eks.outputs.cluster_name
   cluster_endpoint        = data.terraform_remote_state.eks.outputs.cluster_endpoint
