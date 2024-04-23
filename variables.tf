@@ -9,11 +9,6 @@ variable "aws_region" {
   description = "The AWS region where resources will be provisioned."
 }
 
-variable "basename" {
-  type        = string
-  description = "The base name used for creating resource names or identifiers."
-}
-
 # EKS
 variable "cluster_name" {
   type        = string
