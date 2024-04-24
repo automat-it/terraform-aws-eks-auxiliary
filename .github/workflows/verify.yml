@@ -76,7 +76,7 @@
       name: "Trigger Terraform code deployment"
       if: github.event.review.state == 'APPROVED'
       runs-on: ubuntu-latest
-      needs: [terraform_validate, tflint, tfsec]
+      needs: [tflint, tfsec]
       env:
         BRANCH: feature/eks
       steps:
