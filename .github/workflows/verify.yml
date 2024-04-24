@@ -90,4 +90,4 @@
             ref: ${{ env.BRANCH }}
             trigger_workflow: true
             wait_workflow: true
-            propagate_failure: false
+            propagate_failure: true
