@@ -36,13 +36,6 @@ locals {
   EOF
   argocd_irsa_policy_json     = null
   argocd_helm_values = [<<EOF
-    nodeSelector:
-      pool: ${var.cluster_nodepool_name}
-    tolerations:
-      - key: dedicated
-        operator: Equal
-        value: ${var.cluster_nodepool_name}
-        effect: NoSchedule
     controller:
       args:
         appResyncPeriod: "60"
@@ -51,6 +44,13 @@ locals {
         name: ${local.argocd_service_account_name}
     global:
       domain: argocd.${var.domain_zone}
+      nodeSelector:
+        pool: ${var.cluster_nodepool_name}
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: ${var.cluster_nodepool_name}
+          effect: NoSchedule
     server:
       serviceAccount:
         name: ${local.argocd_service_account_name}
