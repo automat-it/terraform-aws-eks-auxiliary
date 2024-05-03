@@ -29,16 +29,6 @@ variable "iam_openid_provider" {
   default = null
 }
 
-# variable "iam_openid_provider_url" {
-#   type        = string
-#   description = "The URL of the IAM OIDC identity provider for the cluster."
-# }
-
-# variable "iam_openid_provider_arn" {
-#   type        = string
-#   description = "The ARN of the IAM OIDC identity provider for the cluster."
-# }
-
 # VPC
 variable "vpc_id" {
   type        = string

@@ -86,15 +86,6 @@ variable "iam_openid_provider" {
   default = null
 }
 
-# variable "iam_openid_provider_url" {
-#   type        = string
-#   description = "AWS IAM OpenID identity provider url to formate the proper IAM role trust."
-# }
-# variable "iam_openid_provider_arn" {
-#   type        = string
-#   description = "AWS IAM OpenID identity provider arn to formate the proper IAM role trust."
-# }
-
 variable "create_cw_alerts" {
   type        = bool
   default     = true
