@@ -48,17 +48,25 @@ variable "values" {
   default     = []
 }
 
-variable "iam_openid_provider_url" {
-  description = "The URL of the OpenID Connect (OIDC) provider associated with the EKS cluster."
-  type        = string
-  default     = null
+variable "iam_openid_provider" {
+  type = object({
+    oidc_provider_arn = string
+    oidc_provider = string
+  })
+  default = null
 }
 
-variable "iam_openid_provider_arn" {
-  description = "The ARN of the OpenID Connect (OIDC) provider associated with the EKS cluster."
-  type        = string
-  default     = null
-}
+# variable "iam_openid_provider_url" {
+#   description = "The URL of the OpenID Connect (OIDC) provider associated with the EKS cluster."
+#   type        = string
+#   default     = null
+# }
+
+# variable "iam_openid_provider_arn" {
+#   description = "The ARN of the OpenID Connect (OIDC) provider associated with the EKS cluster."
+#   type        = string
+#   default     = null
+# }
 
 variable "irsa_iam_role_name" {
   description = "Name of the IAM role for IRSA."

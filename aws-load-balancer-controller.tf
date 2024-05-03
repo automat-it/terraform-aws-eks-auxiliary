@@ -248,19 +248,18 @@ locals {
 }
 
 module "aws-alb-ingress-controller" {
-  source                  = "./modules/helm-chart"
-  count                   = var.has_aws_lb_controller ? 1 : 0
-  name                    = "aws-alb-ingress-controller"
-  repository              = "https://aws.github.io/eks-charts"
-  chart                   = "aws-load-balancer-controller"
-  namespace               = local.aws_lb_controller_namespace
-  helm_version            = local.aws_lb_controller_helm_version
-  service_account_name    = local.aws_lb_controller_service_account_name
-  irsa_iam_role_name      = local.aws_lb_controller_irsa_iam_role_name
-  irsa_policy_json        = local.aws_lb_controller_irsa_policy_json
-  iam_openid_provider_url = var.iam_openid_provider_url
-  iam_openid_provider_arn = var.iam_openid_provider_arn
-  values                  = local.aws_lb_controller_helm_values
+  source               = "./modules/helm-chart"
+  count                = var.has_aws_lb_controller ? 1 : 0
+  name                 = "aws-alb-ingress-controller"
+  repository           = "https://aws.github.io/eks-charts"
+  chart                = "aws-load-balancer-controller"
+  namespace            = local.aws_lb_controller_namespace
+  helm_version         = local.aws_lb_controller_helm_version
+  service_account_name = local.aws_lb_controller_service_account_name
+  irsa_iam_role_name   = local.aws_lb_controller_irsa_iam_role_name
+  irsa_policy_json     = local.aws_lb_controller_irsa_policy_json
+  iam_openid_provider  = var.iam_openid_provider
+  values               = local.aws_lb_controller_helm_values
 
   depends_on = [kubernetes_namespace_v1.general]
 }

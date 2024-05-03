@@ -14,9 +14,8 @@ module "monitoring" {
   eks_cluster_name = var.cluster_name
   aws_region       = var.aws_region
 
-  irsa_iam_role_name      = local.otl_irsa_iam_role_name
-  iam_openid_provider_url = var.iam_openid_provider_url
-  iam_openid_provider_arn = var.iam_openid_provider_arn
+  irsa_iam_role_name  = local.otl_irsa_iam_role_name
+  iam_openid_provider = var.iam_openid_provider
 
   helm_version = local.otl_helm_version
 

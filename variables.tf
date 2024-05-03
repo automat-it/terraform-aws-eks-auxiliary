@@ -21,15 +21,23 @@ variable "cluster_nodepool_name" {
   description = "The nodepool name in the Amazon EKS cluster to install all the controllers."
 }
 
-variable "iam_openid_provider_url" {
-  type        = string
-  description = "The URL of the IAM OIDC identity provider for the cluster."
+variable "iam_openid_provider" {
+  type = object({
+    oidc_provider_arn = string
+    oidc_provider     = string
+  })
+  default = null
 }
 
-variable "iam_openid_provider_arn" {
-  type        = string
-  description = "The ARN of the IAM OIDC identity provider for the cluster."
-}
+# variable "iam_openid_provider_url" {
+#   type        = string
+#   description = "The URL of the IAM OIDC identity provider for the cluster."
+# }
+
+# variable "iam_openid_provider_arn" {
+#   type        = string
+#   description = "The ARN of the IAM OIDC identity provider for the cluster."
+# }
 
 # VPC
 variable "vpc_id" {
