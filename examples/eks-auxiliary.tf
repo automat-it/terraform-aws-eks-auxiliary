@@ -1,32 +1,33 @@
-module "secure-eks" {
+module "eks-aux" {
 
   source = "git@github.com:automat-it/terraform-aws-eks-auxiliary.git"
 
+  project_env  = "test"
+  project_name = "eks-aux"
+
   # Components
-  has_autoscaler        = true
-  has_aws_lb_controller = true
-  has_external_dns      = false
-  has_metrics_server    = true
-  has_external_secrets  = true
-  has_monitoring        = true
-  has_argocd            = true
+  has_autoscaler          = true
+  has_aws_lb_controller   = true
+  aws_lb_controller_sg_id = aws_security_group.alb-controller-sg.id
+  has_external_dns        = true
+  has_metrics_server      = true
+  has_external_secrets    = true
+  has_monitoring          = true
+  has_argocd              = true
 
   # AWS
-  aws_account = local.aws_account
-  aws_region  = local.aws_region
-  basename    = local.basename
+  aws_account = var.aws_account_id
+  aws_region  = var.aws_region
 
   # EKS
-  cluster_name            = module.eks.cluster_name
-  iam_openid_provider_url = module.eks.oidc_provider
-  iam_openid_provider_arn = module.eks.oidc_provider_arn
+  cluster_name        = module.eks.cluster_name
+  iam_openid_provider = module.eks
 
   # VPC
-  vpc_id = module.vpc.vpc.id
+  vpc_id = var.vpc_id
 
   # DNS
-  r53_zone_id = aws_route53_zone.route53-domain.zone_id
-  domain_zone = aws_route53_zone.route53-domain.name
+  domain_zone = var.domain_zone #aws_route53_zone.route53-domain.name
 
   # Monitoring
   monitoring_config = {
@@ -41,47 +42,7 @@ module "secure-eks" {
     k8s_metrics_interval      = "5m"
   }
 
-  # Tagging
-  project_env  = "test"
-  project_name = "eks_aux"
-
-  # Argocd 
-  # argocd_custom_ingress = <<EOF
-  # enabled: true
-  # hosts:
-  #   - "argocd.${var.domain_zone}"
-  # rules:
-  #   - https:
-  #       paths:
-  #         - backend:
-  #             serviceName: ssl-redirect
-  #             servicePort: use-annotation
-  # annotations:
-  #   kubernetes.io/ingress.class: alb
-  #   alb.ingress.kubernetes.io/load-balancer-name: "${lower(var.basename)}-argocd-alb"
-  #   alb.ingress.kubernetes.io/group.name: "internal"
-  #   alb.ingress.kubernetes.io/ip-address-type: ipv4
-  #   alb.ingress.kubernetes.io/scheme: "internal"
-  #   alb.ingress.kubernetes.io/target-type: ip
-  #   alb.ingress.kubernetes.io/healthcheck-port: traffic-port
-  #   alb.ingress.kubernetes.io/healthcheck-path: /
-  #   alb.ingress.kubernetes.io/success-codes: 200-399
-  #   alb.ingress.kubernetes.io/backend-protocol: HTTPS
-  #   alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-  #   alb.ingress.kubernetes.io/tags: 'Environment=${var.project_env}, Managed_by=helm, Project=${var.project_name}'
-  #   alb.ingress.kubernetes.io/ssl-redirect: '443'
-  # EOF
-
-  #  depends_on = [
-  #    module.eks,
-  #    module.vpc,
-  #    module.private-subnets,
-  #    module.isolated-subnets,
-  #    module.public-subnets,
-  #    module.tgw-attachment,
-  #    module.tgw-sharing-attachment,
-  #    module.tgw-peering-attachment,
-  #    module.tgw-peering,
-  #    module.tgw
-  #  ]
+  depends_on = [
+    module.eks
+  ]
 }
