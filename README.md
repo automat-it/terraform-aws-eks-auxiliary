@@ -30,7 +30,6 @@ Reference values could be found at [examples directory](examples).
 | external-secrets | ./modules/helm-chart | n/a |
 | keda | ./modules/helm-chart | n/a |
 | metrics-server | ./modules/helm-chart | n/a |
-| monitoring | ./helm-charts/otl-agent-monitoring | n/a |
 | slack-notifications | ./modules/argocd-slack-notification | n/a |
 
 ## Resources
@@ -48,30 +47,28 @@ Reference values could be found at [examples directory](examples).
 | aws_account | The AWS account ID where resources will be provisioned. | `string` | n/a | yes |
 | aws_region | The AWS region where resources will be provisioned. | `string` | n/a | yes |
 | cluster_name | The name of the Amazon EKS cluster. | `string` | n/a | yes |
-| iam_openid_provider_arn | The ARN of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
-| iam_openid_provider_url | The URL of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
 | vpc_id | The ID of the Virtual Private Cloud (VPC) where resources will be deployed. | `string` | n/a | yes |
-| argocd_custom_ingress | n/a | `string` | `""` | no |
-| aws_lb_controller_sg_id | Explicitly mention the AWS SG ID to work with. If not mentioned, the controller creates the one automatically. | `string` | `""` | no |
-| backup_cron | Backup job run period in crontab format. Default run is daily 1 AM | `string` | `"0 1 * * *"` | no |
-| cluster_nodepool_name | The nodepool name in the Amazon EKS cluster to install all the controllers. | `string` | `"system"` | no |
-| destination_s3_name | n/a | `string` | `""` | no |
-| destination_s3_name_prefix | n/a | `string` | `"argocd"` | no |
+| argocd_custom_ingress | Custom ingress settings for ArgoCD. | `string` | `""` | no |
+| aws_lb_controller_sg_id | The AWS Security Group ID for the Load Balancer Controller. If not specified, the controller creates one automatically. | `string` | `""` | no |
+| backup_cron | Backup job schedule in crontab format. The default is daily at 1 AM. | `string` | `"0 1 * * *"` | no |
+| cluster_nodepool_name | The node pool name in the Amazon EKS cluster where all controllers will be installed. | `string` | `"system"` | no |
+| destination_s3_name | The name of the destination S3 bucket for backups. | `string` | `""` | no |
+| destination_s3_name_prefix | The prefix for the S3 bucket destination for backups. | `string` | `"argocd"` | no |
 | domain_zone | The domain zone associated with the Route 53 hosted zone. | `string` | `""` | no |
-| enable_backup | Enable backup for the ArgoCD | `bool` | `false` | no |
-| has_argocd | Whether argocd will be installed. | `bool` | `false` | no |
+| enable_backup | Enable backup for ArgoCD. | `bool` | `false` | no |
+| has_argocd | Whether ArgoCD will be installed. | `bool` | `false` | no |
 | has_autoscaler | Whether the cluster autoscaler will be installed. | `bool` | `false` | no |
 | has_aws_lb_controller | Whether the AWS Load Balancer Controller will be installed. | `bool` | `false` | no |
 | has_external_dns | Whether the External DNS controller will be installed. | `bool` | `false` | no |
-| has_external_secrets | Whether the Kubernetes Metrics Server will be installed. | `bool` | `false` | no |
-| has_keda | Whether keda controller will be installed. | `bool` | `false` | no |
-| has_metrics_server | Whether the External Secrets controller will be installed. | `bool` | `true` | no |
-| has_monitoring | Whether monitoring components will be installed. | `bool` | `false` | no |
-| monitoring_config | Configuration map for the monitoring will be installed. | `any` | `{}` | no |
-| notification_slack_token_secret | AWS Secret manager key to keep a slack token | `string` | `""` | no |
-| project_env | Project environment | `string` | `""` | no |
-| project_name | Project name | `string` | `""` | no |
+| has_external_secrets | Whether the External Secrets controller will be installed. | `bool` | `false` | no |
+| has_keda | Whether KEDA (Kubernetes Event-driven Autoscaling) controller will be installed. | `bool` | `false` | no |
+| has_metrics_server | Whether the Kubernetes Metrics Server will be installed. | `bool` | `true` | no |
+| iam_openid_provider | The IAM OIDC provider configuration for the EKS cluster. | ```object({ oidc_provider_arn = string oidc_provider = string })``` | `null` | no |
+| notification_slack_token_secret | AWS Secret Manager key to store a Slack token for notifications. | `string` | `""` | no |
+| project_env | The project environment (e.g., dev, staging, prod). | `string` | `""` | no |
+| project_name | The name of the project. | `string` | `""` | no |
 | r53_zone_id | The ID of the Route 53 hosted zone, if DNS records are managed by Route 53. | `string` | `""` | no |
+| services | List of services and their parameters (version, configs, namespaces, etc.). | `any` | `{}` | no |
 
 ## Outputs
 

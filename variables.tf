@@ -18,17 +18,16 @@ variable "cluster_name" {
 variable "cluster_nodepool_name" {
   type        = string
   default     = "system"
-  description = "The nodepool name in the Amazon EKS cluster to install all the controllers."
+  description = "The node pool name in the Amazon EKS cluster where all controllers will be installed."
 }
 
-variable "iam_openid_provider_url" {
-  type        = string
-  description = "The URL of the IAM OIDC identity provider for the cluster."
-}
-
-variable "iam_openid_provider_arn" {
-  type        = string
-  description = "The ARN of the IAM OIDC identity provider for the cluster."
+variable "iam_openid_provider" {
+  type = object({
+    oidc_provider_arn = string
+    oidc_provider     = string
+  })
+  default     = null
+  description = "The IAM OIDC provider configuration for the EKS cluster."
 }
 
 # VPC
@@ -50,12 +49,6 @@ variable "has_aws_lb_controller" {
   description = "Whether the AWS Load Balancer Controller will be installed."
 }
 
-variable "aws_lb_controller_sg_id" {
-  type        = string
-  default     = ""
-  description = "Explicitly mention the AWS SG ID to work with. If not mentioned, the controller creates the one automatically."
-}
-
 variable "has_external_dns" {
   type        = bool
   default     = false
@@ -65,42 +58,31 @@ variable "has_external_dns" {
 variable "has_metrics_server" {
   type        = bool
   default     = true
-  description = "Whether the External Secrets controller will be installed."
+  description = "Whether the Kubernetes Metrics Server will be installed."
 }
 
 variable "has_external_secrets" {
   type        = bool
   default     = false
-  description = "Whether the Kubernetes Metrics Server will be installed."
+  description = "Whether the External Secrets controller will be installed."
 }
 
 variable "has_argocd" {
   type        = bool
   default     = false
-  description = "Whether argocd will be installed."
+  description = "Whether ArgoCD will be installed."
 }
 
 variable "argocd_custom_ingress" {
-  type    = string
-  default = ""
-}
-
-variable "has_monitoring" {
-  type        = bool
-  default     = false
-  description = "Whether monitoring components will be installed."
-}
-
-variable "monitoring_config" {
-  type        = any
-  default     = {}
-  description = "Configuration map for the monitoring will be installed."
+  type        = string
+  default     = ""
+  description = "Custom ingress settings for ArgoCD."
 }
 
 variable "has_keda" {
   type        = bool
   default     = false
-  description = "Whether keda controller will be installed."
+  description = "Whether KEDA (Kubernetes Event-driven Autoscaling) controller will be installed."
 }
 
 # Route53
@@ -119,40 +101,48 @@ variable "domain_zone" {
 variable "project_env" {
   type        = string
   default     = ""
-  description = "Project environment"
+  description = "The project environment (e.g., dev, staging, prod)."
 }
 
 variable "project_name" {
   type        = string
   default     = ""
-  description = "Project name"
+  description = "The name of the project."
 }
 
-### Notifications
 variable "notification_slack_token_secret" {
   type        = string
   default     = ""
-  description = "AWS Secret manager key to keep a slack token"
+  description = "AWS Secret Manager key to store a Slack token for notifications."
 }
 
-### Backup ###
+# Backup
 variable "enable_backup" {
   type        = bool
   default     = false
-  description = "Enable backup for the ArgoCD"
+  description = "Enable backup for ArgoCD."
 }
 
 variable "backup_cron" {
   type        = string
   default     = "0 1 * * *"
-  description = "Backup job run period in crontab format. Default run is daily 1 AM"
+  description = "Backup job schedule in crontab format. The default is daily at 1 AM."
 }
+
 variable "destination_s3_name" {
-  type    = string
-  default = ""
+  type        = string
+  default     = ""
+  description = "The name of the destination S3 bucket for backups."
 }
 
 variable "destination_s3_name_prefix" {
-  type    = string
-  default = "argocd"
+  type        = string
+  default     = "argocd"
+  description = "The prefix for the S3 bucket destination for backups."
+}
+
+variable "services" {
+  type        = any
+  default     = {}
+  description = "List of services and their parameters (version, configs, namespaces, etc.)."
 }
