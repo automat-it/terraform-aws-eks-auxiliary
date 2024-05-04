@@ -26,9 +26,9 @@ variable "subnet_ids" {
   type = list(string)
 }
 
-variable "domain_zone" {
-  type = string
-}
+#variable "domain_zone" {
+#  type = string
+#}
 
 # AWS
 variable "aws_account_id" {
@@ -77,6 +77,14 @@ module "eks" {
   cluster_addons = {
     coredns = {
       most_recent = true
+      configuration_values = jsonencode({
+        tolerations : [{
+          key : "dedicated",
+          operator : "Equal",
+          value : "system",
+          effect : "NoSchedule"
+        }]
+      })
     }
     kube-proxy = {
       most_recent = true

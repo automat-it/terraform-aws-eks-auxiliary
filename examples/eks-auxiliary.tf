@@ -1,6 +1,6 @@
 module "eks-aux" {
 
-  source = "git@github.com:automat-it/terraform-aws-eks-auxiliary.git"
+  source = "https://github.com/automat-it/terraform-aws-eks-auxiliary.git"
 
   project_env  = "test"
   project_name = "eks-aux"
@@ -27,7 +27,7 @@ module "eks-aux" {
   vpc_id = var.vpc_id
 
   # DNS
-  domain_zone = var.domain_zone #aws_route53_zone.route53-domain.name
+  #domain_zone = var.domain_zone #aws_route53_zone.route53-domain.name
 
   # Monitoring
   monitoring_config = {
