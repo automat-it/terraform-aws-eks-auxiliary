@@ -1,6 +1,6 @@
 module "eks-aux" {
 
-  source = "git::https://github.com:automat-it/terraform-aws-eks-auxiliary.git?ref=bugfix/oidc_fix_validate"
+  source = "https://github.com:automat-it/terraform-aws-eks-auxiliary.git?ref=bugfix/oidc_fix_validate"
 
   project_env  = "test"
   project_name = "eks-aux"
