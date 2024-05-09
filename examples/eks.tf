@@ -121,7 +121,7 @@ module "eks" {
   create_aws_auth_configmap = false
   aws_auth_roles = [
     {
-      rolearn  = "arn:aws:iam::970335434494:role/OneLogin-AIT-AdministratorAccess"
+      rolearn  = "arn:aws:iam::637423408015:role/OneLogin-AIT-AdministratorAccess"
       username = "terraform"
       groups   = ["system:masters"]
     },
