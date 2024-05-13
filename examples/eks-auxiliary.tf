@@ -29,7 +29,7 @@ module "eks-aux" {
   vpc_id = var.vpc_id
 
   # DNS
-  domain_zone = "publicmodules.com" #aws_route53_zone.route53-domain.name
+  #domain_zone = var.domain_zone #aws_route53_zone.route53-domain.name
 
   # Monitoring
   monitoring_config = {

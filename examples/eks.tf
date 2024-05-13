@@ -26,10 +26,6 @@ variable "subnet_ids" {
   type = list(string)
 }
 
-#variable "domain_zone" {
-#  type = string
-#}
-
 # AWS
 variable "aws_account_id" {
   type = string
