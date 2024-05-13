@@ -8,7 +8,6 @@ variable "eks_system_min_size" { type = number }
 variable "eks_system_max_size" { type = number }
 variable "eks_system_desired_size" { type = number }
 variable "eks_system_instance_types" { type = list(string) }
-#variable "eks_system_capacity_type" { type = string }
 # Worker
 variable "eks_worker_min_size" { type = number }
 variable "eks_worker_max_size" { type = number }
@@ -16,31 +15,15 @@ variable "eks_worker_desired_size" { type = number }
 variable "eks_worker_instance_types" { type = list(string) }
 variable "eks_worker_capacity_type" { type = string }
 # Networking
-variable "vpc_cidr" {
-  type = string
-}
-variable "vpc_id" {
-  type = string
-}
-variable "subnet_ids" {
-  type = list(string)
-}
-
-variable "domain_zone" {
-  type = string
-}
-
+variable "vpc_cidr" { type = string }
+variable "vpc_id" { type = string }
+variable "subnet_ids" { type = list(string) }
+variable "domain_zone" { type = string }
+variable "r53_zone_id" { type = string }
 # AWS
-variable "aws_account_id" {
-  type = string
-}
-variable "aws_region" {
-  type = string
-}
-
-variable "eks_cluster_name" {
-  type = string
-}
+variable "aws_account_id" { type = string }
+variable "aws_region" { type = string }
+variable "eks_cluster_name" { type = string }
 
 data "aws_eks_cluster_auth" "this" {
   name = var.eks_cluster_name
