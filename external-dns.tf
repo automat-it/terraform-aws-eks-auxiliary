@@ -70,8 +70,7 @@ module "external-dns" {
   service_account_name    = local.external_dns_service_account_name
   irsa_iam_role_name      = local.external_dns_irsa_iam_role_name
   irsa_policy_json        = local.external_dns_irsa_policy_json
-  iam_openid_provider_url = var.iam_openid_provider_url
-  iam_openid_provider_arn = var.iam_openid_provider_arn
+  iam_openid_provider     = var.iam_openid_provider
   values                  = local.external_dns_helm_values
 
   depends_on = [kubernetes_namespace_v1.general]

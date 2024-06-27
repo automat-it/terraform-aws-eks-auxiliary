@@ -48,8 +48,6 @@ Reference values could be found at [examples directory](examples).
 | aws_account | The AWS account ID where resources will be provisioned. | `string` | n/a | yes |
 | aws_region | The AWS region where resources will be provisioned. | `string` | n/a | yes |
 | cluster_name | The name of the Amazon EKS cluster. | `string` | n/a | yes |
-| iam_openid_provider_arn | The ARN of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
-| iam_openid_provider_url | The URL of the IAM OIDC identity provider for the cluster. | `string` | n/a | yes |
 | vpc_id | The ID of the Virtual Private Cloud (VPC) where resources will be deployed. | `string` | n/a | yes |
 | argocd_custom_ingress | n/a | `string` | `""` | no |
 | aws_lb_controller_sg_id | Explicitly mention the AWS SG ID to work with. If not mentioned, the controller creates the one automatically. | `string` | `""` | no |
@@ -67,6 +65,7 @@ Reference values could be found at [examples directory](examples).
 | has_keda | Whether keda controller will be installed. | `bool` | `false` | no |
 | has_metrics_server | Whether the External Secrets controller will be installed. | `bool` | `true` | no |
 | has_monitoring | Whether monitoring components will be installed. | `bool` | `false` | no |
+| iam_openid_provider | n/a | ```object({ oidc_provider_arn = string oidc_provider = string })``` | `null` | no |
 | monitoring_config | Configuration map for the monitoring will be installed. | `any` | `{}` | no |
 | notification_slack_token_secret | AWS Secret manager key to keep a slack token | `string` | `""` | no |
 | project_env | Project environment | `string` | `""` | no |

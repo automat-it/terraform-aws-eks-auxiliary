@@ -84,8 +84,7 @@ module "cluster-autoscaler" {
   service_account_name    = local.cluster_autoscaler_service_account_name
   irsa_iam_role_name      = local.cluster_autoscaler_irsa_iam_role_name
   irsa_policy_json        = local.cluster_autoscaler_irsa_policy_json
-  iam_openid_provider_url = var.iam_openid_provider_url
-  iam_openid_provider_arn = var.iam_openid_provider_arn
+  iam_openid_provider     = var.iam_openid_provider
   values                  = local.cluster_autoscaler_helm_values
 
   depends_on = [kubernetes_namespace_v1.general]

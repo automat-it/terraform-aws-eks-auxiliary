@@ -5,12 +5,12 @@ data "aws_iam_policy_document" "oidc_assume_role_policy" {
 
     condition {
       test     = "StringEquals"
-      variable = "${replace(var.iam_openid_provider_url, "https://", "")}:sub"
+      variable = "${replace(var.iam_openid_provider.oidc_provider_arn, "https://", "")}:sub"
       values   = ["system:serviceaccount:${var.namespace}:${var.service_account_name}"]
     }
 
     principals {
-      identifiers = [var.iam_openid_provider_arn]
+      identifiers = [var.iam_openid_provider.oidc_provider]
       type        = "Federated"
     }
   }
