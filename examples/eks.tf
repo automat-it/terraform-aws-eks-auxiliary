@@ -54,7 +54,7 @@ module "eks" {
   version = "~> 19.13.1"
 
   cluster_name                   = var.eks_cluster_name
-  cluster_version                = "1.28"
+  cluster_version                = "1.30"
   cluster_endpoint_public_access = false
 
   cluster_addons = {
@@ -96,7 +96,7 @@ module "eks" {
   create_aws_auth_configmap = false
   aws_auth_roles = [
     {
-      rolearn  = "arn:aws:iam::970335434494:role/OneLogin-AIT-AdministratorAccess"
+      rolearn  = "arn:aws:iam::${var.aws_account_id}:role/OneLogin-AIT-AdministratorAccess"
       username = "terraform"
       groups   = ["system:masters"]
     },

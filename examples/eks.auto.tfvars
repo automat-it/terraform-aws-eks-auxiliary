@@ -3,7 +3,7 @@
 eks_ami_type                              = "AL2_x86_64"
 eks_instance_types                        = ["t3.medium"]
 eks_attach_cluster_primary_security_group = false
-eks_cluster_name                          = "TEST-EKSV2"
+eks_cluster_name                          = "TEST"
 # System
 eks_system_min_size       = 2
 eks_system_max_size       = 2
