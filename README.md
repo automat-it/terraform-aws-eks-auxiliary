@@ -49,7 +49,6 @@ Reference values could be found at [examples directory](examples).
 | cluster_name | The name of the Amazon EKS cluster. | `string` | n/a | yes |
 | vpc_id | The ID of the Virtual Private Cloud (VPC) where resources will be deployed. | `string` | n/a | yes |
 | argocd_custom_ingress | Custom ingress settings for ArgoCD. | `string` | `""` | no |
-| aws_lb_controller_sg_id | The AWS Security Group ID for the Load Balancer Controller. If not specified, the controller creates one automatically. | `string` | `""` | no |
 | backup_cron | Backup job schedule in crontab format. The default is daily at 1 AM. | `string` | `"0 1 * * *"` | no |
 | cluster_nodepool_name | The node pool name in the Amazon EKS cluster where all controllers will be installed. | `string` | `"system"` | no |
 | destination_s3_name | The name of the destination S3 bucket for backups. | `string` | `""` | no |
