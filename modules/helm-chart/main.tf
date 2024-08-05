@@ -19,7 +19,7 @@ resource "aws_iam_role_policy" "eks-system-external-dns" {
 }
 
 resource "aws_iam_role" "irsa" {
-  count              = var.enable_pod_identity != true && var.irsa_iam_role_name != null ? 1 : 0
+  count              = !var.enable_pod_identity && var.iam_openid_provider != null ? 1 : 0
   assume_role_policy = data.aws_iam_policy_document.oidc_assume_role_policy[0].json
   name               = var.irsa_iam_role_name
 }

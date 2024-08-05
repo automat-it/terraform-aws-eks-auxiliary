@@ -1,41 +1,44 @@
 ### ArgoCD helm
 locals {
-  argocd_url = "https://argocd.${var.domain_zone}"
+  argocd_enabled = try(var.services["argocd"]["enabled"], var.has_argocd)
+  argocd_url     = try(var.services["argocd"]["argocd_url"], "https://argocd.${var.domain_zone}")
   # Helm versions
-  argocd_helm_version = "6.7.12"
+  argocd_helm_version = try(var.services["argocd"]["helm_version"], "7.3.11")
   # K8s namespace to deploy
-  argocd_namespace = try(kubernetes_namespace_v1.argocd[0].id, "")
-  # K8S Service Account Name
-  argocd_service_account_name = "argocd-sa"
-  argocd_irsa_iam_role_name   = "${var.cluster_name}-argo-cd"
-  argocd_ingress              = var.argocd_custom_ingress != "" ? var.argocd_custom_ingress : local.argocd_default_ingress
+  argocd_namespace = try(var.services["argocd"]["namespace"], try(kubernetes_namespace_v1.argocd[0].id, "argocd"))
+  # K8S Service Account
+  argocd_service_account_name = try(var.services["argocd"]["service_account_name"], "argocd-sa")
+  argocd_irsa_iam_role_name   = try(var.services["argocd"]["irsa_iam_role_name"], "${var.cluster_name}-argo-cd")
+  argocd_ingress              = try(var.services["argocd"]["custom_ingress"], var.argocd_custom_ingress) != "" ? try(var.services["argocd"]["custom_ingress"], var.argocd_custom_ingress) : local.argocd_default_ingress
   argocd_default_ingress      = <<EOF
-  enabled: true
-  hosts:
-    - "argocd.${var.domain_zone}"
-  rules:
-    - https:
-        paths:
-          - backend:
-              serviceName: ssl-redirect
-              servicePort: use-annotation
-  annotations:
-    kubernetes.io/ingress.class: alb
-    alb.ingress.kubernetes.io/load-balancer-name: "${lower(var.cluster_name)}-argocd-alb"
-    alb.ingress.kubernetes.io/group.name: "internal"
-    alb.ingress.kubernetes.io/ip-address-type: ipv4
-    alb.ingress.kubernetes.io/scheme: "internal"
-    alb.ingress.kubernetes.io/target-type: ip
-    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
-    alb.ingress.kubernetes.io/healthcheck-path: /
-    alb.ingress.kubernetes.io/success-codes: 200-399
-    alb.ingress.kubernetes.io/backend-protocol: HTTPS
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-    alb.ingress.kubernetes.io/tags: 'Environment=${var.project_env}, Managed_by=helm, Project=${var.project_name}'
-    alb.ingress.kubernetes.io/ssl-redirect: '443'
+  server:
+    ingress:
+      enabled: true
+      hosts:
+        - "argocd.${var.domain_zone}"
+      rules:
+        - https:
+            paths:
+              - backend:
+                  serviceName: ssl-redirect
+                  servicePort: use-annotation
+      annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/load-balancer-name: "${lower(var.cluster_name)}-argocd-alb"
+        alb.ingress.kubernetes.io/group.name: "internal"
+        alb.ingress.kubernetes.io/ip-address-type: ipv4
+        alb.ingress.kubernetes.io/scheme: "internal"
+        alb.ingress.kubernetes.io/target-type: ip
+        alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+        alb.ingress.kubernetes.io/healthcheck-path: /
+        alb.ingress.kubernetes.io/success-codes: 200-399
+        alb.ingress.kubernetes.io/backend-protocol: HTTPS
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+        alb.ingress.kubernetes.io/tags: 'Environment=${var.project_env}, Managed_by=helm, Project=${var.project_name}'
+        alb.ingress.kubernetes.io/ssl-redirect: '443'
   EOF
   argocd_irsa_policy_json     = null
-  argocd_helm_values = [<<EOF
+  argocd_helm_values          = <<EOF
     controller:
       args:
         appResyncPeriod: "60"
@@ -44,20 +47,20 @@ locals {
         name: ${local.argocd_service_account_name}
     global:
       domain: argocd.${var.domain_zone}
+      %{~if try(var.services["argocd"]["nodepool"], var.cluster_nodepool_name) != ""~}
       nodeSelector:
-        pool: ${var.cluster_nodepool_name}
+        pool: ${try(var.services["argocd"]["nodepool"], var.cluster_nodepool_name)}
       tolerations:
         - key: dedicated
           operator: Equal
-          value: ${var.cluster_nodepool_name}
+          value: ${try(var.services["argocd"]["nodepool"], var.cluster_nodepool_name)}
           effect: NoSchedule
+      %{~endif~}
     server:
       serviceAccount:
         name: ${local.argocd_service_account_name}
         annotations:
-          eks.amazonaws.com/role-arn: ${try(module.argocd[0].irsa_role_arn, "")}
-      ingress:
-      ${indent(6, local.argocd_ingress)}
+          eks.amazonaws.com/role-arn: ${try(var.services["argocd"]["irsa_role_arn"], try(module.argocd[0].irsa_role_arn, ""))}
     configs:
       cm:
         exec.enabled: "true"
@@ -245,39 +248,41 @@ locals {
         defaultTriggers: |
           - on-sync-status-unknown
   EOF
-  ]
 }
 
 module "argocd" {
-  source                  = "./modules/helm-chart"
-  count                   = var.has_argocd ? 1 : 0
-  name                    = "argocd"
-  repository              = "https://argoproj.github.io/argo-helm"
-  chart                   = "argo-cd"
-  namespace               = local.argocd_namespace
-  helm_version            = local.argocd_helm_version
-  service_account_name    = local.argocd_service_account_name
-  irsa_iam_role_name      = local.argocd_irsa_iam_role_name
-  irsa_policy_json        = local.argocd_irsa_policy_json
-  iam_openid_provider_url = var.iam_openid_provider_url
-  iam_openid_provider_arn = var.iam_openid_provider_arn
-  values                  = local.argocd_helm_values
+  source               = "./modules/helm-chart"
+  count                = local.argocd_enabled ? 1 : 0
+  name                 = "argocd"
+  repository           = "https://argoproj.github.io/argo-helm"
+  chart                = "argo-cd"
+  namespace            = local.argocd_namespace
+  helm_version         = local.argocd_helm_version
+  service_account_name = local.argocd_service_account_name
+  irsa_iam_role_name   = local.argocd_irsa_iam_role_name
+  irsa_policy_json     = local.argocd_irsa_policy_json
+  iam_openid_provider  = var.iam_openid_provider
+
+  values = [
+    local.argocd_helm_values,
+    local.argocd_ingress,
+    try(var.services["argocd"]["additional_helm_values"], "")
+  ]
 
   depends_on = [
     kubernetes_namespace_v1.general,
     module.aws-alb-ingress-controller
   ]
-
 }
 
 ### Notifications
 ### Merging slack token from AWS Secret
 module "slack-notifications" {
-  count = var.notification_slack_token_secret != "" ? 1 : 0
+  count = try(var.services["argocd"]["notification_slack_token_secret"], var.notification_slack_token_secret) != "" && local.argocd_enabled ? 1 : 0
 
   source = "./modules/argocd-slack-notification"
 
-  notification_slack_token_secret = var.notification_slack_token_secret
+  notification_slack_token_secret = try(var.services["argocd"]["notification_slack_token_secret"], var.notification_slack_token_secret)
 
   chart_name           = "argo-cd"
   namespace            = local.argocd_namespace
@@ -292,7 +297,7 @@ module "slack-notifications" {
 }
 ### Backup
 module "argocd-backup" {
-  count = var.enable_backup ? 1 : 0
+  count = try(var.services["argocd"]["enable_backup"], var.enable_backup) && local.argocd_enabled ? 1 : 0
 
   source = "./modules/argocd-s3-backup"
 
@@ -301,9 +306,9 @@ module "argocd-backup" {
   chart_version        = local.argocd_helm_version
   service_account_name = local.argocd_service_account_name
 
-  backup_cron                = var.backup_cron
-  destination_s3_name        = var.destination_s3_name
-  destination_s3_name_prefix = var.destination_s3_name_prefix
+  backup_cron                = try(var.services["argocd"]["backup_cron"], var.backup_cron)
+  destination_s3_name        = try(var.services["argocd"]["destination_s3_name"], var.destination_s3_name)
+  destination_s3_name_prefix  = try(var.services["argocd"]["destination_s3_name_prefix"], var.destination_s3_name_prefix)
 
   depends_on = [
     module.argocd

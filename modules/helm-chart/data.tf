@@ -1,17 +1,17 @@
 data "aws_iam_policy_document" "oidc_assume_role_policy" {
-  count = var.enable_pod_identity != true && var.iam_openid_provider_arn != null ? 1 : 0
+  count = var.enable_pod_identity == false && var.iam_openid_provider != null ? 1 : 0
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     effect  = "Allow"
 
     condition {
       test     = "StringEquals"
-      variable = "${var.iam_openid_provider_url}:sub"
+      variable = "${var.iam_openid_provider.oidc_provider}:sub"
       values   = ["system:serviceaccount:${var.namespace}:${var.service_account_name}"]
     }
 
     principals {
-      identifiers = [var.iam_openid_provider_arn]
+      identifiers = [var.iam_openid_provider.oidc_provider_arn]
       type        = "Federated"
     }
   }
