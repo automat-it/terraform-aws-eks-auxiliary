@@ -19,6 +19,8 @@ locals {
         value: ${try(var.services["keda"]["nodepool"], var.cluster_nodepool_name)}
         effect: NoSchedule
     %{~endif~}
+    webhooks:
+      enabled: false
     rbac:
       create: true
     serviceAccount:
