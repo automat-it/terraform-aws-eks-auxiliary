@@ -13,7 +13,7 @@ Reference values could be found at [examples directory](examples).
 
 | Name | Version |
 |------|---------|
-| terraform | >= 1.8 |
+| terraform | >= 1.8.4 |
 | aws | >= 5.0 |
 | helm | >= 2.9.0 |
 | kubernetes | >= 2.20 |
