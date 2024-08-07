@@ -3,7 +3,7 @@ locals {
   argocd_enabled = try(var.services["argocd"]["enabled"], var.has_argocd)
   argocd_url     = try(var.services["argocd"]["argocd_url"], "https://argocd.${var.domain_zone}")
   # Helm versions
-  argocd_helm_version = try(var.services["argocd"]["helm_version"], "7.4.1")
+  argocd_helm_version = try(var.services["argocd"]["helm_version"], "7.3.11")
   # K8s namespace to deploy
   argocd_namespace = try(var.services["argocd"]["namespace"], try(kubernetes_namespace_v1.argocd[0].id, "argocd"))
   # K8S Service Account
