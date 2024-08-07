@@ -1,7 +1,7 @@
 # External Secrets
 locals {
   # Helm versions
-  external_secrets_helm_version = try(var.services["external-secrets"]["helm_version"], "0.10.0")
+  external_secrets_helm_version = try(var.services["external-secrets"]["helm_version"], "0.9.20")
   # K8s namespace to deploy
   external_secrets_namespace = try(var.services["external-secrets"]["namespace"], kubernetes_namespace_v1.general.id)
   # K8S Service Account Name
