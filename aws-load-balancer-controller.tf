@@ -8,7 +8,6 @@ locals {
   aws_lb_controller_service_account_name = try(var.services["aws-alb-ingress-controller"]["service_account_name"], "load-balancer-sa")
   # Helm ovveride values
   aws_lb_controller_helm_values = <<EOF
-    enableServiceMutatorWebhook: false
     clusterName: ${var.cluster_name}
     %{~if try(var.services["aws-alb-ingress-controller"]["nodepool"], var.cluster_nodepool_name) != ""~}
     nodeSelector:
