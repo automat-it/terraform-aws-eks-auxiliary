@@ -1,7 +1,7 @@
 ### ArgoCD helm
 locals {
   argocd_enabled = try(var.services["argocd"]["enabled"], var.has_argocd)
-  argocd_url     = try(var.services["argocd"]["argocd_url"], "https://argocd.${var.domain_zone}")
+  argocd_url     = try(var.services["argocd"]["argocd_url"], "argocd.${var.domain_zone}")
   # Helm versions
   argocd_helm_version = try(var.services["argocd"]["helm_version"], "7.3.11")
   # K8s namespace to deploy
@@ -15,7 +15,7 @@ locals {
     ingress:
       enabled: true
       hosts:
-        - "argocd.${var.domain_zone}"
+        - "${local.argocd_url}"
       rules:
         - https:
             paths:
@@ -46,7 +46,7 @@ locals {
         create: false
         name: ${local.argocd_service_account_name}
     global:
-      domain: argocd.${var.domain_zone}
+      domain: ${local.argocd_url}
       %{~if try(var.services["argocd"]["nodepool"], var.cluster_nodepool_name) != ""~}
       nodeSelector:
         pool: ${try(var.services["argocd"]["nodepool"], var.cluster_nodepool_name)}
@@ -68,7 +68,7 @@ locals {
         type: NodePort
     notifications:
       enabled: true
-      argocdUrl: ${local.argocd_url}
+      argocdUrl: "https://${local.argocd_url}"
       secret:
         create: true
       cm:

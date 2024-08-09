@@ -1,7 +1,7 @@
 # Keda
 locals {
   # Helm versions
-  keda_helm_version = try(var.services["keda"]["helm_version"], "2.13.2")
+  keda_helm_version = try(var.services["keda"]["helm_version"], "2.14.3")
   # K8s namespace to deploy
   keda_namespace = try(var.services["keda"]["namespace"], kubernetes_namespace_v1.general.id)
   # K8S Service Account Name
