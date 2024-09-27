@@ -3,9 +3,9 @@ name: Verify
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "v1.30.0" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "v1.30.0" ]
 
   workflow_dispatch:
 
@@ -67,3 +67,20 @@ jobs:
           scan-type: 'fs'
           scan-ref: '.'
           trivy-config: trivy.yaml
+
+  test:
+    name: "Start Test"
+    if: github.event.review.state == 'APPROVED'
+    runs-on: ubuntu-latest
+    needs: [terraform_validate, tflint, tfsec]
+    env:
+      BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+    steps:
+      - name: "Test"
+        uses: convictional/trigger-workflow-and-wait@v1.6.5
+        with:
+          owner: ${{ secrets.TESTING_ORGANIZATION }}
+          repo: ${{ secrets.TESTING_REPO }}
+          workflow_file_name: ${{ secrets.TESTING_WORKFLOW_FILE }}
+          github_token: ${{ secrets.TESTING_PAT }}
+          client_payload: '{"inputs": {"ref": "${{ env.BRANCH_NAME }}"}}'
