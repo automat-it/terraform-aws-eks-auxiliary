@@ -51,15 +51,24 @@ data "aws_availability_zones" "available" {}
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.13.1"
+  version = "~> 20.0"
 
   cluster_name                   = var.eks_cluster_name
   cluster_version                = "1.30"
   cluster_endpoint_public_access = false
+  enable_cluster_creator_admin_permissions = true
 
   cluster_addons = {
     coredns = {
       most_recent = true
+      configuration_values = jsonencode({
+        tolerations : [{
+          key : "dedicated",
+          operator : "Equal",
+          value : "system",
+          effect : "NoSchedule"
+        }]
+      })
     }
     kube-proxy = {
       most_recent = true
@@ -90,22 +99,6 @@ module "eks" {
       cidr_blocks = [var.vpc_cidr]
     }
   }
-
-  # aws-auth
-  manage_aws_auth_configmap = true
-  create_aws_auth_configmap = false
-  aws_auth_roles = [
-    {
-      rolearn  = "arn:aws:iam::${var.aws_account_id}:role/OneLogin-AIT-AdministratorAccess"
-      username = "terraform"
-      groups   = ["system:masters"]
-    },
-    {
-      rolearn  = "${var.eks_cluster_name}-EKS-Admin-ROLE"
-      username = "admin"
-      groups   = ["system:masters"]
-    }
-  ]
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
@@ -154,6 +147,43 @@ module "eks" {
       }
     }
   }
+
+  access_entries = {
+    # One access entry with a policy associated
+    ex-single = {
+      kubernetes_groups = []
+      principal_arn     = aws_iam_role.this["single"].arn
+
+      policy_associations = {
+        single = {
+          policy_arn = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "aws_iam_role" "this" {
+  for_each = toset(["single"])
+
+  name = "Terraform-CI-${each.key}"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = "Example"
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        }
+      },
+    ]
+  })
 }
 
 ### SG to work with the EKS AKB ingress controller
