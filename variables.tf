@@ -73,6 +73,12 @@ variable "has_argocd" {
   description = "Whether ArgoCD will be installed."
 }
 
+variable "has_karpenter" {
+  type        = bool
+  default     = false
+  description = "Whether Karpenter will be installed."
+}
+
 variable "argocd_custom_ingress" {
   type        = string
   default     = ""
@@ -145,4 +151,9 @@ variable "services" {
   type        = any
   default     = {}
   description = "List of services and their parameters (version, configs, namespaces, etc.)."
+}
+
+variable "tags" {
+  default     = {}
+  description = "Resource tags."
 }

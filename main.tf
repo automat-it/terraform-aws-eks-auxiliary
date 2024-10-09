@@ -30,3 +30,8 @@ resource "kubernetes_namespace_v1" "argocd" {
     name = "argocd"
   }
 }
+
+### EKS data
+data "aws_eks_cluster" "this" {
+  name = var.cluster_name
+}
