@@ -2,8 +2,6 @@
 locals {
   # Helm versions
   karpenter_helm_version = try(var.services["karpenter"]["helm_version"], "1.0.0")
-  # External module version
-  karpenter_external_module_version = try(var.services["karpenter"]["external_module_version"], "~> 20.0")
   # K8s namespace to deploy
   karpenter_namespace = try(var.services["karpenter"]["namespace"], kubernetes_namespace_v1.general.id)
   # K8S Service Account Name
@@ -133,7 +131,7 @@ module "karpenter-helm" {
 
 module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version = local.karpenter_external_module_version
+  version = "~> 20.0"
 
   count = try(var.services["karpenter"]["enabled"], var.has_karpenter) ? 1 : 0
 
