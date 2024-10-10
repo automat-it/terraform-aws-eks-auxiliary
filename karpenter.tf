@@ -7,24 +7,28 @@ locals {
   # K8S Service Account Name
   karpenter_service_account_name = try(var.services["karpenter"]["service_account_name"], "karpenter")
   # Karpenetr default NodeClass
-  deploy_karpenetr_default_nodeclass = try(var.services["karpenter"]["deploy_karpenetr_default_nodeclass"], true)
+  deploy_karpenetr_default_nodeclass = try(var.services["karpenter"]["deploy_karpeneter_default_nodeclass"], true)
   # Karpenetr default Nodepool
-  deploy_karpenetr_default_nodepool = try(var.services["karpenter"]["deploy_karpenetr_default_nodepool"], true)
+  deploy_karpenetr_default_nodepool = try(var.services["karpenter"]["deploy_karpeneter_default_nodepool"], true)
   # AWS IAM IRSA
-  karpenter_irsa_iam_role_name = try(var.services["karpenter"]["irsa_iam_role_name"], "${var.cluster_name}-karpenter-iam-role")
-  karpenter_node_iam_role_name = try(var.services["karpenter"]["node_iam_role_name"], "${var.cluster_name}-karpenter-worker-iam-role")
+  karpenter_irsa_iam_role_name       = try(var.services["karpenter"]["irsa_iam_role_name"], "")
+  karpenter_irsa_iam_role_name_prefix = try(var.services["karpenter"]["irsa_iam_role_name_prefix"], "KarpenterController")
+  karpenter_irsa_iam_policy_name       = try(var.services["karpenter"]["irsa_iam_policy_name"], "")
+  karpenter_irsa_iam_policy_name_prefix = try(var.services["karpenter"]["irsa_iam_policy_name_prefix"], "KarpenterController")
+  karpenter_node_iam_role_name       = try(var.services["karpenter"]["node_iam_role_name"], "")
+  karpenter_node_iam_role_name_prefix = try(var.services["karpenter"]["node_iam_role_name"], null)
   # SG
   karpenter_node_security_group_id = try(var.services["karpenter"]["node_security_group_id"], "")
   # Helm ovveride values
   karpenter_helm_values = <<-EOT
     serviceAccount:
-      name: ${module.karpenter.service_account}
+      name: ${module.karpenter[0].service_account}
       annotations:
-        eks.amazonaws.com/role-arn: ${module.karpenter.iam_role_arn}
+        eks.amazonaws.com/role-arn: ${module.karpenter[0].iam_role_arn}
     settings:
       clusterName: ${var.cluster_name}
       clusterEndpoint: ${data.aws_eks_cluster.this.endpoint}
-      interruptionQueue: ${module.karpenter.queue_name}
+      interruptionQueue: ${module.karpenter[0].queue_name}
     %{~if try(var.services["karpenter"]["nodepool"], var.cluster_nodepool_name) != ""~}
     nodeSelector:
       pool: ${try(var.services["karpenter"]["nodepool"], var.cluster_nodepool_name)}
@@ -44,13 +48,13 @@ locals {
       name: default
     spec:
       amiFamily: AL2023
-      role: ${module.karpenter.node_iam_role_name}
+      role: ${module.karpenter[0].node_iam_role_name}
       subnetSelectorTerms:
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
       securityGroupSelectorTerms:
         %{~if local.karpenter_node_security_group_id != ""~}
-        - id: ${module.eks_dev.node_security_group_id}
+        - id: ${local.karpenter_node_security_group_id}
         %{~endif~}
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
@@ -95,6 +99,9 @@ locals {
             - key: "karpenter.k8s.aws/instance-generation"
               operator: Gt
               values: ["2"]
+            - key: "karpenter.sh/capacity-type"
+              operator: In
+              values: ["on-demand"]
       limits:
         cpu: 100
       disruption:
@@ -135,11 +142,20 @@ module "karpenter" {
 
   count = try(var.services["karpenter"]["enabled"], var.has_karpenter) ? 1 : 0
 
-  cluster_name = module.eks_dev.cluster_name
+  cluster_name = var.cluster_name
+
+  enable_v1_permissions = true
+
+  enable_pod_identity             = true
+  create_pod_identity_association = true
 
   # IAM
-  iam_role_name      = local.karpenter_irsa_iam_role_name
-  node_iam_role_name = local.karpenter_node_iam_role_name
+  iam_role_name                = length(local.karpenter_irsa_iam_role_name) > 0 ? local.karpenter_irsa_iam_role_name : local.karpenter_irsa_iam_role_name_prefix
+  iam_role_use_name_prefix      = length(local.karpenter_irsa_iam_role_name) > 0 == false
+  iam_policy_name              = length(local.karpenter_irsa_iam_policy_name) > 0 ? local.karpenter_irsa_iam_policy_name : local.karpenter_irsa_iam_policy_name_prefix
+  iam_policy_use_name_prefix   = length(local.karpenter_irsa_iam_policy_name) > 0 == false
+  node_iam_role_name           = length(local.karpenter_irsa_iam_role_name) > 0 ? local.karpenter_node_iam_role_name : local.karpenter_node_iam_role_name_prefix
+  node_iam_role_use_name_prefix = length(local.karpenter_node_iam_role_name) > 0 == false
 
   # EKS Fargate currently does not support Pod Identity
   enable_irsa                     = true
