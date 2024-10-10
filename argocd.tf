@@ -8,7 +8,7 @@ locals {
   argocd_namespace = try(var.services["argocd"]["namespace"], try(kubernetes_namespace_v1.argocd[0].id, "argocd"))
   # K8S Service Account
   argocd_service_account_name = try(var.services["argocd"]["service_account_name"], "argocd-sa")
-  argocd_irsa_iam_role_name   = try(var.services["argocd"]["irsa_iam_role_name"], "${var.cluster_name}-argo-cd")
+  argocd_irsa_iam_role_name   = try(var.services["argocd"]["irsa_iam_role_name"], "${local.lower_cluster_name}-argo-cd")
   argocd_ingress              = try(var.services["argocd"]["custom_ingress"], var.argocd_custom_ingress) != "" ? try(var.services["argocd"]["custom_ingress"], var.argocd_custom_ingress) : local.argocd_default_ingress
   argocd_default_ingress      = <<EOF
   server:
@@ -24,7 +24,7 @@ locals {
                   servicePort: use-annotation
       annotations:
         kubernetes.io/ingress.class: alb
-        alb.ingress.kubernetes.io/load-balancer-name: "${lower(var.cluster_name)}-argocd-alb"
+        alb.ingress.kubernetes.io/load-balancer-name: "${local.lower_cluster_name}-argocd-alb"
         alb.ingress.kubernetes.io/group.name: "internal"
         alb.ingress.kubernetes.io/ip-address-type: ipv4
         alb.ingress.kubernetes.io/scheme: "internal"
