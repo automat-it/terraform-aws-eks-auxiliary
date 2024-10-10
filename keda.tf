@@ -7,7 +7,7 @@ locals {
   # K8S Service Account Name
   keda_service_account_name = try(var.services["keda"]["service_account_name"], "keda-sa")
   # AWS IAM IRSA
-  keda_irsa_iam_role_name = "${var.cluster_name}-keda-iam-role"
+  keda_irsa_iam_role_name = "${local.lower_cluster_name}-keda-iam-role"
   # Helm ovveride values
   keda_helm_values = <<EOF
     %{~if try(var.services["keda"]["nodepool"], var.cluster_nodepool_name) != ""~}

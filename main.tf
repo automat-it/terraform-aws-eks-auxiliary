@@ -1,3 +1,7 @@
+locals {
+  lower_cluster_name = lower(var.cluster_name)
+}
+
 ### Kubernetes namespaces
 
 # general
