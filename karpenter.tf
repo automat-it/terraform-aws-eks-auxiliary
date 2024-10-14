@@ -22,17 +22,25 @@ locals {
   # Helm ovveride values
   karpenter_helm_values = <<-EOT
     serviceAccount:
+      %{~if try(module.karpenter[0].service_account, "") != ""~}
       name: ${module.karpenter[0].service_account}
+      %{~endif~}
+      %{~if try(module.karpenter[0].iam_role_arn, "") != ""~}
       annotations:
         eks.amazonaws.com/role-arn: ${module.karpenter[0].iam_role_arn}
+      %{~endif~}
     settings:
       clusterName: ${var.cluster_name}
       clusterEndpoint: ${data.aws_eks_cluster.this.endpoint}
+      %{~if try(module.karpenter[0].queue_name, "") != ""~}
       interruptionQueue: ${module.karpenter[0].queue_name}
+      %{~endif~}
     %{~if try(var.services["karpenter"]["nodepool"], var.cluster_nodepool_name) != ""~}
     nodeSelector:
       pool: ${try(var.services["karpenter"]["nodepool"], var.cluster_nodepool_name)}
     tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
       - key: dedicated
         operator: Equal
         value: ${try(var.services["karpenter"]["nodepool"], var.cluster_nodepool_name)}
@@ -48,7 +56,9 @@ locals {
       name: default
     spec:
       amiFamily: AL2023
+      %{~if try(module.karpenter[0].node_iam_role_name, "") != ""~}
       role: ${module.karpenter[0].node_iam_role_name}
+      %{~endif~}
       subnetSelectorTerms:
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
