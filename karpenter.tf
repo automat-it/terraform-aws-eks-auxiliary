@@ -199,7 +199,7 @@ resource "kubectl_manifest" "karpenter_default_node_class" {
 
 resource "kubectl_manifest" "karpenter_default_node_pool" {
 
-  count = var.services["karpenter"]["enabled"] && local.deploy_karpenetr_default_nodeclass ? 1 : 0
+  count = var.services["karpenter"]["enabled"] && local.deploy_karpenetr_default_nodepool ? 1 : 0
 
   yaml_body = try(var.services["karpenter"]["default_nodepool_yaml"], local.default_nodepool_yaml)
 
