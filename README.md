@@ -76,7 +76,7 @@ Reference values could be found at [examples directory](examples).
 | project_name | The name of the project. | `string` | `""` | no |
 | r53_zone_id | The ID of the Route 53 hosted zone, if DNS records are managed by Route 53. | `string` | `""` | no |
 | services | List of services and their parameters (version, configs, namespaces, etc.). | `any` | `{}` | no |
-| tags | Resource tags. | `map` | `{}` | no |
+| tags | Resource tags. | `any` | `{}` | no |
 
 ## Outputs
 
