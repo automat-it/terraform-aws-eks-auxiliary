@@ -5,7 +5,7 @@ locals {
   # K8s namespace to deploy
   keda_namespace = try(var.services["keda"]["namespace"], kubernetes_namespace_v1.general.id)
   # K8S Service Account Name
-  keda_service_account_name = try(var.services["keda"]["service_account_name"], "keda-sa")
+  keda_service_account_name = try(var.services["keda"]["service_account_name"], "keda")
   # AWS IAM IRSA
   keda_irsa_iam_role_name = "${local.lower_cluster_name}-keda-iam-role"
   # Helm ovveride values
@@ -22,10 +22,21 @@ locals {
     rbac:
       create: true
     serviceAccount:
-      create: true
-      name: ${local.keda_service_account_name}
-      annotations:
-        eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
+      operator:
+        create: true
+        name: ${local.keda_service_account_name}-operator
+        annotations:
+          eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
+      metricServer:
+        create: true
+        name: ${local.keda_service_account_name}-metrics-server
+        annotations:
+          eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
+      webhooks:
+        create: true
+        name: ${local.keda_service_account_name}-webhook
+        annotations:
+          eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
     prometheus:
       metricServer:
         enabled: true
