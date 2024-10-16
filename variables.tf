@@ -155,5 +155,6 @@ variable "services" {
 
 variable "tags" {
   default     = {}
+  type        = any
   description = "Resource tags."
 }
