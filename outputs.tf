@@ -67,3 +67,24 @@ output "keda_irsa_role_id" {
   description = "The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts)."
   value       = try(var.services["keda"]["enabled"], var.has_keda) ? module.keda[0].irsa_role_id : "Not Installed"
 }
+
+output "karpenter_irsa_role_arn" {
+  description = "The ARN of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts)."
+  value       = try(var.services["karpenter"]["enabled"]) ? module.karpenter[0].iam_role_arn : "Not Installed"
+}
+
+output "karpenter_irsa_role_id" {
+  description = "The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts)."
+  value       = try(var.services["karpenter"]["enabled"]) ? module.karpenter[0].iam_role_name : "Not Installed"
+}
+
+output "karpenter_node_iam_role_name" {
+  description = "The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts)."
+  value       = try(var.services["karpenter"]["enabled"]) ? module.karpenter[0].node_iam_role_name : "Not Installed"
+}
+
+output "karpenter_default_node_class_name" {
+  description = "The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts)."
+  value       = try(var.services["karpenter"]["enabled"]) ? local.karpenetr_default_nodeclass_name : "Not Installed"
+}
+

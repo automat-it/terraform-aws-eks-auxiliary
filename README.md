@@ -16,6 +16,7 @@ Reference values could be found at [examples directory](examples).
 | terraform | >= 1.8.4 |
 | aws | >= 5.0 |
 | helm | >= 2.9.0 |
+| kubectl | >= 2.0 |
 | kubernetes | >= 2.20 |
 
 ## Modules
@@ -28,6 +29,8 @@ Reference values could be found at [examples directory](examples).
 | cluster-autoscaler | ./modules/helm-chart | n/a |
 | external-dns | ./modules/helm-chart | n/a |
 | external-secrets | ./modules/helm-chart | n/a |
+| karpenter | terraform-aws-modules/eks/aws//modules/karpenter | ~> 20.0 |
+| karpenter-helm | ./modules/helm-chart | n/a |
 | keda | ./modules/helm-chart | n/a |
 | metrics-server | ./modules/helm-chart | n/a |
 | slack-notifications | ./modules/argocd-slack-notification | n/a |
@@ -36,9 +39,13 @@ Reference values could be found at [examples directory](examples).
 
 | Name | Type |
 |------|------|
+| [kubectl_manifest.karpenter_default_node_class](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
+| [kubectl_manifest.karpenter_default_node_pool](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubernetes_namespace_v1.argocd](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.general](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.security](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
+| [aws_eks_cluster.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster) | data source |
 
 ## Inputs
 
@@ -60,6 +67,7 @@ Reference values could be found at [examples directory](examples).
 | has_aws_lb_controller | Whether the AWS Load Balancer Controller will be installed. | `bool` | `false` | no |
 | has_external_dns | Whether the External DNS controller will be installed. | `bool` | `false` | no |
 | has_external_secrets | Whether the External Secrets controller will be installed. | `bool` | `false` | no |
+| has_karpenter | Whether Karpenter will be installed. | `bool` | `false` | no |
 | has_keda | Whether KEDA (Kubernetes Event-driven Autoscaling) controller will be installed. | `bool` | `false` | no |
 | has_metrics_server | Whether the Kubernetes Metrics Server will be installed. | `bool` | `true` | no |
 | iam_openid_provider | The IAM OIDC provider configuration for the EKS cluster. | ```object({ oidc_provider_arn = string oidc_provider = string })``` | `null` | no |
@@ -68,6 +76,7 @@ Reference values could be found at [examples directory](examples).
 | project_name | The name of the project. | `string` | `""` | no |
 | r53_zone_id | The ID of the Route 53 hosted zone, if DNS records are managed by Route 53. | `string` | `""` | no |
 | services | List of services and their parameters (version, configs, namespaces, etc.). | `any` | `{}` | no |
+| tags | Resource tags. | `any` | `{}` | no |
 
 ## Outputs
 
@@ -83,6 +92,10 @@ Reference values could be found at [examples directory](examples).
 | external_dns_irsa_role_id | The ID of the IAM role used by the External DNS controller for IRSA (IAM Roles for Service Accounts). |
 | external_secrets_irsa_role_arn | The ARN of the IAM role used by the External Secrets controller for IRSA (IAM Roles for Service Accounts). |
 | external_secrets_irsa_role_id | The ID of the IAM role used by the External Secrets controller for IRSA (IAM Roles for Service Accounts). |
+| karpenter_default_node_class_name | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
+| karpenter_irsa_role_arn | The ARN of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
+| karpenter_irsa_role_id | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
+| karpenter_node_iam_role_name | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
 | keda_irsa_role_arn | The ARN of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
 | keda_irsa_role_id | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
 | metrics_server_irsa_role_arn | The ARN of the IAM role used by the Metrics Server for IRSA (IAM Roles for Service Accounts). |

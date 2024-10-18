@@ -9,7 +9,7 @@ locals {
   # Helm ovveride values
   aws_lb_controller_helm_values = <<EOF
     enableServiceMutatorWebhook: false
-    clusterName: ${var.cluster_name}
+    clusterName: ${local.lower_cluster_name}
     %{~if try(var.services["aws-alb-ingress-controller"]["nodepool"], var.cluster_nodepool_name) != ""~}
     nodeSelector:
       pool: ${try(var.services["aws-alb-ingress-controller"]["nodepool"], var.cluster_nodepool_name)}
@@ -27,7 +27,7 @@ locals {
     vpcId: ${var.vpc_id}
     EOF
   # AWS IAM IRSA
-  aws_lb_controller_irsa_iam_role_name = "${var.cluster_name}-aws-alb-ingress-controller-iam-role"
+  aws_lb_controller_irsa_iam_role_name = "${local.lower_cluster_name}-aws-alb-ingress-controller-iam-role"
   aws_lb_controller_irsa_policy_json   = <<-EOF
     {
         "Version": "2012-10-17",

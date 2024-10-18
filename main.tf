@@ -1,3 +1,7 @@
+locals {
+  lower_cluster_name = lower(var.cluster_name)
+}
+
 ### Kubernetes namespaces
 
 # general
@@ -30,3 +34,11 @@ resource "kubernetes_namespace_v1" "argocd" {
     name = "argocd"
   }
 }
+
+### EKS data
+data "aws_eks_cluster" "this" {
+  name = var.cluster_name
+}
+
+data "aws_caller_identity" "current" {}
+

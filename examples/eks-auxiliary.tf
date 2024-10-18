@@ -19,7 +19,15 @@ module "eks-aux" {
       EOF
     }
     cluster-autoscaler = {
+      enabled = false
+    }
+    karpenter = {
       enabled = true
+      # Otional Karpenter parameters
+      node_security_group_id                        = module.eks.node_security_group_id
+      karpenetr_default_nodepool_capacity_type      = ["spot"]
+      karpenetr_default_nodeclass_volume_size       = "30Gi"
+      karpenetr_default_nodeclass_instance_category = ["t"]
     }
     external-dns = {
       enabled = true
