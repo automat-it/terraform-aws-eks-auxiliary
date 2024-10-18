@@ -56,7 +56,7 @@ locals {
 
   # Default karpenter nodeclass
   default_nodeclass_yaml = <<-YAML
-    apiVersion: karpenter.k8s.aws/v1beta1
+    apiVersion: karpenter.k8s.aws/v1
     kind: EC2NodeClass
     metadata:
       name: ${local.karpenetr_default_nodeclass_name}
@@ -90,7 +90,7 @@ locals {
 
   # Default karpenter nodepool
   default_nodepool_yaml = <<-YAML
-    apiVersion: karpenter.sh/v1beta1
+    apiVersion: karpenter.sh/v1
     kind: NodePool
     metadata:
       name: default
