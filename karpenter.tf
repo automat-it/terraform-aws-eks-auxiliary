@@ -1,22 +1,26 @@
 # Karpenter
 locals {
-  # Helm versions
+  # Helm versions. Please change the public submodule version in the apropriet line 'module "karpenter" {'
   karpenter_helm_version = try(var.services["karpenter"]["helm_version"], "1.0.0")
   # K8s namespace to deploy
   karpenter_namespace = try(var.services["karpenter"]["namespace"], kubernetes_namespace_v1.general.id)
   # K8S Service Account Name
   karpenter_service_account_name = try(var.services["karpenter"]["service_account_name"], "karpenter")
   # Karpenetr default NodeClass
-  deploy_karpenetr_default_nodeclass = try(var.services["karpenter"]["deploy_karpeneter_default_nodeclass"], true)
+  deploy_karpenetr_default_nodeclass            = try(var.services["karpenter"]["deploy_karpeneter_default_nodeclass"], true)
+  karpenetr_default_nodeclass_volume_size       = try(var.services["karpenter"]["karpenetr_default_nodeclass_volume_size"], "20Gi")
+  karpenetr_default_nodeclass_instance_category = try(var.services["karpenter"]["karpenetr_default_nodeclass_instance_category"], ["t", "c", "m"])
+  karpenetr_default_nodeclass_instance_cpu      = try(var.services["karpenter"]["karpenetr_default_nodeclass_instance_cpu"], ["2", "4"])
   # Karpenetr default Nodepool
-  deploy_karpenetr_default_nodepool = try(var.services["karpenter"]["deploy_karpeneter_default_nodepool"], true)
+  deploy_karpenetr_default_nodepool    = try(var.services["karpenter"]["deploy_karpeneter_default_nodepool"], true)
+  karpenetr_default_nodepool_cpu_limit = try(var.services["karpenter"]["karpenetr_default_nodepool_cpu_limit"], "100")
   # AWS IAM IRSA
-  karpenter_irsa_iam_role_name       = try(var.services["karpenter"]["irsa_iam_role_name"], "")
-  karpenter_irsa_iam_role_name_prefix = try(var.services["karpenter"]["irsa_iam_role_name_prefix"], "KarpenterController")
-  karpenter_irsa_iam_policy_name       = try(var.services["karpenter"]["irsa_iam_policy_name"], "")
+  karpenter_irsa_iam_role_name          = try(var.services["karpenter"]["irsa_iam_role_name"], "")
+  karpenter_irsa_iam_role_name_prefix   = try(var.services["karpenter"]["irsa_iam_role_name_prefix"], "KarpenterController")
+  karpenter_irsa_iam_policy_name        = try(var.services["karpenter"]["irsa_iam_policy_name"], "")
   karpenter_irsa_iam_policy_name_prefix = try(var.services["karpenter"]["irsa_iam_policy_name_prefix"], "KarpenterController")
-  karpenter_node_iam_role_name       = try(var.services["karpenter"]["node_iam_role_name"], "")
-  karpenter_node_iam_role_name_prefix = try(var.services["karpenter"]["node_iam_role_name"], null)
+  karpenter_node_iam_role_name          = try(var.services["karpenter"]["node_iam_role_name"], "")
+  karpenter_node_iam_role_name_prefix   = try(var.services["karpenter"]["node_iam_role_name"], null)
   # SG
   karpenter_node_security_group_id = try(var.services["karpenter"]["node_security_group_id"], "")
   # Helm ovveride values
@@ -73,7 +77,7 @@ locals {
       blockDeviceMappings:
         - deviceName: /dev/xvda
           ebs:
-            volumeSize: "20Gi"
+            volumeSize: ${local.karpenetr_default_nodeclass_volume_size}
             volumeType: gp3
             encrypted: true
             deleteOnTermination: true
@@ -99,10 +103,10 @@ locals {
               values: ["amd64"]
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
-              values: ["t", "c", "m"]
+              values: ${jsonencode(local.karpenetr_default_nodeclass_instance_category)}
             - key: "karpenter.k8s.aws/instance-cpu"
               operator: In
-              values: ["2", "4"]
+              values: ${jsonencode(local.karpenetr_default_nodeclass_instance_cpu)}
             - key: "karpenter.k8s.aws/instance-hypervisor"
               operator: In
               values: ["nitro"]
@@ -113,12 +117,11 @@ locals {
               operator: In
               values: ["on-demand"]
       limits:
-        cpu: 100
+        cpu: ${local.karpenetr_default_nodepool_cpu_limit}
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
   YAML
-
 }
 
 ################################################################################
@@ -160,11 +163,11 @@ module "karpenter" {
   create_pod_identity_association = true
 
   # IAM
-  iam_role_name                = length(local.karpenter_irsa_iam_role_name) > 0 ? local.karpenter_irsa_iam_role_name : local.karpenter_irsa_iam_role_name_prefix
+  iam_role_name                 = length(local.karpenter_irsa_iam_role_name) > 0 ? local.karpenter_irsa_iam_role_name : local.karpenter_irsa_iam_role_name_prefix
   iam_role_use_name_prefix      = length(local.karpenter_irsa_iam_role_name) > 0 == false
-  iam_policy_name              = length(local.karpenter_irsa_iam_policy_name) > 0 ? local.karpenter_irsa_iam_policy_name : local.karpenter_irsa_iam_policy_name_prefix
-  iam_policy_use_name_prefix   = length(local.karpenter_irsa_iam_policy_name) > 0 == false
-  node_iam_role_name           = length(local.karpenter_irsa_iam_role_name) > 0 ? local.karpenter_node_iam_role_name : local.karpenter_node_iam_role_name_prefix
+  iam_policy_name               = length(local.karpenter_irsa_iam_policy_name) > 0 ? local.karpenter_irsa_iam_policy_name : local.karpenter_irsa_iam_policy_name_prefix
+  iam_policy_use_name_prefix    = length(local.karpenter_irsa_iam_policy_name) > 0 == false
+  node_iam_role_name            = length(local.karpenter_irsa_iam_role_name) > 0 ? local.karpenter_node_iam_role_name : local.karpenter_node_iam_role_name_prefix
   node_iam_role_use_name_prefix = length(local.karpenter_node_iam_role_name) > 0 == false
 
   # EKS Fargate currently does not support Pod Identity
