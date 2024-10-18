@@ -5,9 +5,9 @@ data "aws_iam_policy_document" "oidc_assume_role_policy" {
     effect  = "Allow"
 
     condition {
-      test     = "StringLike"
+      test     = "StringEquals"
       variable = "${var.iam_openid_provider.oidc_provider}:sub"
-      values   = ["system:serviceaccount:${var.namespace}:${var.service_account_name}*"]
+      values   = ["system:serviceaccount:${var.namespace}:${var.service_account_name}"]
     }
 
     principals {

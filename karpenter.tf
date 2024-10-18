@@ -12,8 +12,9 @@ locals {
   karpenetr_default_nodeclass_instance_category = try(var.services["karpenter"]["karpenetr_default_nodeclass_instance_category"], ["t", "c", "m"])
   karpenetr_default_nodeclass_instance_cpu      = try(var.services["karpenter"]["karpenetr_default_nodeclass_instance_cpu"], ["2", "4"])
   # Karpenetr default Nodepool
-  deploy_karpenetr_default_nodepool    = try(var.services["karpenter"]["deploy_karpeneter_default_nodepool"], true)
-  karpenetr_default_nodepool_cpu_limit = try(var.services["karpenter"]["karpenetr_default_nodepool_cpu_limit"], "100")
+  deploy_karpenetr_default_nodepool        = try(var.services["karpenter"]["deploy_karpeneter_default_nodepool"], true)
+  karpenetr_default_nodepool_cpu_limit     = try(var.services["karpenter"]["karpenetr_default_nodepool_cpu_limit"], "100")
+  karpenetr_default_nodepool_capacity_type = try(var.services["karpenter"]["karpenetr_default_nodepool_capacity_type"], ["on-demand"])
   # AWS IAM IRSA
   karpenter_irsa_iam_role_name          = try(var.services["karpenter"]["irsa_iam_role_name"], "")
   karpenter_irsa_iam_role_name_prefix   = try(var.services["karpenter"]["irsa_iam_role_name_prefix"], "KarpenterController")
@@ -115,7 +116,7 @@ locals {
               values: ["2"]
             - key: "karpenter.sh/capacity-type"
               operator: In
-              values: ["on-demand"]
+              values:  ${jsonencode(local.karpenetr_default_nodepool_capacity_type)}
       limits:
         cpu: ${local.karpenetr_default_nodepool_cpu_limit}
       disruption:

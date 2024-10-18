@@ -24,17 +24,17 @@ locals {
     serviceAccount:
       operator:
         create: true
-        name: ${local.keda_service_account_name}-operator
+        name: ${local.keda_service_account_name}
         annotations:
           eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
       metricServer:
-        create: true
-        name: ${local.keda_service_account_name}-metrics-server
+        create: false
+        name: ${local.keda_service_account_name}
         annotations:
           eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
       webhooks:
-        create: true
-        name: ${local.keda_service_account_name}-webhook
+        create: false
+        name: ${local.keda_service_account_name}
         annotations:
           eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
     prometheus:
