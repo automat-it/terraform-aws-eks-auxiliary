@@ -244,6 +244,39 @@ locals {
           when: app.status.sync.status == 'Unknown'
       defaultTriggers: |
         - on-sync-status-unknown
+  extraObjects:
+    - apiVersion: external-secrets.io/v1beta1
+      kind: SecretStore
+      metadata:
+        name: argocd-secret-store-aws-secret
+      spec:
+        provider:
+          aws:
+            auth:
+              jwt:
+                serviceAccountRef:
+                  name: ${local.argocd_service_account_name}
+            region: ${var.aws_region}
+            service: SecretsManager
+    - apiVersion: external-secrets.io/v1beta1
+      kind: ExternalSecret
+      metadata:
+        name: argocd-ext-aws-secret-slack
+      spec:
+        refreshInterval: "5s"
+        secretStoreRef:
+          name: argocd-secret-store-aws-secret
+          kind: SecretStore
+        target:
+          name: argocd-notifications-secret
+          creationPolicy: Merge
+          deletionPolicy: Merge
+          template:
+            mergePolicy: Merge
+            engineVersion: v2
+        dataFrom:
+          - extract:
+              key: ${var.notification_slack_token_secret}
   %{~ endif ~}
   EOF
 }
@@ -271,22 +304,4 @@ module "argocd" {
     kubernetes_namespace_v1.general,
     module.aws-alb-ingress-controller
   ]
-}
-
-### Notifications
-### Merging slack token from AWS Secret
-module "slack-notifications" {
-  count = try(var.services.argocd.notification_slack_token_secret, var.notification_slack_token_secret) != "" && local.argocd_enabled ? 1 : 0
-
-  source = "./modules/argocd-slack-notification"
-
-  notification_slack_token_secret = try(var.services.argocd.notification_slack_token_secret, var.notification_slack_token_secret)
-
-  chart_name           = "argo-cd"
-  namespace            = local.argocd_namespace
-  chart_version        = local.argocd_helm_version
-  service_account_name = local.argocd_service_account_name
-  aws_region           = var.aws_region
-
-  depends_on = [module.argocd]
 }
