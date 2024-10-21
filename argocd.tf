@@ -1,15 +1,15 @@
 ### ArgoCD helm
 locals {
-  argocd_enabled = try(var.services["argocd"]["enabled"], var.has_argocd)
-  argocd_url     = try(var.services["argocd"]["argocd_url"], "argocd.${var.domain_zone}")
+  argocd_enabled = try(var.services.argocd.enabled, var.has_argocd)
+  argocd_url     = try(var.services.argocd.argocd_url, "argocd.${var.domain_zone}")
   # Helm versions
-  argocd_helm_version = try(var.services["argocd"]["helm_version"], "7.3.11")
+  argocd_helm_version = try(var.services.argocd.helm_version, "7.3.11")
   # K8s namespace to deploy
-  argocd_namespace = try(var.services["argocd"]["namespace"], try(kubernetes_namespace_v1.argocd[0].id, "argocd"))
+  argocd_namespace = try(var.services.argocd.namespace, try(kubernetes_namespace_v1.argocd[0].id, "argocd"))
   # K8S Service Account
-  argocd_service_account_name = try(var.services["argocd"]["service_account_name"], "argocd-sa")
-  argocd_irsa_iam_role_name   = try(var.services["argocd"]["irsa_iam_role_name"], "${local.lower_cluster_name}-argo-cd")
-  argocd_ingress              = try(var.services["argocd"]["custom_ingress"], var.argocd_custom_ingress) != "" ? try(var.services["argocd"]["custom_ingress"], var.argocd_custom_ingress) : local.argocd_default_ingress
+  argocd_service_account_name = try(var.services.argocd.service_account_name, "argocd-sa")
+  argocd_irsa_iam_role_name   = try(var.services.argocd.irsa_iam_role_name, "${local.lower_cluster_name}-argo-cd")
+  argocd_ingress              = try(var.services.argocd.custom_ingress, var.argocd_custom_ingress) != "" ? try(var.services.argocd.custom_ingress, var.argocd_custom_ingress) : local.argocd_default_ingress
   argocd_default_ingress      = <<EOF
   server:
     ingress:
@@ -47,20 +47,22 @@ locals {
         name: ${local.argocd_service_account_name}
     global:
       domain: ${local.argocd_url}
-      %{~if try(var.services["argocd"]["nodepool"], var.cluster_nodepool_name) != ""~}
+      %{~ if try(var.services.argocd.nodepool, var.cluster_nodepool_name) != "" ~}
       nodeSelector:
-        pool: ${try(var.services["argocd"]["nodepool"], var.cluster_nodepool_name)}
+        pool: ${try(var.services.argocd.nodepool, var.cluster_nodepool_name)}
       tolerations:
         - key: dedicated
           operator: Equal
-          value: ${try(var.services["argocd"]["nodepool"], var.cluster_nodepool_name)}
+          value: ${try(var.services.argocd.nodepool, var.cluster_nodepool_name)}
           effect: NoSchedule
-      %{~endif~}
+      %{~ endif ~}
     server:
       serviceAccount:
         name: ${local.argocd_service_account_name}
+        %{~ if try(var.services.argocd.irsa_role_arn, try(module.argocd[0].irsa_role_arn, "")) != "" ~}
         annotations:
-          eks.amazonaws.com/role-arn: ${try(var.services["argocd"]["irsa_role_arn"], try(module.argocd[0].irsa_role_arn, ""))}
+          eks.amazonaws.com/role-arn: ${try(var.services.argocd.irsa_role_arn, module.argocd[0].irsa_role_arn)}
+        %{~ endif ~}
     configs:
       cm:
         exec.enabled: "true"
@@ -266,7 +268,7 @@ module "argocd" {
   values = [
     local.argocd_helm_values,
     local.argocd_ingress,
-    try(var.services["argocd"]["additional_helm_values"], "")
+    try(var.services.argocd.additional_helm_values, null),
   ]
 
   depends_on = [
@@ -278,11 +280,11 @@ module "argocd" {
 ### Notifications
 ### Merging slack token from AWS Secret
 module "slack-notifications" {
-  count = try(var.services["argocd"]["notification_slack_token_secret"], var.notification_slack_token_secret) != "" && local.argocd_enabled ? 1 : 0
+  count = try(var.services.argocd.notification_slack_token_secret, var.notification_slack_token_secret) != "" && local.argocd_enabled ? 1 : 0
 
   source = "./modules/argocd-slack-notification"
 
-  notification_slack_token_secret = try(var.services["argocd"]["notification_slack_token_secret"], var.notification_slack_token_secret)
+  notification_slack_token_secret = try(var.services.argocd.notification_slack_token_secret, var.notification_slack_token_secret)
 
   chart_name           = "argo-cd"
   namespace            = local.argocd_namespace
