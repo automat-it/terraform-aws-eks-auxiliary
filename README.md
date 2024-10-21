@@ -24,7 +24,6 @@ Reference values could be found at [examples directory](examples).
 | Name | Source | Version |
 |------|--------|---------|
 | argocd | ./modules/helm-chart | n/a |
-| argocd-backup | ./modules/argocd-s3-backup | n/a |
 | aws-alb-ingress-controller | ./modules/helm-chart | n/a |
 | cluster-autoscaler | ./modules/helm-chart | n/a |
 | external-dns | ./modules/helm-chart | n/a |
