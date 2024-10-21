@@ -38,7 +38,7 @@ locals {
   argocd_helm_values          = <<EOF
   global:
     domain: ${local.argocd_url}
-    %{~ if try(var.services.argocd.nodepool, var.cluster_nodepool_name) != "" ~}
+    %{~if try(var.services.argocd.nodepool, var.cluster_nodepool_name) != ""~}
     nodeSelector:
       pool: ${try(var.services.argocd.nodepool, var.cluster_nodepool_name)}
     tolerations:
@@ -46,14 +46,14 @@ locals {
         operator: Equal
         value: ${try(var.services.argocd.nodepool, var.cluster_nodepool_name)}
         effect: NoSchedule
-    %{~ endif ~}
+    %{~endif~}
   server:
     serviceAccount:
       name: ${local.argocd_service_account_name}
-      %{~ if try(var.services.argocd.irsa_role_arn, try(module.argocd[0].irsa_role_arn, "")) != "" ~}
+      %{~if try(var.services.argocd.irsa_role_arn, try(module.argocd[0].irsa_role_arn, "")) != ""~}
       annotations:
         eks.amazonaws.com/role-arn: ${try(var.services.argocd.irsa_role_arn, module.argocd[0].irsa_role_arn)}
-      %{~ endif ~}
+      %{~endif~}
   controller:
     serviceAccount:
       create: false
@@ -63,8 +63,8 @@ locals {
       exec.enabled: "true"
       timeout.reconciliation: 60s
   EOF
-  argocd_notifications = <<EOF
-  %{~ if try(var.services.argocd.notification_slack_token_secret, var.notification_slack_token_secret) != "" ~}
+  argocd_notifications        = <<EOF
+  %{~if try(var.services.argocd.notification_slack_token_secret, var.notification_slack_token_secret) != ""~}
   notifications:
     enabled: true
     secret:
@@ -277,7 +277,7 @@ locals {
         dataFrom:
           - extract:
               key: ${var.notification_slack_token_secret}
-  %{~ endif ~}
+  %{~endif~}
   EOF
 }
 
