@@ -292,27 +292,5 @@ module "slack-notifications" {
   service_account_name = local.argocd_service_account_name
   aws_region           = var.aws_region
 
-  depends_on = [
-    module.argocd
-  ]
-
-}
-### Backup
-module "argocd-backup" {
-  count = try(var.services["argocd"]["enable_backup"], var.enable_backup) && local.argocd_enabled ? 1 : 0
-
-  source = "./modules/argocd-s3-backup"
-
-  chart_name           = "argo-cd"
-  namespace            = local.argocd_namespace
-  chart_version        = local.argocd_helm_version
-  service_account_name = local.argocd_service_account_name
-
-  backup_cron                = try(var.services["argocd"]["backup_cron"], var.backup_cron)
-  destination_s3_name        = try(var.services["argocd"]["destination_s3_name"], var.destination_s3_name)
-  destination_s3_name_prefix  = try(var.services["argocd"]["destination_s3_name_prefix"], var.destination_s3_name_prefix)
-
-  depends_on = [
-    module.argocd
-  ]
+  depends_on = [module.argocd]
 }
