@@ -31,6 +31,9 @@ locals {
         alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
         alb.ingress.kubernetes.io/tags: 'Environment=${var.project_env}, Managed_by=helm, Project=${var.project_name}'
         alb.ingress.kubernetes.io/ssl-redirect: '443'
+  configs:
+    params:
+      server.insecure: true
   EOF
   argocd_helm_values          = <<EOF
   global:
