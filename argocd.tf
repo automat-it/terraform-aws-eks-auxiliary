@@ -14,25 +14,20 @@ locals {
   server:
     ingress:
       enabled: true
-      hosts:
-        - "${local.argocd_url}"
-      rules:
-        - https:
-            paths:
-              - backend:
-                  serviceName: ssl-redirect
-                  servicePort: use-annotation
+      controller: aws
+      ingressClassName: alb
+      aws:
+        serviceType: ClusterIP
+        backendProtocolVersion: GRPC
       annotations:
-        kubernetes.io/ingress.class: alb
-        alb.ingress.kubernetes.io/load-balancer-name: "${local.lower_cluster_name}-argocd-alb"
-        alb.ingress.kubernetes.io/group.name: "internal"
+        alb.ingress.kubernetes.io/load-balancer-name: ${local.lower_cluster_name}-argocd-alb
+        alb.ingress.kubernetes.io/group.name: internal
         alb.ingress.kubernetes.io/ip-address-type: ipv4
-        alb.ingress.kubernetes.io/scheme: "internal"
+        alb.ingress.kubernetes.io/scheme: internal
         alb.ingress.kubernetes.io/target-type: ip
         alb.ingress.kubernetes.io/healthcheck-port: traffic-port
-        alb.ingress.kubernetes.io/healthcheck-path: /
         alb.ingress.kubernetes.io/success-codes: 200-399
-        alb.ingress.kubernetes.io/backend-protocol: HTTPS
+        alb.ingress.kubernetes.io/backend-protocol: HTTP
         alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
         alb.ingress.kubernetes.io/tags: 'Environment=${var.project_env}, Managed_by=helm, Project=${var.project_name}'
         alb.ingress.kubernetes.io/ssl-redirect: '443'
@@ -66,11 +61,8 @@ locals {
     configs:
       cm:
         exec.enabled: "true"
-      service:
-        type: NodePort
     notifications:
       enabled: true
-      argocdUrl: "https://${local.argocd_url}"
       secret:
         create: true
       cm:
