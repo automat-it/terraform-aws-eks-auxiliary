@@ -32,7 +32,6 @@ locals {
         alb.ingress.kubernetes.io/tags: 'Environment=${var.project_env}, Managed_by=helm, Project=${var.project_name}'
         alb.ingress.kubernetes.io/ssl-redirect: '443'
   EOF
-  argocd_irsa_policy_json     = null
   argocd_helm_values          = <<EOF
     controller:
       serviceAccount:
@@ -253,7 +252,6 @@ module "argocd" {
   helm_version         = local.argocd_helm_version
   service_account_name = local.argocd_service_account_name
   irsa_iam_role_name   = local.argocd_irsa_iam_role_name
-  irsa_policy_json     = local.argocd_irsa_policy_json
   iam_openid_provider  = var.iam_openid_provider
 
   values = [
