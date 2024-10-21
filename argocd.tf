@@ -35,8 +35,6 @@ locals {
   argocd_irsa_policy_json     = null
   argocd_helm_values          = <<EOF
     controller:
-      args:
-        appResyncPeriod: "60"
       serviceAccount:
         create: false
         name: ${local.argocd_service_account_name}
@@ -61,6 +59,7 @@ locals {
     configs:
       cm:
         exec.enabled: "true"
+        timeout.reconciliation: 60s
     notifications:
       enabled: true
       secret:
