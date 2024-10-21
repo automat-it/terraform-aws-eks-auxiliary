@@ -62,6 +62,9 @@ locals {
     cm:
       exec.enabled: "true"
       timeout.reconciliation: 60s
+  EOF
+  argocd_notifications = <<EOF
+  %{~ if try(var.services.argocd.notification_slack_token_secret, var.notification_slack_token_secret) != "" ~}
   notifications:
     enabled: true
     secret:
@@ -217,7 +220,6 @@ locals {
               {{end}}
               ]
             }]
-
     triggers:
       trigger.on-deployed: |
         - description: Application is synced and healthy. Triggered once per commit.
@@ -242,6 +244,7 @@ locals {
           when: app.status.sync.status == 'Unknown'
       defaultTriggers: |
         - on-sync-status-unknown
+  %{~ endif ~}
   EOF
 }
 
@@ -260,6 +263,7 @@ module "argocd" {
   values = [
     local.argocd_helm_values,
     local.argocd_ingress,
+    try(local.argocd_notifications, null),
     try(var.services.argocd.additional_helm_values, null),
   ]
 
