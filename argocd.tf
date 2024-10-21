@@ -33,10 +33,6 @@ locals {
         alb.ingress.kubernetes.io/ssl-redirect: '443'
   EOF
   argocd_helm_values          = <<EOF
-    controller:
-      serviceAccount:
-        create: false
-        name: ${local.argocd_service_account_name}
     global:
       domain: ${local.argocd_url}
       %{~ if try(var.services.argocd.nodepool, var.cluster_nodepool_name) != "" ~}
@@ -55,6 +51,10 @@ locals {
         annotations:
           eks.amazonaws.com/role-arn: ${try(var.services.argocd.irsa_role_arn, module.argocd[0].irsa_role_arn)}
         %{~ endif ~}
+    controller:
+      serviceAccount:
+        create: false
+        name: ${local.argocd_service_account_name}
     configs:
       cm:
         exec.enabled: "true"
