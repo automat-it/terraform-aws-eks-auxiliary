@@ -296,8 +296,8 @@ module "argocd" {
   values = [
     local.argocd_helm_values,
     local.argocd_ingress,
-    try(local.argocd_notifications, null),
-    try(var.services.argocd.additional_helm_values, null),
+    try(local.argocd_notifications, ""),
+    try(var.services.argocd.additional_helm_values, ""),
   ]
 
   depends_on = [
