@@ -23,6 +23,7 @@ locals {
   karpenter_irsa_iam_policy_name_prefix = try(var.services["karpenter"]["irsa_iam_policy_name_prefix"], "KarpenterController")
   karpenter_node_iam_role_name          = try(var.services["karpenter"]["node_iam_role_name"], "")
   karpenter_node_iam_role_name_prefix   = try(var.services["karpenter"]["node_iam_role_name"], null)
+  karpenter_node_iam_additional_policy  = try(var.services["karpenter"]["node_iam_additional_policy"], {})
   # SG
   karpenter_node_security_group_id = try(var.services["karpenter"]["node_security_group_id"], "")
   # Helm ovveride values
@@ -180,10 +181,11 @@ module "karpenter" {
   create_access_entry = true
 
   # Used to attach additional IAM policies to the Karpenter node IAM role
-  node_iam_role_additional_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
-
+  node_iam_role_additional_policies = merge({
+    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+    },
+    local.karpenter_node_iam_additional_policy
+  )
   tags = var.tags
 }
 
