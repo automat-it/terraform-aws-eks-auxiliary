@@ -62,7 +62,6 @@ locals {
     metadata:
       name: ${local.karpenetr_default_nodeclass_name}
     spec:
-      amiFamily: AL2023
       amiSelectorTerms:
         - alias: ${local.karpenetr_default_nodeclass_ami_alias}
       %{~if try(module.karpenter[0].node_iam_role_name, "") != ""~}
