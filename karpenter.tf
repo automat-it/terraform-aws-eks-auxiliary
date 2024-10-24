@@ -104,6 +104,8 @@ locals {
       template:
         spec:
           nodeClassRef:
+            group: karpenter.k8s.aws
+            kind: EC2NodeClass
             name: default
           requirements:
             - key: kubernetes.io/arch
