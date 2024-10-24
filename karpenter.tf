@@ -8,6 +8,7 @@ locals {
   karpenter_service_account_name = try(var.services["karpenter"]["service_account_name"], "karpenter")
   # Karpenetr default NodeClass
   deploy_karpenetr_default_nodeclass            = try(var.services["karpenter"]["deploy_karpeneter_default_nodeclass"], true)
+  karpenetr_default_nodeclass_ami_family        = try(var.services["karpenter"]["karpenetr_default_nodeclass_ami_family"], "AL2023")
   karpenetr_default_nodeclass_ami_alias         = try(var.services["karpenter"]["karpenetr_default_nodeclass_ami_alias"], "al2023@latest")
   karpenetr_default_nodeclass_name              = try(var.services["karpenter"]["karpenetr_default_nodeclass_name"], "default")
   karpenetr_default_nodeclass_volume_size       = try(var.services["karpenter"]["karpenetr_default_nodeclass_volume_size"], "20Gi")
@@ -60,8 +61,11 @@ locals {
     apiVersion: karpenter.k8s.aws/v1
     kind: EC2NodeClass
     metadata:
-      name: ${local.karpenetr_default_nodeclass_name}
+      name: ${local.karpenetr_default_nodeclass_ami_alias}
     spec:
+    %{~if local.karpenetr_default_nodeclass_ami_family != ""~}
+      amiFamily: ${local.karpenetr_default_nodeclass_ami_family}
+    %{~endif~}
       amiSelectorTerms:
         - alias: ${local.karpenetr_default_nodeclass_ami_alias}
       %{~if try(module.karpenter[0].node_iam_role_name, "") != ""~}
