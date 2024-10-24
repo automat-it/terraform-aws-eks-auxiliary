@@ -59,7 +59,7 @@ variable "iam_openid_provider" {
 variable "irsa_iam_role_name" {
   description = "Name of the IAM role for IRSA."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "irsa_policy_json" {

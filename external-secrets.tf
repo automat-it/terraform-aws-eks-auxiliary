@@ -33,7 +33,7 @@ locals {
     %{~endif~}
     EOF
 
-  external_secrets_irsa_policy_json   = <<-POLICY
+  external_secrets_irsa_policy_json = <<-POLICY
     {
       "Version": "2012-10-17",
       "Statement": [

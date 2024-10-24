@@ -1,9 +1,0 @@
-apiVersion: v2
-name: argocd-backup
-description: A Helm chart for ArgoCD backup to AWS s3
-
-type: application
-
-version: 0.2.0
-
-appVersion: 0.0.1

@@ -122,31 +122,6 @@ variable "notification_slack_token_secret" {
   description = "AWS Secret Manager key to store a Slack token for notifications."
 }
 
-# Backup
-variable "enable_backup" {
-  type        = bool
-  default     = false
-  description = "Enable backup for ArgoCD."
-}
-
-variable "backup_cron" {
-  type        = string
-  default     = "0 1 * * *"
-  description = "Backup job schedule in crontab format. The default is daily at 1 AM."
-}
-
-variable "destination_s3_name" {
-  type        = string
-  default     = ""
-  description = "The name of the destination S3 bucket for backups."
-}
-
-variable "destination_s3_name_prefix" {
-  type        = string
-  default     = "argocd"
-  description = "The prefix for the S3 bucket destination for backups."
-}
-
 variable "services" {
   type        = any
   default     = {}
