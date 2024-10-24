@@ -61,7 +61,7 @@ locals {
     apiVersion: karpenter.k8s.aws/v1
     kind: EC2NodeClass
     metadata:
-      name: ${local.karpenetr_default_nodeclass_ami_alias}
+      name: ${local.karpenetr_default_nodeclass_name}
     spec:
     %{~if local.karpenetr_default_nodeclass_ami_family != ""~}
       amiFamily: ${local.karpenetr_default_nodeclass_ami_family}
