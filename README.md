@@ -53,17 +53,8 @@ Reference values could be found at [examples directory](examples).
 | aws_region | The AWS region where resources will be provisioned. | `string` | n/a | yes |
 | cluster_name | The name of the Amazon EKS cluster. | `string` | n/a | yes |
 | vpc_id | The ID of the Virtual Private Cloud (VPC) where resources will be deployed. | `string` | n/a | yes |
-| argocd_custom_ingress | Custom ingress settings for ArgoCD. | `string` | `""` | no |
 | cluster_nodepool_name | The node pool name in the Amazon EKS cluster where all controllers will be installed. | `string` | `"system"` | no |
 | domain_zone | The domain zone associated with the Route 53 hosted zone. | `string` | `""` | no |
-| has_argocd | Whether ArgoCD will be installed. | `bool` | `false` | no |
-| has_autoscaler | Whether the cluster autoscaler will be installed. | `bool` | `false` | no |
-| has_aws_lb_controller | Whether the AWS Load Balancer Controller will be installed. | `bool` | `false` | no |
-| has_external_dns | Whether the External DNS controller will be installed. | `bool` | `false` | no |
-| has_external_secrets | Whether the External Secrets controller will be installed. | `bool` | `false` | no |
-| has_karpenter | Whether Karpenter will be installed. | `bool` | `false` | no |
-| has_keda | Whether KEDA (Kubernetes Event-driven Autoscaling) controller will be installed. | `bool` | `false` | no |
-| has_metrics_server | Whether the Kubernetes Metrics Server will be installed. | `bool` | `true` | no |
 | iam_openid_provider | The IAM OIDC provider configuration for the EKS cluster. | ```object({ oidc_provider_arn = string oidc_provider = string })``` | `null` | no |
 | notification_slack_token_secret | AWS Secret Manager key to store a Slack token for notifications. | `string` | `""` | no |
 | project_env | The project environment (e.g., dev, staging, prod). | `string` | `""` | no |
