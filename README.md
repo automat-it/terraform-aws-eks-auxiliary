@@ -92,10 +92,10 @@ Reference values could be found at [examples directory](examples).
 | external_dns_irsa_role_id | The ID of the IAM role used by the External DNS controller for IRSA (IAM Roles for Service Accounts). |
 | external_secrets_irsa_role_arn | The ARN of the IAM role used by the External Secrets controller for IRSA (IAM Roles for Service Accounts). |
 | external_secrets_irsa_role_id | The ID of the IAM role used by the External Secrets controller for IRSA (IAM Roles for Service Accounts). |
-| karpenter_default_node_class_name | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
-| karpenter_irsa_role_arn | The ARN of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
-| karpenter_irsa_role_id | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
-| karpenter_node_iam_role_name | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
+| karpenter_default_node_class_name | The ID of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
+| karpenter_irsa_role_arn | The ARN of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
+| karpenter_irsa_role_id | The ID of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
+| karpenter_node_iam_role_name | The ID of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
 | keda_irsa_role_arn | The ARN of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
 | keda_irsa_role_id | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
 | metrics_server_irsa_role_arn | The ARN of the IAM role used by the Metrics Server for IRSA (IAM Roles for Service Accounts). |
