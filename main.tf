@@ -26,7 +26,7 @@ resource "kubernetes_namespace_v1" "security" {
 
 # argocd
 resource "kubernetes_namespace_v1" "argocd" {
-  count = try(var.services["argocd"]["enabled"], false) ? 1 : 0
+  count = try(var.services.argocd.enabled, false) ? 1 : 0
   metadata {
     annotations = {
       name = "argocd"

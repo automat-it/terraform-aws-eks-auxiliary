@@ -1,5 +1,6 @@
 # Karpenter
 locals {
+  has_karpenter = try(var.services.karpenter.enabled, false)
   # Helm versions. Please change the public submodule version in the apropriet line 'module "karpenter" {'
   karpenter_helm_version = try(var.services.karpenter.helm_version, "1.0.0")
   # K8s namespace to deploy
@@ -140,7 +141,7 @@ locals {
 
 module "karpenter-helm" {
   source       = "./modules/helm-chart"
-  count        = try(var.services.karpenter.enabled, var.has_karpenter) ? 1 : 0
+  count        = local.has_karpenter ? 1 : 0
   name         = "karpenter"
   repository   = "oci://public.ecr.aws/karpenter"
   chart        = "karpenter"
@@ -163,7 +164,7 @@ module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
   version = "~> 20.0"
 
-  count = try(var.services.karpenter.enabled, var.has_karpenter) ? 1 : 0
+  count = local.has_karpenter ? 1 : 0
 
   cluster_name = var.cluster_name
 
@@ -201,7 +202,7 @@ module "karpenter" {
 
 resource "kubectl_manifest" "karpenter_default_node_class" {
 
-  count = var.services.karpenter.enabled && local.deploy_karpenter_default_nodeclass ? 1 : 0
+  count = local.has_karpenter && local.deploy_karpenter_default_nodeclass ? 1 : 0
 
   yaml_body = try(var.services.karpenter.default_nodeclass_yaml, local.default_nodeclass_yaml)
 
@@ -212,7 +213,7 @@ resource "kubectl_manifest" "karpenter_default_node_class" {
 
 resource "kubectl_manifest" "karpenter_default_node_pool" {
 
-  count = var.services.karpenter.enabled && local.deploy_karpenter_default_nodepool ? 1 : 0
+  count = local.has_karpenter && local.deploy_karpenter_default_nodepool ? 1 : 0
 
   yaml_body = try(var.services.karpenter.default_nodepool_yaml, local.default_nodepool_yaml)
 

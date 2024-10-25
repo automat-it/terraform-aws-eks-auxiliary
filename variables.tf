@@ -36,61 +36,6 @@ variable "vpc_id" {
   description = "The ID of the Virtual Private Cloud (VPC) where resources will be deployed."
 }
 
-# Helm-charts
-variable "has_autoscaler" {
-  type        = bool
-  default     = false
-  description = "Whether the cluster autoscaler will be installed."
-}
-
-variable "has_aws_lb_controller" {
-  type        = bool
-  default     = false
-  description = "Whether the AWS Load Balancer Controller will be installed."
-}
-
-variable "has_external_dns" {
-  type        = bool
-  default     = false
-  description = "Whether the External DNS controller will be installed."
-}
-
-variable "has_metrics_server" {
-  type        = bool
-  default     = true
-  description = "Whether the Kubernetes Metrics Server will be installed."
-}
-
-variable "has_external_secrets" {
-  type        = bool
-  default     = false
-  description = "Whether the External Secrets controller will be installed."
-}
-
-variable "has_argocd" {
-  type        = bool
-  default     = false
-  description = "Whether ArgoCD will be installed."
-}
-
-variable "has_karpenter" {
-  type        = bool
-  default     = false
-  description = "Whether Karpenter will be installed."
-}
-
-variable "argocd_custom_ingress" {
-  type        = string
-  default     = ""
-  description = "Custom ingress settings for ArgoCD."
-}
-
-variable "has_keda" {
-  type        = bool
-  default     = false
-  description = "Whether KEDA (Kubernetes Event-driven Autoscaling) controller will be installed."
-}
-
 # Route53
 variable "r53_zone_id" {
   type        = string

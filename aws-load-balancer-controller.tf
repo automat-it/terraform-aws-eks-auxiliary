@@ -1,29 +1,30 @@
 # AWS Load Balancer controller
 locals {
+  has_aws_lb_controller = try(var.services.aws-alb-ingress-controller.enabled, false)
   # Helm versions
-  aws_lb_controller_helm_version = try(var.services["aws-alb-ingress-controller"]["helm_version"], "1.8.1")
+  aws_lb_controller_helm_version = try(var.services.aws-alb-ingress-controller.helm_version, "1.8.1")
   # K8s namespace to deploy
-  aws_lb_controller_namespace = try(var.services["aws-alb-ingress-controller"]["namespace"], kubernetes_namespace_v1.general.id)
+  aws_lb_controller_namespace = try(var.services.aws-alb-ingress-controller.namespace, kubernetes_namespace_v1.general.id)
   # K8S Service Account Name
-  aws_lb_controller_service_account_name = try(var.services["aws-alb-ingress-controller"]["service_account_name"], "load-balancer-sa")
+  aws_lb_controller_service_account_name = try(var.services.aws-alb-ingress-controller.service_account_name, "load-balancer-sa")
   # Helm ovveride values
   aws_lb_controller_helm_values = <<EOF
     enableServiceMutatorWebhook: false
     clusterName: ${local.lower_cluster_name}
-    %{~if try(var.services["aws-alb-ingress-controller"]["nodepool"], var.cluster_nodepool_name) != ""~}
+    %{~if try(var.services.aws-alb-ingress-controller.nodepool, var.cluster_nodepool_name) != ""~}
     nodeSelector:
-      pool: ${try(var.services["aws-alb-ingress-controller"]["nodepool"], var.cluster_nodepool_name)}
+      pool: ${try(var.services.aws-alb-ingress-controller.nodepool, var.cluster_nodepool_name)}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${try(var.services["aws-alb-ingress-controller"]["nodepool"], var.cluster_nodepool_name)}
+        value: ${try(var.services.aws-alb-ingress-controller.nodepool, var.cluster_nodepool_name)}
         effect: NoSchedule
     %{~endif~}
     serviceAccount:
       create: true
       name: ${local.aws_lb_controller_service_account_name}
       annotations:
-        eks.amazonaws.com/role-arn: ${try(var.services["aws-alb-ingress-controller"]["irsa_role_arn"], try(module.aws-alb-ingress-controller[0].irsa_role_arn, ""))}
+        eks.amazonaws.com/role-arn: ${try(var.services.aws-alb-ingress-controller.irsa_role_arn, try(module.aws-alb-ingress-controller[0].irsa_role_arn, ""))}
     vpcId: ${var.vpc_id}
     EOF
   # AWS IAM IRSA
@@ -246,9 +247,12 @@ locals {
     EOF
 }
 
+################################################################################
+# ALB Ingress controller helm
+################################################################################
 module "aws-alb-ingress-controller" {
   source               = "./modules/helm-chart"
-  count                = try(var.services["aws-alb-ingress-controller"]["enabled"], var.has_aws_lb_controller) ? 1 : 0
+  count                = local.has_aws_lb_controller ? 1 : 0
   name                 = "aws-alb-ingress-controller"
   repository           = "https://aws.github.io/eks-charts"
   chart                = "aws-load-balancer-controller"
@@ -261,7 +265,7 @@ module "aws-alb-ingress-controller" {
 
   values = [
     local.aws_lb_controller_helm_values,
-    try(var.services["aws-alb-ingress-controller"]["additional_helm_values"], "")
+    try(var.services.aws-alb-ingress-controller.additional_helm_values, "")
   ]
 
   depends_on = [kubernetes_namespace_v1.general]
