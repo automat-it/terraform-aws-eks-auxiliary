@@ -7,7 +7,7 @@ locals {
   # K8S Service Account Name
   karpenter_service_account_name = try(var.services["karpenter"]["service_account_name"], "karpenter")
   # Karpenetr default NodeClass
-  deploy_karpenetr_default_nodeclass            = try(var.services["karpenter"]["deploy_karpeneter_default_nodeclass"], true)
+  deploy_karpenter_default_nodeclass            = try(var.services["karpenter"]["deploy_karpenter_default_nodeclass"], true)
   karpenetr_default_nodeclass_ami_family        = try(var.services["karpenter"]["karpenetr_default_nodeclass_ami_family"], "AL2023")
   karpenetr_default_nodeclass_ami_alias         = try(var.services["karpenter"]["karpenetr_default_nodeclass_ami_alias"], "al2023@latest")
   karpenetr_default_nodeclass_name              = try(var.services["karpenter"]["karpenetr_default_nodeclass_name"], "default")
@@ -15,7 +15,7 @@ locals {
   karpenetr_default_nodeclass_instance_category = try(var.services["karpenter"]["karpenetr_default_nodeclass_instance_category"], ["t", "c", "m"])
   karpenetr_default_nodeclass_instance_cpu      = try(var.services["karpenter"]["karpenetr_default_nodeclass_instance_cpu"], ["2", "4"])
   # Karpenetr default Nodepool
-  deploy_karpenetr_default_nodepool        = try(var.services["karpenter"]["deploy_karpeneter_default_nodepool"], true)
+  deploy_karpenter_default_nodepool        = try(var.services["karpenter"]["deploy_karpenter_default_nodepool"], true)
   karpenetr_default_nodepool_cpu_limit     = try(var.services["karpenter"]["karpenetr_default_nodepool_cpu_limit"], "100")
   karpenetr_default_nodepool_capacity_type = try(var.services["karpenter"]["karpenetr_default_nodepool_capacity_type"], ["on-demand"])
   # AWS IAM IRSA
@@ -201,7 +201,7 @@ module "karpenter" {
 
 resource "kubectl_manifest" "karpenter_default_node_class" {
 
-  count = var.services["karpenter"]["enabled"] && local.deploy_karpenetr_default_nodeclass ? 1 : 0
+  count = var.services["karpenter"]["enabled"] && local.deploy_karpenter_default_nodeclass ? 1 : 0
 
   yaml_body = try(var.services["karpenter"]["default_nodeclass_yaml"], local.default_nodeclass_yaml)
 
@@ -212,7 +212,7 @@ resource "kubectl_manifest" "karpenter_default_node_class" {
 
 resource "kubectl_manifest" "karpenter_default_node_pool" {
 
-  count = var.services["karpenter"]["enabled"] && local.deploy_karpenetr_default_nodepool ? 1 : 0
+  count = var.services["karpenter"]["enabled"] && local.deploy_karpenter_default_nodepool ? 1 : 0
 
   yaml_body = try(var.services["karpenter"]["default_nodepool_yaml"], local.default_nodepool_yaml)
 
