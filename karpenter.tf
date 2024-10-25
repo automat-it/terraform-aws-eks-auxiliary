@@ -8,16 +8,16 @@ locals {
   karpenter_service_account_name = try(var.services["karpenter"]["service_account_name"], "karpenter")
   # Karpenetr default NodeClass
   deploy_karpenter_default_nodeclass            = try(var.services["karpenter"]["deploy_karpenter_default_nodeclass"], true)
-  karpenetr_default_nodeclass_ami_family        = try(var.services["karpenter"]["karpenetr_default_nodeclass_ami_family"], "AL2023")
-  karpenetr_default_nodeclass_ami_alias         = try(var.services["karpenter"]["karpenetr_default_nodeclass_ami_alias"], "al2023@latest")
-  karpenetr_default_nodeclass_name              = try(var.services["karpenter"]["karpenetr_default_nodeclass_name"], "default")
-  karpenetr_default_nodeclass_volume_size       = try(var.services["karpenter"]["karpenetr_default_nodeclass_volume_size"], "20Gi")
-  karpenetr_default_nodeclass_instance_category = try(var.services["karpenter"]["karpenetr_default_nodeclass_instance_category"], ["t", "c", "m"])
-  karpenetr_default_nodeclass_instance_cpu      = try(var.services["karpenter"]["karpenetr_default_nodeclass_instance_cpu"], ["2", "4"])
+  karpenter_default_nodeclass_ami_family        = try(var.services["karpenter"]["karpenter_default_nodeclass_ami_family"], "AL2023")
+  karpenter_default_nodeclass_ami_alias         = try(var.services["karpenter"]["karpenter_default_nodeclass_ami_alias"], "al2023@latest")
+  karpenter_default_nodeclass_name              = try(var.services["karpenter"]["karpenter_default_nodeclass_name"], "default")
+  karpenter_default_nodeclass_volume_size       = try(var.services["karpenter"]["karpenter_default_nodeclass_volume_size"], "20Gi")
+  karpenter_default_nodeclass_instance_category = try(var.services["karpenter"]["karpenter_default_nodeclass_instance_category"], ["t", "c", "m"])
+  karpenter_default_nodeclass_instance_cpu      = try(var.services["karpenter"]["karpenter_default_nodeclass_instance_cpu"], ["2", "4"])
   # Karpenetr default Nodepool
   deploy_karpenter_default_nodepool        = try(var.services["karpenter"]["deploy_karpenter_default_nodepool"], true)
-  karpenetr_default_nodepool_cpu_limit     = try(var.services["karpenter"]["karpenetr_default_nodepool_cpu_limit"], "100")
-  karpenetr_default_nodepool_capacity_type = try(var.services["karpenter"]["karpenetr_default_nodepool_capacity_type"], ["on-demand"])
+  karpenter_default_nodepool_cpu_limit     = try(var.services["karpenter"]["karpenter_default_nodepool_cpu_limit"], "100")
+  karpenter_default_nodepool_capacity_type = try(var.services["karpenter"]["karpenter_default_nodepool_capacity_type"], ["on-demand"])
   # AWS IAM IRSA
   karpenter_irsa_iam_role_name          = try(var.services["karpenter"]["irsa_iam_role_name"], "")
   karpenter_irsa_iam_role_name_prefix   = try(var.services["karpenter"]["irsa_iam_role_name_prefix"], "KarpenterController")
@@ -61,13 +61,13 @@ locals {
     apiVersion: karpenter.k8s.aws/v1
     kind: EC2NodeClass
     metadata:
-      name: ${local.karpenetr_default_nodeclass_name}
+      name: ${local.karpenter_default_nodeclass_name}
     spec:
-    %{~if local.karpenetr_default_nodeclass_ami_family != ""~}
-      amiFamily: ${local.karpenetr_default_nodeclass_ami_family}
+    %{~if local.karpenter_default_nodeclass_ami_family != ""~}
+      amiFamily: ${local.karpenter_default_nodeclass_ami_family}
     %{~endif~}
       amiSelectorTerms:
-        - alias: ${local.karpenetr_default_nodeclass_ami_alias}
+        - alias: ${local.karpenter_default_nodeclass_ami_alias}
       %{~if try(module.karpenter[0].node_iam_role_name, "") != ""~}
       role: ${module.karpenter[0].node_iam_role_name}
       %{~endif~}
@@ -85,7 +85,7 @@ locals {
       blockDeviceMappings:
         - deviceName: /dev/xvda
           ebs:
-            volumeSize: ${local.karpenetr_default_nodeclass_volume_size}
+            volumeSize: ${local.karpenter_default_nodeclass_volume_size}
             volumeType: gp3
             encrypted: true
             deleteOnTermination: true
@@ -113,10 +113,10 @@ locals {
               values: ["amd64"]
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
-              values: ${jsonencode(local.karpenetr_default_nodeclass_instance_category)}
+              values: ${jsonencode(local.karpenter_default_nodeclass_instance_category)}
             - key: "karpenter.k8s.aws/instance-cpu"
               operator: In
-              values: ${jsonencode(local.karpenetr_default_nodeclass_instance_cpu)}
+              values: ${jsonencode(local.karpenter_default_nodeclass_instance_cpu)}
             - key: "karpenter.k8s.aws/instance-hypervisor"
               operator: In
               values: ["nitro"]
@@ -125,9 +125,9 @@ locals {
               values: ["2"]
             - key: "karpenter.sh/capacity-type"
               operator: In
-              values:  ${jsonencode(local.karpenetr_default_nodepool_capacity_type)}
+              values:  ${jsonencode(local.karpenter_default_nodepool_capacity_type)}
       limits:
-        cpu: ${local.karpenetr_default_nodepool_cpu_limit}
+        cpu: ${local.karpenter_default_nodepool_cpu_limit}
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
