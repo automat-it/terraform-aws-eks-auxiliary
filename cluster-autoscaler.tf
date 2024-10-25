@@ -1,11 +1,12 @@
 # Cluster Autoscaler
 locals {
+  has_autoscaler = try(var.services.cluster-autoscaler.enabled, false)
   # Helm versions
-  cluster_autoscaler_helm_version = try(var.services["cluster-autoscaler"]["helm_version"], "9.37.0")
+  cluster_autoscaler_helm_version = try(var.services.cluster-autoscaler.helm_version, "9.37.0")
   # K8s namespace to deploy
-  cluster_autoscaler_namespace = try(var.services["cluster-autoscaler"]["namespace"], kubernetes_namespace_v1.general.id)
+  cluster_autoscaler_namespace = try(var.services.cluster-autoscaler.namespace, kubernetes_namespace_v1.general.id)
   # K8S Service Account Name
-  cluster_autoscaler_service_account_name = try(var.services["cluster-autoscaler"]["service_account_name"], "autoscaler-sa")
+  cluster_autoscaler_service_account_name = try(var.services.cluster-autoscaler.service_account_name, "autoscaler-sa")
   # Helm ovveride values
   cluster_autoscaler_helm_values = <<EOF
     autoDiscovery:
@@ -13,13 +14,13 @@ locals {
     awsRegion: ${var.aws_region}
     rbac:
       create : true
-    %{~if try(var.services["cluster-autoscaler"]["nodepool"], var.cluster_nodepool_name) != ""~}
+    %{~if try(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name) != ""~}
     nodeSelector:
-      pool: ${try(var.services["cluster-autoscaler"]["nodepool"], var.cluster_nodepool_name)}
+      pool: ${try(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name)}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${try(var.services["cluster-autoscaler"]["nodepool"], var.cluster_nodepool_name)}
+        value: ${try(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name)}
         effect: NoSchedule
     %{~endif~}
     rbac:
@@ -27,7 +28,7 @@ locals {
         create: true
         name: ${local.cluster_autoscaler_service_account_name}
         annotations:
-          eks.amazonaws.com/role-arn: ${try(var.services["cluster-autoscaler"]["irsa_role_arn"], "arn:aws:iam::${data.aws_caller_identity.current.id}:role/${local.lower_cluster_name}-cluster-autoscaler-iam-role")}
+          eks.amazonaws.com/role-arn: ${try(var.services.cluster-autoscaler.irsa_role_arn, "arn:aws:iam::${data.aws_caller_identity.current.id}:role/${local.lower_cluster_name}-cluster-autoscaler-iam-role")}
 
     EOF
   # AWS IAM IRSA
@@ -74,9 +75,12 @@ locals {
     EOF
 }
 
+################################################################################
+# Cluster Autoscaler helm
+################################################################################
 module "cluster-autoscaler" {
   source               = "./modules/helm-chart"
-  count                = try(var.services["cluster-autoscaler"]["enabled"], var.has_autoscaler) ? 1 : 0
+  count                = local.has_autoscaler ? 1 : 0
   name                 = "cluster-autoscaler"
   repository           = "https://kubernetes.github.io/autoscaler"
   chart                = "cluster-autoscaler"
@@ -89,7 +93,7 @@ module "cluster-autoscaler" {
 
   values = [
     local.cluster_autoscaler_helm_values,
-    try(var.services["cluster-autoscaler"]["additional_helm_values"], "")
+    try(var.services.cluster-autoscaler.additional_helm_values, "")
   ]
 
   depends_on = [kubernetes_namespace_v1.general]

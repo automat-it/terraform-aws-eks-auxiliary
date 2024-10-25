@@ -1,6 +1,6 @@
 ### ArgoCD helm
 locals {
-  argocd_enabled = try(var.services.argocd.enabled, var.has_argocd)
+  argocd_enabled = try(var.services.argocd.enabled, false)
   argocd_url     = try(var.services.argocd.argocd_url, "argocd.${var.domain_zone}")
   # Helm versions
   argocd_helm_version = try(var.services.argocd.helm_version, "7.3.11")
@@ -9,7 +9,7 @@ locals {
   # K8S Service Account
   argocd_service_account_name = try(var.services.argocd.service_account_name, "argocd-sa")
   argocd_irsa_iam_role_name   = try(var.services.argocd.irsa_iam_role_name, "${local.lower_cluster_name}-argo-cd")
-  argocd_ingress              = try(var.services.argocd.custom_ingress, var.argocd_custom_ingress) != "" ? try(var.services.argocd.custom_ingress, var.argocd_custom_ingress) : local.argocd_default_ingress
+  argocd_ingress              = try(var.services.argocd.custom_ingress, local.argocd_default_ingress)
   argocd_default_ingress      = <<EOF
   server:
     ingress:
@@ -280,6 +280,9 @@ locals {
   EOF
 }
 
+################################################################################
+# Argocd helm
+################################################################################
 module "argocd" {
   source               = "./modules/helm-chart"
   count                = local.argocd_enabled ? 1 : 0
