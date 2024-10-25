@@ -13,7 +13,7 @@ Reference values could be found at [examples directory](examples).
 
 | Name | Version |
 |------|---------|
-| terraform | >= 1.8.4 |
+| terraform | ~> 1.0 |
 | aws | >= 5.0 |
 | helm | >= 2.9.0 |
 | kubectl | >= 2.0 |
@@ -24,7 +24,6 @@ Reference values could be found at [examples directory](examples).
 | Name | Source | Version |
 |------|--------|---------|
 | argocd | ./modules/helm-chart | n/a |
-| argocd-backup | ./modules/argocd-s3-backup | n/a |
 | aws-alb-ingress-controller | ./modules/helm-chart | n/a |
 | cluster-autoscaler | ./modules/helm-chart | n/a |
 | external-dns | ./modules/helm-chart | n/a |
@@ -33,7 +32,6 @@ Reference values could be found at [examples directory](examples).
 | karpenter-helm | ./modules/helm-chart | n/a |
 | keda | ./modules/helm-chart | n/a |
 | metrics-server | ./modules/helm-chart | n/a |
-| slack-notifications | ./modules/argocd-slack-notification | n/a |
 
 ## Resources
 
@@ -56,12 +54,8 @@ Reference values could be found at [examples directory](examples).
 | cluster_name | The name of the Amazon EKS cluster. | `string` | n/a | yes |
 | vpc_id | The ID of the Virtual Private Cloud (VPC) where resources will be deployed. | `string` | n/a | yes |
 | argocd_custom_ingress | Custom ingress settings for ArgoCD. | `string` | `""` | no |
-| backup_cron | Backup job schedule in crontab format. The default is daily at 1 AM. | `string` | `"0 1 * * *"` | no |
 | cluster_nodepool_name | The node pool name in the Amazon EKS cluster where all controllers will be installed. | `string` | `"system"` | no |
-| destination_s3_name | The name of the destination S3 bucket for backups. | `string` | `""` | no |
-| destination_s3_name_prefix | The prefix for the S3 bucket destination for backups. | `string` | `"argocd"` | no |
 | domain_zone | The domain zone associated with the Route 53 hosted zone. | `string` | `""` | no |
-| enable_backup | Enable backup for ArgoCD. | `bool` | `false` | no |
 | has_argocd | Whether ArgoCD will be installed. | `bool` | `false` | no |
 | has_autoscaler | Whether the cluster autoscaler will be installed. | `bool` | `false` | no |
 | has_aws_lb_controller | Whether the AWS Load Balancer Controller will be installed. | `bool` | `false` | no |
