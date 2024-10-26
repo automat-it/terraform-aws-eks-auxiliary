@@ -10,7 +10,7 @@ locals {
   # Helm ovveride values
   cluster_autoscaler_helm_values = <<EOF
     autoDiscovery:
-      clusterName: ${local.lower_cluster_name}
+      clusterName: ${var.cluster_name}
     awsRegion: ${var.aws_region}
     rbac:
       create : true
