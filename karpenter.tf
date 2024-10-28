@@ -110,7 +110,7 @@ locals {
           requirements:
             - key: kubernetes.io/arch
               operator: In
-              values: .amd64
+              values: ["amd64"]
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
               values: ${jsonencode(local.karpenter_default_nodeclass_instance_category)}
@@ -119,10 +119,10 @@ locals {
               values: ${jsonencode(local.karpenter_default_nodeclass_instance_cpu)}
             - key: "karpenter.k8s.aws/instance-hypervisor"
               operator: In
-              values: .nitro
+              values: ["nitro"]
             - key: "karpenter.k8s.aws/instance-generation"
               operator: Gt
-              values: .2
+              values: ["2"]
             - key: "karpenter.sh/capacity-type"
               operator: In
               values:  ${jsonencode(local.karpenter_default_nodepool_capacity_type)}
