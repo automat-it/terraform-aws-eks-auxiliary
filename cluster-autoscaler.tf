@@ -28,11 +28,11 @@ locals {
         create: true
         name: ${local.cluster_autoscaler_service_account_name}
         annotations:
-          eks.amazonaws.com/role-arn: ${try(var.services.cluster-autoscaler.irsa_role_arn, "arn:aws:iam::${data.aws_caller_identity.current.id}:role/${local.lower_cluster_name}-cluster-autoscaler-iam-role")}
+          eks.amazonaws.com/role-arn: ${try(var.services.cluster-autoscaler.irsa_role_arn, "arn:aws:iam::${data.aws_caller_identity.current.id}:role/${var.cluster_name}-cluster-autoscaler-iam-role")}
 
     EOF
   # AWS IAM IRSA
-  cluster_autoscaler_irsa_iam_role_name = "${local.lower_cluster_name}-cluster-autoscaler-iam-role"
+  cluster_autoscaler_irsa_iam_role_name = "${var.cluster_name}-cluster-autoscaler-iam-role"
   cluster_autoscaler_irsa_policy_json   = <<-EOF
     {
       "Version": "2012-10-17",
@@ -66,7 +66,7 @@ locals {
           "Condition": {
             "StringEquals": {
               "aws:ResourceTag/k8s.io/cluster-autoscaler/enabled": "true",
-              "aws:ResourceTag/kubernetes.io/cluster/${local.lower_cluster_name}": "owned"
+              "aws:ResourceTag/kubernetes.io/cluster/${var.cluster_name}": "owned"
             }
           }
         }
