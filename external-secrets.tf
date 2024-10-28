@@ -8,7 +8,7 @@ locals {
   # K8S Service Account Name
   external_secrets_service_account_name = try(var.services.external-secrets.service_account_name, "external-secrets-sa")
   # AWS IAM IRSA
-  external_secrets_irsa_iam_role_name = "${local.lower_cluster_name}-external-secrets-iam-role"
+  external_secrets_irsa_iam_role_name = "${var.cluster_name}-external-secrets-iam-role"
   # Helm ovveride values
   external_secrets_helm_values = <<EOF
     installCRDs: true

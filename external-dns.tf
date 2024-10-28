@@ -33,7 +33,7 @@ locals {
     EOF
 
   # AWS IAM IRSA
-  external_dns_irsa_iam_role_name = "${local.lower_cluster_name}-external-dns-iam-role"
+  external_dns_irsa_iam_role_name = "${var.cluster_name}-external-dns-iam-role"
   external_dns_irsa_policy_json   = <<-POLICY
     {
       "Version": "2012-10-17",
