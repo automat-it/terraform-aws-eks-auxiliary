@@ -1,7 +1,7 @@
 # Karpenter
 locals {
   # Helm versions. Please change the public submodule version in the apropriet line 'module "karpenter" {'
-  karpenter_helm_version = try(var.services.karpenter.helm_version, "1.0.0")
+  karpenter_helm_version = try(var.services.karpenter.helm_version, "1.0.6")
   # K8s namespace to deploy
   karpenter_namespace = try(var.services.karpenter.namespace, kubernetes_namespace_v1.general.id)
   # K8S Service Account Name

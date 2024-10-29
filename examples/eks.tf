@@ -122,6 +122,11 @@ module "eks" {
       desired_size = var.eks_system_desired_size
 
       instance_types = var.eks_system_instance_types
+
+      iam_role_additional_policies = {
+        policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      }
+
       labels = {
         pool = "system"
       }
@@ -145,6 +150,11 @@ module "eks" {
 
       instance_types = var.eks_worker_instance_types
       capacity_type  = var.eks_worker_capacity_type
+
+      iam_role_additional_policies = {
+        policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      }
+      
       labels = {
         pool = "worker"
       }
