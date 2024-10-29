@@ -1,12 +1,5 @@
 # External DNS controller
 locals {
-  has_external_dns = try(var.services.external-dns.enabled, false)
-  # Helm versions
-  external_dns_helm_version = try(var.services.external-dns.helm_version, "1.14.5")
-  # K8s namespace to deploy
-  external_dns_namespace = try(var.services.external-dns.namespace, kubernetes_namespace_v1.general.id)
-  # K8S Service Account Name
-  external_dns_service_account_name = try(var.services.external-dns.service_account_name, "external-dns-sa")
   # Helm ovveride values
   external_dns_helm_values = <<EOF
     logLevel: debug
@@ -27,13 +20,14 @@ locals {
     policy: upsert-only
     serviceAccount:
       create: true
-      name: ${local.external_dns_service_account_name}
+      name: ${var.services.external-dns.service_account_name}
       annotations:
-        eks.amazonaws.com/role-arn: ${try(var.services.external-dns.irsa_role_arn, try(module.external-dns[0].irsa_role_arn, ""))}
+        %{~if coalesce(var.services.external-dns.irsa_role_arn, try(module.external-dns[0].irsa_role_arn, "no_annotation")) != "no_annotation" ~}
+        eks.amazonaws.com/role-arn: ${coalesce(var.services.external-dns.irsa_role_arn, module.external-dns[0].irsa_role_arn)}
+        %{~endif~}
     EOF
 
   # AWS IAM IRSA
-  external_dns_irsa_iam_role_name = "${var.cluster_name}-external-dns-iam-role"
   external_dns_irsa_policy_json   = <<-POLICY
     {
       "Version": "2012-10-17",
@@ -67,19 +61,19 @@ locals {
 ################################################################################
 module "external-dns" {
   source               = "./modules/helm-chart"
-  count                = local.has_external_dns ? 1 : 0
+  count                = var.services.external-dns.enabled ? 1 : 0
   name                 = "external-dns"
   repository           = "https://kubernetes-sigs.github.io/external-dns"
   chart                = "external-dns"
-  namespace            = local.external_dns_namespace
-  helm_version         = local.external_dns_helm_version
-  service_account_name = local.external_dns_service_account_name
-  irsa_iam_role_name   = local.external_dns_irsa_iam_role_name
-  irsa_policy_json     = local.external_dns_irsa_policy_json
+  namespace            = var.services.external-dns.namespace
+  helm_version         = var.services.external-dns.helm_version
+  service_account_name = var.services.external-dns.service_account_name
+  irsa_iam_role_name   = coalesce(var.services.external-dns.irsa_role_name, "${var.cluster_name}-external-dns-iam-role")
+  irsa_policy_json     = coalesce(var.services.external-dns.irsa_iam_policy_json, local.external_dns_irsa_policy_json)
   iam_openid_provider  = var.iam_openid_provider
   values = [
     local.external_dns_helm_values,
-    try(var.services.external-dns.additional_helm_values, "")
+    var.services.external-dns.additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]
