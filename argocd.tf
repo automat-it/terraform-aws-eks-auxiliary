@@ -1,15 +1,5 @@
 ### ArgoCD helm
 locals {
-  argocd_enabled = try(var.services.argocd.enabled, false)
-  argocd_url     = try(var.services.argocd.argocd_url, "argocd.${var.domain_zone}")
-  # Helm versions
-  argocd_helm_version = try(var.services.argocd.helm_version, "7.3.11")
-  # K8s namespace to deploy
-  argocd_namespace = try(var.services.argocd.namespace, try(kubernetes_namespace_v1.argocd[0].id, "argocd"))
-  # K8S Service Account
-  argocd_service_account_name = try(var.services.argocd.service_account_name, "argocd-sa")
-  argocd_irsa_iam_role_name   = try(var.services.argocd.irsa_iam_role_name, "${var.cluster_name}-argo-cd")
-  argocd_ingress              = try(var.services.argocd.custom_ingress, local.argocd_default_ingress)
   argocd_default_ingress      = <<EOF
   server:
     ingress:
@@ -20,7 +10,7 @@ locals {
         serviceType: ClusterIP
         backendProtocolVersion: GRPC
       annotations:
-        alb.ingress.kubernetes.io/load-balancer-name: ${var.cluster_name}-argocd-alb
+        alb.ingress.kubernetes.io/load-balancer-name: ${substr("${var.cluster_name}-argo-lb", 0, 32)}
         alb.ingress.kubernetes.io/group.name: internal
         alb.ingress.kubernetes.io/ip-address-type: ipv4
         alb.ingress.kubernetes.io/scheme: internal
@@ -36,34 +26,34 @@ locals {
   EOF
   argocd_helm_values          = <<EOF
   global:
-    domain: ${local.argocd_url}
-    %{~if try(var.services.argocd.nodepool, var.cluster_nodepool_name) != ""~}
+    domain: ${coalesce(var.services.argocd.argocd_url, "argocd.${var.domain_zone}")}
+    %{~if coalesce(var.services.argocd.nodepool, "no_pool") != "no_pool" ~}
     nodeSelector:
-      pool: ${try(var.services.argocd.nodepool, var.cluster_nodepool_name)}
+      pool: ${var.services.argocd.nodepool}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${try(var.services.argocd.nodepool, var.cluster_nodepool_name)}
+        value: ${var.services.argocd.nodepool}
         effect: NoSchedule
     %{~endif~}
   server:
     serviceAccount:
-      name: ${local.argocd_service_account_name}
-      %{~if try(var.services.argocd.irsa_role_arn, try(module.argocd[0].irsa_role_arn, "")) != ""~}
+      name: ${var.services.argocd.service_account_name}
+      %{~if coalesce(var.services.argocd.irsa_role_arn, try(module.argocd[0].irsa_role_arn, "no_iam_role")) != "no_iam_role" ~}
       annotations:
-        eks.amazonaws.com/role-arn: ${try(var.services.argocd.irsa_role_arn, module.argocd[0].irsa_role_arn)}
+        eks.amazonaws.com/role-arn: ${coalesce(var.services.argocd.irsa_role_arn, module.argocd[0].irsa_role_arn)}
       %{~endif~}
   controller:
     serviceAccount:
       create: false
-      name: ${local.argocd_service_account_name}
+      name: ${var.services.argocd.service_account_name}
   configs:
     cm:
       exec.enabled: "true"
       timeout.reconciliation: 60s
   EOF
   argocd_notifications        = <<EOF
-  %{~if try(var.services.argocd.notification_slack_token_secret, var.notification_slack_token_secret) != ""~}
+  %{~if coalesce(var.services.argocd.notification_slack_token_secret, coalesce(var.notification_slack_token_secret, "no_slack_notification")) != "no_slack_notification" ~}
   notifications:
     enabled: true
     secret:
@@ -254,7 +244,7 @@ locals {
             auth:
               jwt:
                 serviceAccountRef:
-                  name: ${local.argocd_service_account_name}
+                  name: ${var.services.argocd.service_account_name}
             region: ${var.aws_region}
             service: SecretsManager
     - apiVersion: external-secrets.io/v1beta1
@@ -285,21 +275,21 @@ locals {
 ################################################################################
 module "argocd" {
   source               = "./modules/helm-chart"
-  count                = local.argocd_enabled ? 1 : 0
+  count                = var.services.argocd.enabled ? 1 : 0
   name                 = "argocd"
   repository           = "https://argoproj.github.io/argo-helm"
   chart                = "argo-cd"
-  namespace            = local.argocd_namespace
-  helm_version         = local.argocd_helm_version
-  service_account_name = local.argocd_service_account_name
-  irsa_iam_role_name   = local.argocd_irsa_iam_role_name
+  namespace            = var.services.argocd.namespace
+  helm_version         = var.services.argocd.helm_version
+  service_account_name = var.services.argocd.service_account_name
+  irsa_iam_role_name   = var.services.argocd.irsa_iam_role_name
   iam_openid_provider  = var.iam_openid_provider
 
   values = [
     local.argocd_helm_values,
-    local.argocd_ingress,
-    try(local.argocd_notifications, ""),
-    try(var.services.argocd.additional_helm_values, ""),
+    coalesce(var.services.argocd.custom_ingress, "no_values") != "no_values" ? var.services.argocd.custom_ingress : local.argocd_default_ingress,
+    coalesce(var.services.argocd.custom_notifications, "no_values") != "no_values" ? var.services.argocd.custom_notifications : local.argocd_notifications,
+    var.services.argocd.additional_helm_values
   ]
 
   depends_on = [
