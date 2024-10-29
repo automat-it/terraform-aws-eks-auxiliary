@@ -70,12 +70,16 @@ variable "notification_slack_token_secret" {
 variable "services" {
   type = object({
     argocd = optional(object({
-      enabled                         = bool
-      helm_version                    = optional(string, "7.3.11")
-      namespace                       = optional(string, "argocd")
-      service_account_name            = optional(string, "argocd-sa")
-      nodepool                        = optional(string, "system")
-      additional_helm_values          = optional(string, "")
+      enabled                  = bool
+      helm_version             = optional(string, "7.3.11")
+      namespace                = optional(string, "argocd")
+      service_account_name     = optional(string, "argocd-sa")
+      nodepool                 = optional(string, "system")
+      additional_helm_values   = optional(string, "")
+      load_balancer_name       = optional(string)
+      load_balancer_group_name = optional(string, "internal")
+      load_balancer_scheme     = optional(string, "internal")
+
       notification_slack_token_secret = optional(string)
       argocd_url                      = optional(string)
       irsa_role_arn                   = optional(string)

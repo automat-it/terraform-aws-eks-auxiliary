@@ -10,10 +10,10 @@ locals {
         serviceType: ClusterIP
         backendProtocolVersion: GRPC
       annotations:
-        alb.ingress.kubernetes.io/load-balancer-name: ${substr("${var.cluster_name}-argo-lb", 0, 32)}
-        alb.ingress.kubernetes.io/group.name: internal
+        alb.ingress.kubernetes.io/load-balancer-name: ${coalesce(var.services.argocd.load_balancer_name, lower(substr("${var.cluster_name}-argo-lb", 0, 32)))}
+        alb.ingress.kubernetes.io/group.name: ${var.services.argocd.load_balancer_group_name}
         alb.ingress.kubernetes.io/ip-address-type: ipv4
-        alb.ingress.kubernetes.io/scheme: internal
+        alb.ingress.kubernetes.io/scheme: ${var.services.argocd.load_balancer_scheme}
         alb.ingress.kubernetes.io/target-type: ip
         alb.ingress.kubernetes.io/healthcheck-port: traffic-port
         alb.ingress.kubernetes.io/backend-protocol: HTTP
