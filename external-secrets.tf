@@ -1,14 +1,5 @@
 # External Secrets
 locals {
-  has_external_secrets = try(var.services.external-secrets.enabled, false)
-  # Helm versions
-  external_secrets_helm_version = try(var.services.external-secrets.helm_version, "0.9.20")
-  # K8s namespace to deploy
-  external_secrets_namespace = try(var.services.external-secrets.namespace, kubernetes_namespace_v1.general.id)
-  # K8S Service Account Name
-  external_secrets_service_account_name = try(var.services.external-secrets.service_account_name, "external-secrets-sa")
-  # AWS IAM IRSA
-  external_secrets_irsa_iam_role_name = "${var.cluster_name}-external-secrets-iam-role"
   # Helm ovveride values
   external_secrets_helm_values = <<EOF
     installCRDs: true
