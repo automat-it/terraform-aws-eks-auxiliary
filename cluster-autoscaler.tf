@@ -7,7 +7,7 @@ locals {
     awsRegion: ${var.aws_region}
     rbac:
       create : true
-    %{~if coalesce(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name) != "" ~}
+    %{~if coalesce(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name) != ""~}
     nodeSelector:
       pool: ${coalesce(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name)}
     tolerations:
@@ -26,7 +26,7 @@ locals {
     EOF
 
   # AWS IAM IRSA
-  cluster_autoscaler_irsa_policy_json   = <<-EOF
+  cluster_autoscaler_irsa_policy_json = <<-EOF
     {
       "Version": "2012-10-17",
       "Statement": [

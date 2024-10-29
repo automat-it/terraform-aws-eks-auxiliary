@@ -2,7 +2,7 @@
 locals {
   # Helm ovveride values
   metrics_server_helm_values = <<EOF
-    %{~if coalesce(var.services.metrics-server.nodepool, "no_pool") != "no_pool" ~}
+    %{~if coalesce(var.services.metrics-server.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:
       pool: ${var.services.metrics-server.nodepool}
     tolerations:

@@ -1,6 +1,10 @@
 resource "helm_release" "this" {
-  name              = var.name
-  repository        = var.repository
+  name       = var.name
+  repository = var.repository
+
+  repository_username = var.repository_username
+  repository_password = var.repository_password
+
   chart             = var.chart
   namespace         = var.namespace
   create_namespace  = true

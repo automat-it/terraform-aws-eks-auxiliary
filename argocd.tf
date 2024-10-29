@@ -1,6 +1,6 @@
 ### ArgoCD helm
 locals {
-  argocd_default_ingress      = <<EOF
+  argocd_default_ingress = <<EOF
   server:
     ingress:
       enabled: true
@@ -24,10 +24,10 @@ locals {
     params:
       server.insecure: true
   EOF
-  argocd_helm_values          = <<EOF
+  argocd_helm_values     = <<EOF
   global:
     domain: ${coalesce(var.services.argocd.argocd_url, "argocd.${var.domain_zone}")}
-    %{~if coalesce(var.services.argocd.nodepool, "no_pool") != "no_pool" ~}
+    %{~if coalesce(var.services.argocd.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:
       pool: ${var.services.argocd.nodepool}
     tolerations:
@@ -39,7 +39,7 @@ locals {
   server:
     serviceAccount:
       name: ${var.services.argocd.service_account_name}
-      %{~if coalesce(var.services.argocd.irsa_role_arn, try(module.argocd[0].irsa_role_arn, "no_iam_role")) != "no_iam_role" ~}
+      %{~if coalesce(var.services.argocd.irsa_role_arn, try(module.argocd[0].irsa_role_arn, "no_iam_role")) != "no_iam_role"~}
       annotations:
         eks.amazonaws.com/role-arn: ${coalesce(var.services.argocd.irsa_role_arn, module.argocd[0].irsa_role_arn)}
       %{~endif~}
@@ -52,8 +52,8 @@ locals {
       exec.enabled: "true"
       timeout.reconciliation: 60s
   EOF
-  argocd_notifications        = <<EOF
-  %{~if coalesce(var.services.argocd.notification_slack_token_secret, coalesce(var.notification_slack_token_secret, "no_slack_notification")) != "no_slack_notification" ~}
+  argocd_notifications   = <<EOF
+  %{~if coalesce(var.services.argocd.notification_slack_token_secret, coalesce(var.notification_slack_token_secret, "no_slack_notification")) != "no_slack_notification"~}
   notifications:
     enabled: true
     secret:

@@ -2,7 +2,7 @@
 locals {
   # Helm ovveride values
   keda_helm_values = <<EOF
-    %{~if coalesce(var.services.keda.nodepool, "no_pool") != "no_pool" ~}
+    %{~if coalesce(var.services.keda.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:
       pool: ${var.services.keda.nodepool}
     tolerations:
@@ -18,21 +18,21 @@ locals {
         create: true
         name: ${var.services.keda.service_account_name}
         annotations:
-          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation" }
+          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation"}
           eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, ""))}
           %{~endif~}
       metricServer:
         create: false
         name: ${var.services.keda.service_account_name}
         annotations:
-          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation" }
+          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation"}
           eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, ""))}
           %{~endif~}
       webhooks:
         create: false
         name: ${var.services.keda.service_account_name}
         annotations:
-          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation" }
+          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation"}
           eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, ""))}
           %{~endif~}
     prometheus:
