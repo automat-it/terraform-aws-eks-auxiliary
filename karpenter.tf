@@ -16,7 +16,7 @@ locals {
       %{~if try(module.karpenter[0].queue_name, "") != ""~}
       interruptionQueue: ${module.karpenter[0].queue_name}
       %{~endif~}
-    %{~if coalesce(var.services.karpenter.nodepool, "no_pool") != "no_pool" ~}
+    %{~if coalesce(var.services.karpenter.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:
       pool: ${var.services.karpenter.nodepool}
     tolerations:
@@ -36,7 +36,7 @@ locals {
     metadata:
       name: ${var.services.karpenter.default_nodeclass_name}
     spec:
-    %{~if coalesce(var.services.karpenter.default_nodeclass_ami_family, "no_nodeclass") != "no_nodeclass" ~}
+    %{~if coalesce(var.services.karpenter.default_nodeclass_ami_family, "no_nodeclass") != "no_nodeclass"~}
       amiFamily: ${var.services.karpenter.default_nodeclass_ami_family}
     %{~endif~}
       amiSelectorTerms:
@@ -48,7 +48,7 @@ locals {
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
       securityGroupSelectorTerms:
-        %{~if coalesce(var.services.karpenter.node_security_group_id, "no_sg") != "no_sg" ~}
+        %{~if coalesce(var.services.karpenter.node_security_group_id, "no_sg") != "no_sg"~}
         - id: ${var.services.karpenter.node_security_group_id}
         %{~endif~}
         - tags:
@@ -110,6 +110,7 @@ locals {
 ################################################################################
 # Karpenter helm
 ################################################################################
+data "aws_ecrpublic_authorization_token" "token" {}
 
 module "karpenter-helm" {
   source       = "./modules/helm-chart"
@@ -119,6 +120,10 @@ module "karpenter-helm" {
   chart        = "karpenter"
   namespace    = var.services.karpenter.namespace
   helm_version = var.services.karpenter.helm_version
+
+  # AWS ECR credentials
+  repository_username = data.aws_ecrpublic_authorization_token.token.user_name
+  repository_password = data.aws_ecrpublic_authorization_token.token.password
 
   values = [
     local.karpenter_helm_values,
@@ -134,7 +139,7 @@ module "karpenter-helm" {
 
 module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version = "~> 20.0"
+  version = "20.26.1"
 
   count = var.services.karpenter.enabled ? 1 : 0
 
@@ -146,26 +151,25 @@ module "karpenter" {
   create_pod_identity_association = true
 
   # IAM
-  iam_role_name                 = coalesce(var.services.karpenter.irsa_iam_role_name, var.services.karpenter.irsa_iam_role_name_prefix)
-  iam_role_use_name_prefix      = coalesce(var.services.karpenter.irsa_iam_role_name, "use_prefix") == "use_prefix"
-  iam_policy_name               = coalesce(var.services.karpenter.irsa_iam_policy_name, var.services.karpenter.irsa_iam_policy_name_prefix)
-  iam_policy_use_name_prefix    = coalesce(var.services.karpenter.irsa_iam_policy_name, "use_prefix") == "use_prefix"
-  node_iam_role_name            = coalesce(var.services.karpenter.irsa_iam_role_name, var.services.karpenter.node_iam_role_name_prefix, "Karpenter-${var.cluster_name}")
-  node_iam_role_use_name_prefix = coalesce(var.services.karpenter.node_iam_role_name, "use_prefix") == "use_prefix"
+  iam_role_name            = coalesce(var.services.karpenter.irsa_iam_role_name, "${var.cluster_name}-Karpenter-Role")
+  iam_role_use_name_prefix = false
+  iam_role_tags            = var.tags
+
+  node_iam_role_name            = coalesce(var.services.karpenter.node_iam_role_name, "${var.cluster_name}-Karpenter-Node-Role")
+  node_iam_role_use_name_prefix = false
+  # Used to attach additional IAM policies to the Karpenter node IAM role
+  node_iam_role_additional_policies = {
+    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+  }
+  node_iam_role_tags = var.tags
 
   service_account = var.services.karpenter.service_account_name
 
-  # EKS Fargate currently does not support Pod Identity
   enable_irsa                     = true
   irsa_oidc_provider_arn          = var.iam_openid_provider.oidc_provider_arn
   irsa_namespace_service_accounts = ["${var.services.karpenter.namespace}:${var.services.karpenter.service_account_name}"]
 
   create_access_entry = true
-
-  # Used to attach additional IAM policies to the Karpenter node IAM role
-  node_iam_role_additional_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
 
   tags = var.tags
 }

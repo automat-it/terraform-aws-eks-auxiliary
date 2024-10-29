@@ -3,7 +3,7 @@ locals {
   aws_lb_controller_helm_values = <<EOF
     enableServiceMutatorWebhook: false
     clusterName: ${var.cluster_name}
-    %{~if coalesce(var.services.aws-alb-ingress-controller.nodepool, "no_pool") != "no_pool" ~}
+    %{~if coalesce(var.services.aws-alb-ingress-controller.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:
       pool: ${var.services.aws-alb-ingress-controller.nodepool}
     tolerations:
@@ -15,7 +15,7 @@ locals {
     serviceAccount:
       create: true
       name: ${var.services.aws-alb-ingress-controller.service_account_name}
-      %{~if coalesce(var.services.aws-alb-ingress-controller.irsa_role_arn, try(module.aws-alb-ingress-controller[0].irsa_role_arn, "no_role")) != "no_role" ~}
+      %{~if coalesce(var.services.aws-alb-ingress-controller.irsa_role_arn, try(module.aws-alb-ingress-controller[0].irsa_role_arn, "no_role")) != "no_role"~}
       annotations:
         eks.amazonaws.com/role-arn: ${coalesce(var.services.aws-alb-ingress-controller.irsa_role_arn, module.aws-alb-ingress-controller[0].irsa_role_arn)}
       %{~endif~}
@@ -23,7 +23,7 @@ locals {
     EOF
 
   # AWS IAM IRSA
-  aws_lb_controller_irsa_policy_json   = <<-EOF
+  aws_lb_controller_irsa_policy_json = <<-EOF
     {
         "Version": "2012-10-17",
         "Statement": [

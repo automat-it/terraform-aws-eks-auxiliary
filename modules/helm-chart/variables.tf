@@ -8,6 +8,18 @@ variable "repository" {
   type        = string
 }
 
+variable "repository_username" {
+  description = "Helm chart repository username."
+  type        = string
+  default     = null
+}
+
+variable "repository_password" {
+  description = "Helm chart repository password."
+  type        = string
+  default     = null
+}
+
 variable "chart" {
   description = "Helm chart name."
   type        = string
@@ -51,7 +63,7 @@ variable "values" {
 variable "iam_openid_provider" {
   type = object({
     oidc_provider_arn = string
-    oidc_provider = string
+    oidc_provider     = string
   })
   default = null
 }

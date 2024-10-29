@@ -141,7 +141,7 @@ variable "services" {
     }),
     karpenter = optional(object({
       enabled                             = optional(bool, false)
-      helm_version                        = optional(string, "1.0.0")
+      helm_version                        = optional(string, "1.0.6")
       namespace                           = optional(string, "general")
       service_account_name                = optional(string, "karpenter")
       nodepool                            = optional(string, "system")
@@ -157,15 +157,9 @@ variable "services" {
       deploy_default_nodepool             = optional(bool, true)
       default_nodepool_cpu_limit          = optional(string, "100")
       default_nodepool_capacity_type      = optional(list(string), ["on-demand"])
-      irsa_iam_role_name_prefix           = optional(string, "KarpenterController")
-      irsa_iam_policy_name_prefix         = optional(string, "KarpenterController")
-      node_iam_role_name_prefix           = optional(string)
       default_nodepool_yaml               = optional(string)
       default_nodeclass_yaml              = optional(string)
-      irsa_role_arn                       = optional(string)
       irsa_iam_role_name                  = optional(string)
-      irsa_iam_policy_json                = optional(string)
-      irsa_iam_policy_name                = optional(string)
       node_iam_role_name                  = optional(string)
       node_security_group_id              = optional(string)
       }), {

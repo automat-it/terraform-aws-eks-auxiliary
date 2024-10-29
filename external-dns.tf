@@ -22,13 +22,13 @@ locals {
       create: true
       name: ${var.services.external-dns.service_account_name}
       annotations:
-        %{~if coalesce(var.services.external-dns.irsa_role_arn, try(module.external-dns[0].irsa_role_arn, "no_annotation")) != "no_annotation" ~}
+        %{~if coalesce(var.services.external-dns.irsa_role_arn, try(module.external-dns[0].irsa_role_arn, "no_annotation")) != "no_annotation"~}
         eks.amazonaws.com/role-arn: ${coalesce(var.services.external-dns.irsa_role_arn, module.external-dns[0].irsa_role_arn)}
         %{~endif~}
     EOF
 
   # AWS IAM IRSA
-  external_dns_irsa_policy_json   = <<-POLICY
+  external_dns_irsa_policy_json = <<-POLICY
     {
       "Version": "2012-10-17",
       "Statement": [
