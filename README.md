@@ -64,9 +64,6 @@ You can check why this step is necessary in [AWS Doc](https://docs.aws.amazon.co
 | cluster_nodepool_name | The node pool name in the Amazon EKS cluster where all controllers will be installed. | `string` | `"system"` | no |
 | domain_zone | The domain zone associated with the Route 53 hosted zone. | `string` | `""` | no |
 | iam_openid_provider | The IAM OIDC provider configuration for the EKS cluster. | ```object({ oidc_provider_arn = string oidc_provider = string })``` | `null` | no |
-| notification_slack_token_secret | AWS Secret Manager key to store a Slack token for notifications. | `string` | `""` | no |
-| project_env | The project environment (e.g., dev, staging, prod). | `string` | `""` | no |
-| project_name | The name of the project. | `string` | `""` | no |
 | r53_zone_id | The ID of the Route 53 hosted zone, if DNS records are managed by Route 53. | `string` | `""` | no |
 | tags | Resource tags. | `any` | `{}` | no |
 
