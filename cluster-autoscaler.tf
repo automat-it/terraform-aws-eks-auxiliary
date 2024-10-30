@@ -86,7 +86,7 @@ module "cluster-autoscaler" {
 
   values = [
     local.cluster_autoscaler_helm_values,
-    try(var.services.cluster-autoscaler.additional_helm_values, "")
+    var.services.cluster-autoscaler.additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]
