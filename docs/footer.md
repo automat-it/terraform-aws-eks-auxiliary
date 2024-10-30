@@ -1,11 +1,35 @@
 ## How to Contribute
 
-To add a component to the cluster module, follow these steps:
+To add a service to the module, follow these steps:
 
 1. Place the component file in the root directory, e.g. [external-dns.tf](external-dns.tf).
-2. Ensure that any required variables for the new component are added to the variables.tf file, like:
+2. Ensure that any required variables for the new component are added to the services variable in [variables.tf](variables.tf?plain=1#L70) file, like:
 ```terraform
-variable "has_external_dns" { default = false }
+variable "services" {
+  type = object({
+    new_service = optional(object({
+      enabled                = optional(bool, false)
+      helm_version           = optional(string, "version")
+      namespace              = optional(string, "namespace")
+      nodepool               = optional(string, "nodepool")
+      additional_helm_values = optional(string, "")
+      }), {
+      enabled = false
+    }),
+  })
+}
 ```
-3. Thoroughly test your changes to ensure proper functionality.
-4. Once you've completed testing, submit a pull request with your changes for review and integration.
+3. Add outputs for new service to [outputs.tf](outputs.tf) file, like:
+```terraform
+output "new_service_irsa_role_arn" {
+  description = "The ARN of the IAM role used by the New service for IRSA (IAM Roles for Service Accounts)."
+  value       = var.services.new_service.enabled ? module.new_service[0].irsa_role_arn : null
+}
+
+output "new_service_irsa_role_id" {
+  description = "The ID of the IAM role used by the New service for IRSA (IAM Roles for Service Accounts)."
+  value       = var.services.new_service.enabled ? module.new_service[0].irsa_role_id : null
+}
+```
+4. Thoroughly test your changes to ensure proper functionality.
+5. Once you've completed testing, submit a pull request with your changes for review and integration.
