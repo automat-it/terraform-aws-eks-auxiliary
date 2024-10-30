@@ -49,24 +49,6 @@ variable "domain_zone" {
   description = "The domain zone associated with the Route 53 hosted zone."
 }
 
-variable "project_env" {
-  type        = string
-  default     = ""
-  description = "The project environment (e.g., dev, staging, prod)."
-}
-
-variable "project_name" {
-  type        = string
-  default     = ""
-  description = "The name of the project."
-}
-
-variable "notification_slack_token_secret" {
-  type        = string
-  default     = ""
-  description = "AWS Secret Manager key to store a Slack token for notifications."
-}
-
 variable "services" {
   type = object({
     argocd = optional(object({
