@@ -1,9 +1,4 @@
 # AWS
-variable "aws_account" {
-  type        = string
-  description = "The AWS account ID where resources will be provisioned."
-}
-
 variable "aws_region" {
   type        = string
   description = "The AWS region where resources will be provisioned."
@@ -52,27 +47,24 @@ variable "domain_zone" {
 variable "services" {
   type = object({
     argocd = optional(object({
-      enabled                  = bool
-      helm_version             = optional(string, "7.3.11")
-      namespace                = optional(string, "argocd")
-      service_account_name     = optional(string, "argocd-sa")
-      nodepool                 = optional(string, "system")
-      additional_helm_values   = optional(string, "")
-      load_balancer_name       = optional(string)
-      load_balancer_group_name = optional(string, "internal")
-      load_balancer_scheme     = optional(string, "internal")
-
+      enabled                         = bool
+      helm_version                    = optional(string, "7.3.11")
+      namespace                       = optional(string, "argocd")
+      service_account_name            = optional(string, "argocd-sa")
+      nodepool                        = optional(string, "system")
+      additional_helm_values          = optional(string, "")
+      load_balancer_name              = optional(string)
+      load_balancer_group_name        = optional(string, "internal")
+      load_balancer_scheme            = optional(string, "internal")
       notification_slack_token_secret = optional(string)
       argocd_url                      = optional(string)
       irsa_role_arn                   = optional(string)
       irsa_iam_role_name              = optional(string)
       custom_ingress                  = optional(string)
       custom_notifications            = optional(string)
-      }), {
-      enabled = false
-    }),
+    }), { enabled = false }),
     aws-alb-ingress-controller = optional(object({
-      enabled                = optional(bool, false)
+      enabled                = bool
       helm_version           = optional(string, "1.8.1")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "aws-alb-ingress-controller-sa")
@@ -81,11 +73,9 @@ variable "services" {
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
       irsa_iam_policy_json   = optional(string)
-      }), {
-      enabled = false
-    }),
+    }), { enabled = false }),
     cluster-autoscaler = optional(object({
-      enabled                = optional(bool, false)
+      enabled                = bool
       helm_version           = optional(string, "9.37.0")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "autoscaler-sa")
@@ -94,11 +84,9 @@ variable "services" {
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
       irsa_iam_policy_json   = optional(string)
-      }), {
-      enabled = false
-    }),
+    }), { enabled = false }),
     external-dns = optional(object({
-      enabled                = optional(bool, false)
+      enabled                = bool
       helm_version           = optional(string, "1.14.5")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "external-dns-sa")
@@ -108,11 +96,9 @@ variable "services" {
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
       irsa_iam_policy_json   = optional(string)
-      }), {
-      enabled = false
-    }),
+    }), { enabled = false }),
     external-secrets = optional(object({
-      enabled                = optional(bool, false)
+      enabled                = bool
       helm_version           = optional(string, "0.9.20")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "external-secrets-sa")
@@ -122,11 +108,9 @@ variable "services" {
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
       irsa_iam_policy_json   = optional(string)
-      }), {
-      enabled = false
-    }),
+    }), { enabled = false }),
     karpenter = optional(object({
-      enabled                             = optional(bool, false)
+      enabled                             = bool
       helm_version                        = optional(string, "1.0.6")
       namespace                           = optional(string, "general")
       service_account_name                = optional(string, "karpenter")
@@ -148,11 +132,9 @@ variable "services" {
       irsa_iam_role_name                  = optional(string)
       node_iam_role_name                  = optional(string)
       node_security_group_id              = optional(string)
-      }), {
-      enabled = false
-    }),
+    }), { enabled = false }),
     keda = optional(object({
-      enabled                = optional(bool, false)
+      enabled                = bool
       helm_version           = optional(string, "2.14.3")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "keda-sa")
@@ -161,18 +143,14 @@ variable "services" {
       irsa_role_name         = optional(string)
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
-      }), {
-      enabled = false
-    }),
+    }), { enabled = false }),
     metrics-server = optional(object({
-      enabled                = optional(bool, false)
+      enabled                = bool
       helm_version           = optional(string, "3.12.1")
       namespace              = optional(string, "general")
       nodepool               = optional(string, "system")
       additional_helm_values = optional(string, "")
-      }), {
-      enabled = false
-    }),
+    }), { enabled = false }),
   })
   description = "List of services and their parameters (version, configs, namespaces, etc.)."
 }
