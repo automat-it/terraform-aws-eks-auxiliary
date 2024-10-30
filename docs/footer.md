@@ -2,7 +2,7 @@
 
 To add a service to the module, follow these steps:
 
-1. Place the component file in the root directory, e.g. [external-dns.tf](external-dns.tf).
+1. Place the component file for new service in the root directory, e.g. [external-dns.tf](external-dns.tf).
 2. Ensure that any required variables for the new component are added to the services variable in [variables.tf](variables.tf?plain=1#L70) file, like:
 ```terraform
 variable "services" {
