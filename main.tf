@@ -3,9 +3,6 @@
 # general
 resource "kubernetes_namespace_v1" "general" {
   metadata {
-    annotations = {
-      name = "general"
-    }
     name = "general"
   }
 }
@@ -13,9 +10,6 @@ resource "kubernetes_namespace_v1" "general" {
 # security
 resource "kubernetes_namespace_v1" "security" {
   metadata {
-    annotations = {
-      name = "security"
-    }
     name = "security"
   }
 }
@@ -24,9 +18,6 @@ resource "kubernetes_namespace_v1" "security" {
 resource "kubernetes_namespace_v1" "argocd" {
   count = try(var.services.argocd.enabled, false) ? 1 : 0
   metadata {
-    annotations = {
-      name = "argocd"
-    }
     name = "argocd"
   }
 }
