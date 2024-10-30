@@ -9,6 +9,7 @@ Include a reference to the directory of your Terraform environment where you con
 
 Reference values could be found at [examples directory](examples).
 
+### Karpenter preparation
 For Karpenter installation, please log out of the Amazon ECR Public registry before terraform apply, using this command:
 ```shell
 helm registry logout public.ecr.aws
