@@ -1,35 +1,34 @@
-# External Secrets
+# Metrics server
 locals {
-  # Helm versions
-  metrics_server_helm_version = try(var.services["metrics-server"]["helm_version"], "3.12.1")
-  # K8s namespace to deploy
-  metrics_server_namespace = try(var.services["metrics-server"]["namespace"], kubernetes_namespace_v1.general.id)
-  # Helm ovveride values
+  # Helm override values
   metrics_server_helm_values = <<EOF
-    %{~if try(var.services["metrics-server"]["nodepool"], var.cluster_nodepool_name) != ""~}
+    %{~if coalesce(var.services.metrics-server.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:
-      pool: ${try(var.services["metrics-server"]["nodepool"], var.cluster_nodepool_name)}
+      pool: ${var.services.metrics-server.nodepool}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${try(var.services["metrics-server"]["nodepool"], var.cluster_nodepool_name)}
+        value: ${var.services.metrics-server.nodepool}
         effect: NoSchedule
     %{~endif~}
     EOF
 }
 
+################################################################################
+# Metrics server helm
+################################################################################
 module "metrics-server" {
   source       = "./modules/helm-chart"
-  count        = try(var.services["metrics-server"]["enabled"], var.has_metrics_server) ? 1 : 0
+  count        = var.services.metrics-server.enabled ? 1 : 0
   name         = "metrics-server"
   repository   = "https://kubernetes-sigs.github.io/metrics-server"
   chart        = "metrics-server"
-  namespace    = local.metrics_server_namespace
-  helm_version = local.metrics_server_helm_version
+  namespace    = var.services.metrics-server.namespace
+  helm_version = var.services.metrics-server.helm_version
 
   values = [
     local.metrics_server_helm_values,
-    try(var.services["metrics-server"]["additional_helm_values"], "")
+    var.services.metrics-server.additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]

@@ -1,6 +1,10 @@
 resource "helm_release" "this" {
-  name              = var.name
-  repository        = var.repository
+  name       = var.name
+  repository = var.repository
+
+  repository_username = var.repository_username
+  repository_password = var.repository_password
+
   chart             = var.chart
   namespace         = var.namespace
   create_namespace  = true
@@ -11,7 +15,7 @@ resource "helm_release" "this" {
   values = var.values
 }
 
-resource "aws_iam_role_policy" "eks-system-external-dns" {
+resource "aws_iam_role_policy" "irsa" {
   count  = var.irsa_policy_json != null ? 1 : 0
   name   = "${var.name}-policy"
   role   = aws_iam_role.irsa[0].id

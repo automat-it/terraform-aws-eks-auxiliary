@@ -1,15 +1,8 @@
-locals {
-  lower_cluster_name = lower(var.cluster_name)
-}
-
 ### Kubernetes namespaces
 
 # general
 resource "kubernetes_namespace_v1" "general" {
   metadata {
-    annotations = {
-      name = "general"
-    }
     name = "general"
   }
 }
@@ -17,20 +10,14 @@ resource "kubernetes_namespace_v1" "general" {
 # security
 resource "kubernetes_namespace_v1" "security" {
   metadata {
-    annotations = {
-      name = "security"
-    }
     name = "security"
   }
 }
 
 # argocd
 resource "kubernetes_namespace_v1" "argocd" {
-  count = try(var.services["argocd"]["enabled"], false) ? 1 : 0
+  count = var.services.argocd.enabled ? 1 : 0
   metadata {
-    annotations = {
-      name = "argocd"
-    }
     name = "argocd"
   }
 }
@@ -41,4 +28,3 @@ data "aws_eks_cluster" "this" {
 }
 
 data "aws_caller_identity" "current" {}
-

@@ -1,22 +1,14 @@
-# Keda
+# KEDA
 locals {
-  # Helm versions
-  keda_helm_version = try(var.services["keda"]["helm_version"], "2.14.3")
-  # K8s namespace to deploy
-  keda_namespace = try(var.services["keda"]["namespace"], kubernetes_namespace_v1.general.id)
-  # K8S Service Account Name
-  keda_service_account_name = try(var.services["keda"]["service_account_name"], "keda")
-  # AWS IAM IRSA
-  keda_irsa_iam_role_name = "${local.lower_cluster_name}-keda-iam-role"
-  # Helm ovveride values
+  # Helm override values
   keda_helm_values = <<EOF
-    %{~if try(var.services["keda"]["nodepool"], var.cluster_nodepool_name) != ""~}
+    %{~if coalesce(var.services.keda.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:
-      pool: ${try(var.services["keda"]["nodepool"], var.cluster_nodepool_name)}
+      pool: ${var.services.keda.nodepool}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${try(var.services["keda"]["nodepool"], var.cluster_nodepool_name)}
+        value: ${var.services.keda.nodepool}
         effect: NoSchedule
     %{~endif~}
     rbac:
@@ -24,19 +16,25 @@ locals {
     serviceAccount:
       operator:
         create: true
-        name: ${local.keda_service_account_name}
+        name: ${var.services.keda.service_account_name}
         annotations:
-          eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
+          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation"}
+          eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, ""))}
+          %{~endif~}
       metricServer:
         create: false
-        name: ${local.keda_service_account_name}
+        name: ${var.services.keda.service_account_name}
         annotations:
-          eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
+          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation"}
+          eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, ""))}
+          %{~endif~}
       webhooks:
         create: false
-        name: ${local.keda_service_account_name}
+        name: ${var.services.keda.service_account_name}
         annotations:
-          eks.amazonaws.com/role-arn: ${try(var.services["keda"]["irsa_role_arn"], try(module.keda[0].irsa_role_arn, ""))}
+          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation"}
+          eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, ""))}
+          %{~endif~}
     prometheus:
       metricServer:
         enabled: true
@@ -45,21 +43,24 @@ locals {
     EOF
 }
 
+################################################################################
+# KEDA helm
+################################################################################
 module "keda" {
   source               = "./modules/helm-chart"
-  count                = try(var.services["keda"]["enabled"], var.has_keda) ? 1 : 0
+  count                = var.services.keda.enabled ? 1 : 0
   name                 = "keda"
   repository           = "https://kedacore.github.io/charts"
   chart                = "keda"
-  namespace            = local.keda_namespace
-  helm_version         = local.keda_helm_version
-  service_account_name = local.keda_service_account_name
-  irsa_iam_role_name   = local.keda_irsa_iam_role_name
+  namespace            = var.services.keda.namespace
+  helm_version         = var.services.keda.helm_version
+  service_account_name = var.services.keda.service_account_name
+  irsa_iam_role_name   = coalesce(var.services.keda.irsa_role_name, "${var.cluster_name}-keda-iam-role")
   iam_openid_provider  = var.iam_openid_provider
 
   values = [
     local.keda_helm_values,
-    try(var.services["keda"]["additional_helm_values"], "")
+    var.services.keda.additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]

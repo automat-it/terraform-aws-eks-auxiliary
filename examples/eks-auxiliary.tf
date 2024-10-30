@@ -2,9 +2,6 @@ module "eks-aux" {
 
   source = "../"
 
-  project_env  = "test"
-  project_name = "eks-aux"
-
   # Components
   services = {
     argocd = {
@@ -23,7 +20,7 @@ module "eks-aux" {
     }
     karpenter = {
       enabled = true
-      # Otional Karpenter parameters
+      # Optional Karpenter parameters
       node_security_group_id                        = module.eks.node_security_group_id
       karpenetr_default_nodepool_capacity_type      = ["spot"]
       karpenetr_default_nodeclass_volume_size       = "30Gi"
@@ -36,7 +33,7 @@ module "eks-aux" {
       enabled = true
     }
     keda = {
-      enabled = true
+      enabled = false
     }
     metrics-server = {
       enabled = true
@@ -44,8 +41,7 @@ module "eks-aux" {
   }
 
   # AWS
-  aws_account = var.aws_account_id
-  aws_region  = var.aws_region
+  aws_region = var.aws_region
 
   # EKS
   cluster_name        = module.eks.cluster_name
@@ -57,6 +53,12 @@ module "eks-aux" {
   # DNS
   r53_zone_id = var.r53_zone_id
   domain_zone = var.domain_zone
+
+  # Tags
+  tags = {
+    Managed_by  = "Terraform"
+    Environment = "Development"
+  }
 
   depends_on = [
     module.eks

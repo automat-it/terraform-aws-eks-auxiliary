@@ -1,33 +1,6 @@
 # Karpenter
 locals {
-  # Helm versions. Please change the public submodule version in the apropriet line 'module "karpenter" {'
-  karpenter_helm_version = try(var.services.karpenter.helm_version, "1.0.0")
-  # K8s namespace to deploy
-  karpenter_namespace = try(var.services.karpenter.namespace, kubernetes_namespace_v1.general.id)
-  # K8S Service Account Name
-  karpenter_service_account_name = try(var.services.karpenter.service_account_name, "karpenter")
-  # Karpenter default NodeClass
-  deploy_karpenter_default_nodeclass            = try(var.services.karpenter.deploy_karpenter_default_nodeclass, true)
-  karpenter_default_nodeclass_ami_family        = try(var.services.karpenter.karpenter_default_nodeclass_ami_family, "AL2023")
-  karpenter_default_nodeclass_ami_alias         = try(var.services.karpenter.karpenter_default_nodeclass_ami_alias, "al2023@latest")
-  karpenter_default_nodeclass_name              = try(var.services.karpenter.karpenter_default_nodeclass_name, "default")
-  karpenter_default_nodeclass_volume_size       = try(var.services.karpenter.karpenter_default_nodeclass_volume_size, "20Gi")
-  karpenter_default_nodeclass_instance_category = try(var.services.karpenter.karpenter_default_nodeclass_instance_category, ["t", "c", "m"])
-  karpenter_default_nodeclass_instance_cpu      = try(var.services.karpenter.karpenter_default_nodeclass_instance_cpu, ["2", "4"])
-  # Karpenter default Nodepool
-  deploy_karpenter_default_nodepool        = try(var.services.karpenter.deploy_karpenter_default_nodepool, true)
-  karpenter_default_nodepool_cpu_limit     = try(var.services.karpenter.karpenter_default_nodepool_cpu_limit, "100")
-  karpenter_default_nodepool_capacity_type = try(var.services.karpenter.karpenter_default_nodepool_capacity_type, ["on-demand"])
-  # AWS IAM IRSA
-  karpenter_irsa_iam_role_name          = try(var.services.karpenter.irsa_iam_role_name, "")
-  karpenter_irsa_iam_role_name_prefix   = try(var.services.karpenter.irsa_iam_role_name_prefix, "KarpenterController")
-  karpenter_irsa_iam_policy_name        = try(var.services.karpenter.irsa_iam_policy_name, "")
-  karpenter_irsa_iam_policy_name_prefix = try(var.services.karpenter.irsa_iam_policy_name_prefix, "KarpenterController")
-  karpenter_node_iam_role_name          = try(var.services.karpenter.node_iam_role_name, "")
-  karpenter_node_iam_role_name_prefix   = try(var.services.karpenter.node_iam_role_name, null)
-  # SG
-  karpenter_node_security_group_id = try(var.services.karpenter.node_security_group_id, "")
-  # Helm ovveride values
+  # Helm override values
   karpenter_helm_values = <<-EOT
     serviceAccount:
       %{~if try(module.karpenter[0].service_account, "") != ""~}
@@ -43,15 +16,15 @@ locals {
       %{~if try(module.karpenter[0].queue_name, "") != ""~}
       interruptionQueue: ${module.karpenter[0].queue_name}
       %{~endif~}
-    %{~if try(var.services.karpenter.nodepool, var.cluster_nodepool_name) != ""~}
+    %{~if coalesce(var.services.karpenter.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:
-      pool: ${try(var.services.karpenter.nodepool, var.cluster_nodepool_name)}
+      pool: ${var.services.karpenter.nodepool}
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
       - key: dedicated
         operator: Equal
-        value: ${try(var.services.karpenter.nodepool, var.cluster_nodepool_name)}
+        value: ${var.services.karpenter.nodepool}
         effect: NoSchedule
     %{~endif~}
     EOT
@@ -61,13 +34,13 @@ locals {
     apiVersion: karpenter.k8s.aws/v1
     kind: EC2NodeClass
     metadata:
-      name: ${local.karpenter_default_nodeclass_name}
+      name: ${var.services.karpenter.default_nodeclass_name}
     spec:
-    %{~if local.karpenter_default_nodeclass_ami_family != ""~}
-      amiFamily: ${local.karpenter_default_nodeclass_ami_family}
+    %{~if coalesce(var.services.karpenter.default_nodeclass_ami_family, "no_nodeclass") != "no_nodeclass"~}
+      amiFamily: ${var.services.karpenter.default_nodeclass_ami_family}
     %{~endif~}
       amiSelectorTerms:
-        - alias: ${local.karpenter_default_nodeclass_ami_alias}
+        - alias: ${var.services.karpenter.default_nodeclass_ami_alias}
       %{~if try(module.karpenter[0].node_iam_role_name, "") != ""~}
       role: ${module.karpenter[0].node_iam_role_name}
       %{~endif~}
@@ -75,8 +48,8 @@ locals {
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
       securityGroupSelectorTerms:
-        %{~if local.karpenter_node_security_group_id != ""~}
-        - id: ${local.karpenter_node_security_group_id}
+        %{~if coalesce(var.services.karpenter.node_security_group_id, "no_sg") != "no_sg"~}
+        - id: ${var.services.karpenter.node_security_group_id}
         %{~endif~}
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
@@ -85,8 +58,8 @@ locals {
       blockDeviceMappings:
         - deviceName: /dev/xvda
           ebs:
-            volumeSize: ${local.karpenter_default_nodeclass_volume_size}
-            volumeType: gp3
+            volumeSize: ${var.services.karpenter.default_nodeclass_volume_size}
+            volumeType: ${var.services.karpenter.default_nodeclass_volume_type}
             encrypted: true
             deleteOnTermination: true
       tags:
@@ -110,24 +83,24 @@ locals {
           requirements:
             - key: kubernetes.io/arch
               operator: In
-              values: .amd64
+              values: ["amd64"]
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
-              values: ${jsonencode(local.karpenter_default_nodeclass_instance_category)}
+              values: ${jsonencode(var.services.karpenter.default_nodeclass_instance_category)}
             - key: "karpenter.k8s.aws/instance-cpu"
               operator: In
-              values: ${jsonencode(local.karpenter_default_nodeclass_instance_cpu)}
+              values: ${jsonencode(var.services.karpenter.default_nodeclass_instance_cpu)}
             - key: "karpenter.k8s.aws/instance-hypervisor"
               operator: In
-              values: .nitro
+              values: ["nitro"]
             - key: "karpenter.k8s.aws/instance-generation"
               operator: Gt
-              values: .2
+              values: ["2"]
             - key: "karpenter.sh/capacity-type"
               operator: In
-              values:  ${jsonencode(local.karpenter_default_nodepool_capacity_type)}
+              values:  ${jsonencode(var.services.karpenter.default_nodepool_capacity_type)}
       limits:
-        cpu: ${local.karpenter_default_nodepool_cpu_limit}
+        cpu: ${var.services.karpenter.default_nodepool_cpu_limit}
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
@@ -137,19 +110,18 @@ locals {
 ################################################################################
 # Karpenter helm
 ################################################################################
-
 module "karpenter-helm" {
   source       = "./modules/helm-chart"
-  count        = try(var.services.karpenter.enabled, var.has_karpenter) ? 1 : 0
+  count        = var.services.karpenter.enabled ? 1 : 0
   name         = "karpenter"
   repository   = "oci://public.ecr.aws/karpenter"
   chart        = "karpenter"
-  namespace    = local.karpenter_namespace
-  helm_version = local.karpenter_helm_version
+  namespace    = var.services.karpenter.namespace
+  helm_version = var.services.karpenter.helm_version
 
   values = [
     local.karpenter_helm_values,
-    try(var.services.karpenter.additional_helm_values, "")
+    var.services.karpenter.additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]
@@ -161,9 +133,9 @@ module "karpenter-helm" {
 
 module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version = "~> 20.0"
+  version = "20.26.1"
 
-  count = try(var.services.karpenter.enabled, var.has_karpenter) ? 1 : 0
+  count = var.services.karpenter.enabled ? 1 : 0
 
   cluster_name = var.cluster_name
 
@@ -173,24 +145,25 @@ module "karpenter" {
   create_pod_identity_association = true
 
   # IAM
-  iam_role_name                 = length(local.karpenter_irsa_iam_role_name) > 0 ? local.karpenter_irsa_iam_role_name : local.karpenter_irsa_iam_role_name_prefix
-  iam_role_use_name_prefix      = length(local.karpenter_irsa_iam_role_name) > 0 == false
-  iam_policy_name               = length(local.karpenter_irsa_iam_policy_name) > 0 ? local.karpenter_irsa_iam_policy_name : local.karpenter_irsa_iam_policy_name_prefix
-  iam_policy_use_name_prefix    = length(local.karpenter_irsa_iam_policy_name) > 0 == false
-  node_iam_role_name            = length(local.karpenter_irsa_iam_role_name) > 0 ? local.karpenter_node_iam_role_name : local.karpenter_node_iam_role_name_prefix
-  node_iam_role_use_name_prefix = length(local.karpenter_node_iam_role_name) > 0 == false
+  iam_role_name            = coalesce(var.services.karpenter.irsa_iam_role_name, "${var.cluster_name}-Karpenter-Role")
+  iam_role_use_name_prefix = false
+  iam_role_tags            = var.tags
 
-  # EKS Fargate currently does not support Pod Identity
-  enable_irsa                     = true
-  irsa_oidc_provider_arn          = var.iam_openid_provider.oidc_provider_arn
-  irsa_namespace_service_accounts = ["${local.karpenter_namespace}:${local.karpenter_service_account_name}"]
-
-  create_access_entry = true
-
+  node_iam_role_name            = coalesce(var.services.karpenter.node_iam_role_name, "${var.cluster_name}-Karpenter-Node-Role")
+  node_iam_role_use_name_prefix = false
   # Used to attach additional IAM policies to the Karpenter node IAM role
   node_iam_role_additional_policies = {
     AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
   }
+  node_iam_role_tags = var.tags
+
+  service_account = var.services.karpenter.service_account_name
+
+  enable_irsa                     = true
+  irsa_oidc_provider_arn          = var.iam_openid_provider.oidc_provider_arn
+  irsa_namespace_service_accounts = ["${var.services.karpenter.namespace}:${var.services.karpenter.service_account_name}"]
+
+  create_access_entry = true
 
   tags = var.tags
 }
@@ -201,9 +174,9 @@ module "karpenter" {
 
 resource "kubectl_manifest" "karpenter_default_node_class" {
 
-  count = var.services.karpenter.enabled && local.deploy_karpenter_default_nodeclass ? 1 : 0
+  count = var.services.karpenter.enabled && var.services.karpenter.deploy_default_nodeclass ? 1 : 0
 
-  yaml_body = try(var.services.karpenter.default_nodeclass_yaml, local.default_nodeclass_yaml)
+  yaml_body = coalesce(var.services.karpenter.default_nodeclass_yaml, local.default_nodeclass_yaml)
 
   depends_on = [
     module.karpenter-helm
@@ -212,9 +185,9 @@ resource "kubectl_manifest" "karpenter_default_node_class" {
 
 resource "kubectl_manifest" "karpenter_default_node_pool" {
 
-  count = var.services.karpenter.enabled && local.deploy_karpenter_default_nodepool ? 1 : 0
+  count = var.services.karpenter.enabled && var.services.karpenter.deploy_default_nodepool ? 1 : 0
 
-  yaml_body = try(var.services.karpenter.default_nodepool_yaml, local.default_nodepool_yaml)
+  yaml_body = coalesce(var.services.karpenter.default_nodepool_yaml, local.default_nodepool_yaml)
 
   depends_on = [
     kubectl_manifest.karpenter_default_node_class
