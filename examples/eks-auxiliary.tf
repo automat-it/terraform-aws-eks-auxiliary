@@ -33,7 +33,7 @@ module "eks-aux" {
       enabled = true
     }
     keda = {
-      enabled = true
+      enabled = false
     }
     metrics-server = {
       enabled = true
@@ -57,7 +57,7 @@ module "eks-aux" {
   # Tags
   tags = {
     Managed_by  = "Terraform"
-    Ebvironment = "Development"
+    Environment = "Development"
   }
 
   depends_on = [
