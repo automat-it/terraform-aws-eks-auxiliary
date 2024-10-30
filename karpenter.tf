@@ -110,8 +110,6 @@ locals {
 ################################################################################
 # Karpenter helm
 ################################################################################
-data "aws_ecrpublic_authorization_token" "token" {}
-
 module "karpenter-helm" {
   source       = "./modules/helm-chart"
   count        = var.services.karpenter.enabled ? 1 : 0
