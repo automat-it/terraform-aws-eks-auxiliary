@@ -121,10 +121,6 @@ module "karpenter-helm" {
   namespace    = var.services.karpenter.namespace
   helm_version = var.services.karpenter.helm_version
 
-  # AWS ECR credentials
-  repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-  repository_password = data.aws_ecrpublic_authorization_token.token.password
-
   values = [
     local.karpenter_helm_values,
     var.services.karpenter.additional_helm_values
