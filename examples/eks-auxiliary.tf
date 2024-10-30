@@ -2,9 +2,6 @@ module "eks-aux" {
 
   source = "../"
 
-  project_env  = "test"
-  project_name = "eks-aux"
-
   # Components
   services = {
     argocd = {
@@ -44,8 +41,7 @@ module "eks-aux" {
   }
 
   # AWS
-  aws_account = var.aws_account_id
-  aws_region  = var.aws_region
+  aws_region = var.aws_region
 
   # EKS
   cluster_name        = module.eks.cluster_name
@@ -57,6 +53,12 @@ module "eks-aux" {
   # DNS
   r53_zone_id = var.r53_zone_id
   domain_zone = var.domain_zone
+
+  # Tags
+  tags = {
+    Managed_by  = "Terraform"
+    Ebvironment = "Development"
+  }
 
   depends_on = [
     module.eks
