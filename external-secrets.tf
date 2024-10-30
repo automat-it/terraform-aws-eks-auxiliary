@@ -64,7 +64,7 @@ module "external-secrets" {
 
   values = [
     local.external_secrets_helm_values,
-    try(var.services.external-secrets.additional_helm_values, "")
+    var.services.external-secrets.additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]
