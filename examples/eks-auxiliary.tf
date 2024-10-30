@@ -23,7 +23,7 @@ module "eks-aux" {
     }
     karpenter = {
       enabled = true
-      # Otional Karpenter parameters
+      # Optional Karpenter parameters
       node_security_group_id                        = module.eks.node_security_group_id
       karpenetr_default_nodepool_capacity_type      = ["spot"]
       karpenetr_default_nodeclass_volume_size       = "30Gi"
