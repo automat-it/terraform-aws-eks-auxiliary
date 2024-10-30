@@ -1,5 +1,6 @@
 ### ArgoCD helm
 locals {
+  # Helm override values
   argocd_default_ingress = <<EOF
   server:
     ingress:

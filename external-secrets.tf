@@ -1,6 +1,6 @@
 # External Secrets
 locals {
-  # Helm ovveride values
+  # Helm override values
   external_secrets_helm_values = <<EOF
     installCRDs: true
     webhook:

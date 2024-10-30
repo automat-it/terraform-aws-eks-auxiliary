@@ -1,5 +1,6 @@
 # AWS Load Balancer controller
 locals {
+  # Helm override values
   aws_lb_controller_helm_values = <<EOF
     enableServiceMutatorWebhook: false
     clusterName: ${var.cluster_name}
@@ -259,7 +260,7 @@ module "aws-alb-ingress-controller" {
 
   values = [
     local.aws_lb_controller_helm_values,
-    try(var.services.aws-alb-ingress-controller.additional_helm_values, "")
+    var.services.aws-alb-ingress-controller.additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]

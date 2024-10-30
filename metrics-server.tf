@@ -1,6 +1,6 @@
-# External Secrets
+# Metrics server
 locals {
-  # Helm ovveride values
+  # Helm override values
   metrics_server_helm_values = <<EOF
     %{~if coalesce(var.services.metrics-server.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:

@@ -1,6 +1,6 @@
 # Karpenter
 locals {
-  # Helm ovveride values
+  # Helm override values
   karpenter_helm_values = <<-EOT
     serviceAccount:
       %{~if try(module.karpenter[0].service_account, "") != ""~}

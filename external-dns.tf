@@ -1,6 +1,6 @@
 # External DNS controller
 locals {
-  # Helm ovveride values
+  # Helm override values
   external_dns_helm_values = <<EOF
     logLevel: debug
     txtOwnerId: ${var.r53_zone_id}
