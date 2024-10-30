@@ -1,6 +1,6 @@
-# Keda
+# KEDA
 locals {
-  # Helm ovveride values
+  # Helm override values
   keda_helm_values = <<EOF
     %{~if coalesce(var.services.keda.nodepool, "no_pool") != "no_pool"~}
     nodeSelector:
@@ -44,7 +44,7 @@ locals {
 }
 
 ################################################################################
-# Keda helm
+# KEDA helm
 ################################################################################
 module "keda" {
   source               = "./modules/helm-chart"

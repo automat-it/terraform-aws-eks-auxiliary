@@ -1,6 +1,6 @@
 # Cluster Autoscaler
 locals {
-  # Helm ovveride values
+  # Helm override values
   cluster_autoscaler_helm_values = <<EOF
     autoDiscovery:
       clusterName: ${var.cluster_name}
