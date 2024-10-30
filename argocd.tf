@@ -18,7 +18,6 @@ locals {
         alb.ingress.kubernetes.io/healthcheck-port: traffic-port
         alb.ingress.kubernetes.io/backend-protocol: HTTP
         alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
-        alb.ingress.kubernetes.io/tags: 'Environment=${var.project_env}, Managed_by=helm, Project=${var.project_name}'
         alb.ingress.kubernetes.io/ssl-redirect: '443'
   configs:
     params:
