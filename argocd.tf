@@ -54,7 +54,7 @@ locals {
       timeout.reconciliation: 60s
   EOF
   argocd_notifications   = <<EOF
-  %{~if coalesce(var.services.argocd.notification_slack_token_secret, coalesce(var.notification_slack_token_secret, "no_slack_notification")) != "no_slack_notification"~}
+  %{~if coalesce(var.services.argocd.notification_slack_token_secret, "no_slack_notification") != "no_slack_notification"~}
   notifications:
     enabled: true
     secret:
@@ -266,7 +266,7 @@ locals {
             engineVersion: v2
         dataFrom:
           - extract:
-              key: ${var.notification_slack_token_secret}
+              key: ${var.services.argocd.notification_slack_token_secret}
   %{~endif~}
   EOF
 }
