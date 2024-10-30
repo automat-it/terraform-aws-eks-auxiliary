@@ -87,7 +87,8 @@ You can check why this step is necessary in [AWS Doc](https://docs.aws.amazon.co
 | karpenter_default_node_class_name | The ID of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
 | karpenter_irsa_role_arn | The ARN of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
 | karpenter_irsa_role_id | The ID of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
-| karpenter_node_iam_role_name | The ID of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
+| karpenter_node_iam_role_arn | The ARN of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
+| karpenter_node_iam_role_id | The ID of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts). |
 | keda_irsa_role_arn | The ARN of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
 | keda_irsa_role_id | The ID of the IAM role used by the Keda for IRSA (IAM Roles for Service Accounts). |
 | metrics_server_irsa_role_arn | The ARN of the IAM role used by the Metrics Server for IRSA (IAM Roles for Service Accounts). |
