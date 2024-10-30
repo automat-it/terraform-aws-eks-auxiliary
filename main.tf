@@ -16,7 +16,7 @@ resource "kubernetes_namespace_v1" "security" {
 
 # argocd
 resource "kubernetes_namespace_v1" "argocd" {
-  count = try(var.services.argocd.enabled, false) ? 1 : 0
+  count = var.services.argocd.enabled ? 1 : 0
   metadata {
     name = "argocd"
   }
@@ -28,4 +28,3 @@ data "aws_eks_cluster" "this" {
 }
 
 data "aws_caller_identity" "current" {}
-
