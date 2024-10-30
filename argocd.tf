@@ -290,7 +290,7 @@ module "argocd" {
   values = [
     local.argocd_helm_values,
     coalesce(var.services.argocd.custom_ingress, local.argocd_default_ingress),
-    coalesce(var.services.argocd.custom_notifications, local.argocd_notifications),
+    try(coalesce(var.services.argocd.custom_notifications, local.argocd_notifications), ""),
     var.services.argocd.additional_helm_values
   ]
 
