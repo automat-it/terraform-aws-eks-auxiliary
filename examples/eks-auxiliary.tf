@@ -21,10 +21,10 @@ module "eks-aux" {
     karpenter = {
       enabled = true
       # Optional Karpenter parameters
-      node_security_group_id                        = module.eks.node_security_group_id
-      karpenetr_default_nodepool_capacity_type      = ["spot"]
-      karpenetr_default_nodeclass_volume_size       = "30Gi"
-      karpenetr_default_nodeclass_instance_category = ["t"]
+      node_security_group_id              = module.eks.node_security_group_id
+      default_nodepool_capacity_type      = ["spot"]
+      default_nodeclass_volume_size       = "30Gi"
+      default_nodeclass_instance_category = ["t"]
     }
     external-dns = {
       enabled = true
