@@ -111,7 +111,7 @@ variable "services" {
     }), { enabled = false }),
     karpenter = optional(object({
       enabled                             = bool
-      helm_version                        = optional(string, "1.0.6")
+      helm_version                        = optional(string, "1.1.0")
       namespace                           = optional(string, "general")
       service_account_name                = optional(string, "karpenter")
       nodepool                            = optional(string, "system")
