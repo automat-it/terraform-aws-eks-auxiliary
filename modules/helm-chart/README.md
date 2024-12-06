@@ -66,9 +66,8 @@ module "external-dns" {
 | [aws_eks_pod_identity_association.pod_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_pod_identity_association) | resource |
 | [aws_iam_role.irsa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.pod_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy.eks-system-external-dns](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role_policy.irsa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [helm_release.this](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
-| [kubernetes_service_account.irsa](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account) | resource |
 | [kubernetes_service_account.pod_identity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account) | resource |
 | [aws_iam_policy_document.oidc_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 | [aws_iam_policy_document.pod_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
@@ -85,11 +84,12 @@ module "external-dns" {
 | eks_cluster_name | Name of the EKS cluster. | `string` | `null` | no |
 | enable_pod_identity | Whether to enable EKS Pod Identity. | `bool` | `false` | no |
 | force_update | Whether to force update the Helm release. | `bool` | `false` | no |
-| iam_openid_provider_arn | The ARN of the OpenID Connect (OIDC) provider associated with the EKS cluster. | `string` | `null` | no |
-| iam_openid_provider_url | The URL of the OpenID Connect (OIDC) provider associated with the EKS cluster. | `string` | `null` | no |
+| iam_openid_provider | n/a | ```object({ oidc_provider_arn = string oidc_provider = string })``` | `null` | no |
 | irsa_iam_role_name | Name of the IAM role for IRSA. | `string` | `null` | no |
 | irsa_policy_json | JSON policy document for IRSA IAM role. | `string` | `null` | no |
 | namespace | Kubernetes namespace to install the release into. Creates one if not present. | `string` | `"default"` | no |
+| repository_password | Helm chart repository password. | `string` | `null` | no |
+| repository_username | Helm chart repository username. | `string` | `null` | no |
 | service_account_name | Name of the Kubernetes service account. | `string` | `null` | no |
 | values | List of paths to Helm values files. | `list(string)` | `[]` | no |
 
