@@ -29,4 +29,5 @@ For Karpenter installation, please log out of the Amazon ECR Public registry bef
 ```shell
 helm registry logout public.ecr.aws
 ```
+
 You can check why these steps are necessary in [AWS Doc](https://docs.aws.amazon.com/AmazonECR/latest/public/public-troubleshooting.html#public-troubleshooting-authentication), [Karpenter official manual](https://karpenter.sh/docs/getting-started/getting-started-with-karpenter/#4-install-karpenter), [Karpenter troubleshooting](https://karpenter.sh/docs/troubleshooting/#missing-service-linked-role)
