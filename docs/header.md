@@ -10,7 +10,7 @@ Include a reference to the directory of your Terraform environment where you con
 Reference values could be found at [examples directory](examples).
 
 ### Karpenter preparation
-Please consider adding the proper tag for the Karpenter subnet autodiscovery. We usually associate these tags with the private subnets:
+Please consider adding the proper tag for the Karpenter subnet autodiscovery. We usually associate these tags with the private AWS Subnets:
 ```shell
 tags = merge(local.base_tags, {
     Tier                                              = "Private"
