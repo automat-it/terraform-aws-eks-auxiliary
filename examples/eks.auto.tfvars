@@ -16,4 +16,3 @@ eks_worker_max_size       = 2
 eks_worker_desired_size   = 2
 eks_worker_instance_types = ["t3.medium"]
 eks_worker_capacity_type  = "SPOT"
-
