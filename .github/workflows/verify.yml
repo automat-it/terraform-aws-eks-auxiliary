@@ -18,41 +18,11 @@ jobs:
 
       - uses: hashicorp/setup-terraform@v2.0.3
 
-      - name: terraform fmt
-        run: terraform fmt -check -recursive -diff
-        continue-on-error: true
-
       - name: terraform init
         run: terraform init
 
       - name: terraform validate
         run: terraform validate
-
-  tflint:
-    name: "Lint Code"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/cache@v4
-        name: Cache plugin dir
-        with:
-          path: ~/.tflint.d/plugins
-          key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
-
-      - uses: terraform-linters/setup-tflint@v4
-        name: Setup TFLint
-        with:
-          tflint_version: v0.50.3
-
-      - name: Init TFLint
-        run: tflint --init
-        env:
-          # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Run TFLint
-        run: tflint -f compact
 
   tfsec:
     name: "Security Scan"

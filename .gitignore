@@ -40,6 +40,9 @@ Thumbs.db
 *.exe
 *.war
 
+# Terraform cache
+.terraform/
+
 # Large media files
 *.mp4
 *.tiff
@@ -47,4 +50,3 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
-
