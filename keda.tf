@@ -55,7 +55,7 @@ module "keda" {
   namespace            = var.services.keda.namespace
   helm_version         = var.services.keda.helm_version
   service_account_name = var.services.keda.service_account_name
-  irsa_iam_role_name   = coalesce(var.services.keda.irsa_role_name, "${var.cluster_name}-keda-iam-role")
+  irsa_iam_role_name   = coalesce(var.services.keda.irsa_iam_role_name, "${var.cluster_name}-keda-iam-role")
   iam_openid_provider  = var.iam_openid_provider
 
   values = [
