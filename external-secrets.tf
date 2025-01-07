@@ -58,7 +58,7 @@ module "external-secrets" {
   namespace            = var.services.external-secrets.namespace
   helm_version         = var.services.external-secrets.helm_version
   service_account_name = var.services.external-secrets.service_account_name
-  irsa_iam_role_name   = coalesce(var.services.external-secrets.irsa_role_name, "${var.cluster_name}-external-secrets-iam-role")
+  irsa_iam_role_name   = coalesce(var.services.external-secrets.irsa_iam_role_name, "${var.cluster_name}-external-secrets-iam-role")
   irsa_policy_json     = coalesce(var.services.external-secrets.irsa_iam_policy_json, local.external_secrets_irsa_policy_json)
   iam_openid_provider  = var.iam_openid_provider
 
