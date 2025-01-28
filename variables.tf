@@ -132,6 +132,7 @@ variable "services" {
       irsa_iam_role_name                  = optional(string)
       node_iam_role_name                  = optional(string)
       node_security_group_id              = optional(string)
+      create_spot_service_linked_role     = optional(bool, false)
     }), { enabled = false }),
     keda = optional(object({
       enabled                = bool

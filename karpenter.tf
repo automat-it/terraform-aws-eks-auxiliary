@@ -193,3 +193,12 @@ resource "kubectl_manifest" "karpenter_default_node_pool" {
     kubectl_manifest.karpenter_default_node_class
   ]
 }
+
+################################################################################
+# Create EC2 Spot service linked role
+################################################################################
+
+resource "aws_iam_service_linked_role" "ec_spot_service_linked_role" {
+  count            = var.services.karpenter.enabled && var.services.karpenter.create_spot_service_linked_role ? 1 : 0
+  aws_service_name = "spot.amazonaws.com"
+}
