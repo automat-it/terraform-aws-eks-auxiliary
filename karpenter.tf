@@ -104,17 +104,9 @@ locals {
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
-      budgets:
-        - nodes: 10%
-        - nodes: "1"
-        - nodes: "0"
-          schedule: "0 9 * * sat-sun"
-          duration: 24h
-        - nodes: "0"
-          schedule: "0 17 * * mon-fri"
-          duration: 16h
-          reasons:
-            - Drifted
+  %{if var.services.karpenter.enable_budgets}
+      budgets: ${jsonencode(var.services.karpenter.budgets)}
+  %{endif}
   YAML
 }
 

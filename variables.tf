@@ -138,13 +138,20 @@ variable "services" {
       default_nodeclass_instance_cpu      = optional(list(string), ["2", "4"])
       deploy_default_nodepool             = optional(bool, true)
       default_nodepool_cpu_limit          = optional(string, "100")
-      default_nodepool_capacity_type      = optional(list(string), ["on-demand"])
-      default_nodepool_yaml               = optional(string)
-      default_nodeclass_yaml              = optional(string)
-      irsa_iam_role_name                  = optional(string)
-      node_iam_role_name                  = optional(string)
-      node_iam_role_additional_policies   = optional(map(string), {})
-      node_security_group_id              = optional(string)
+      enable_budgets                      = true
+      budgets = [
+        { nodes = "10%" },
+        { nodes = "3" },
+        { nodes = "0", schedule = "0 9 * * sat-sun", duration = "24h" },
+        { nodes = "0", schedule = "0 17 * * mon-fri", duration = "16h", reasons = ["Drifted"] }
+      ]
+      default_nodepool_capacity_type    = optional(list(string), ["on-demand"])
+      default_nodepool_yaml             = optional(string)
+      default_nodeclass_yaml            = optional(string)
+      irsa_iam_role_name                = optional(string)
+      node_iam_role_name                = optional(string)
+      node_iam_role_additional_policies = optional(map(string), {})
+      node_security_group_id            = optional(string)
     }), { enabled = false }),
     keda = optional(object({
       enabled                = bool
