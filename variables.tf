@@ -138,7 +138,7 @@ variable "services" {
       default_nodeclass_instance_cpu      = optional(list(string), ["2", "4"])
       deploy_default_nodepool             = optional(bool, true)
       default_nodepool_cpu_limit          = optional(string, "100")
-      enable_budgets                      = true
+      enable_budgets                      = false
       budgets = [
         { nodes = "10%" },
         { nodes = "3" },
