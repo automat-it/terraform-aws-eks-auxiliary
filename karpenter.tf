@@ -104,6 +104,17 @@ locals {
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
+      budgets:
+        - nodes: 10%
+        - nodes: "1"
+        - nodes: "0"
+          schedule: "0 9 * * sat-sun"
+          duration: 24h
+        - nodes: "0"
+          schedule: "0 17 * * mon-fri"
+          duration: 16h
+          reasons:
+            - Drifted
   YAML
 }
 
@@ -152,10 +163,8 @@ module "karpenter" {
   node_iam_role_name            = coalesce(var.services.karpenter.node_iam_role_name, "${var.cluster_name}-Karpenter-Node-Role")
   node_iam_role_use_name_prefix = false
   # Used to attach additional IAM policies to the Karpenter node IAM role
-  node_iam_role_additional_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
-  node_iam_role_tags = var.tags
+  node_iam_role_additional_policies = var.services.karpenter.node_iam_role_additional_policies
+  node_iam_role_tags                = var.tags
 
   service_account = var.services.karpenter.service_account_name
 
