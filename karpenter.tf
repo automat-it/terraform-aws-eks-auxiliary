@@ -161,7 +161,6 @@ module "karpenter" {
       AmazonEKSWorkerNodePolicy          = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
       AmazonSSMManagedInstanceCore       = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
       CloudWatchAgentServerPolicy        = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
-      AmazonFSxFullAccess                = "arn:aws:iam::aws:policy/AmazonFSxFullAccess"
     },
     var.services.karpenter.node_iam_role_additional_policies
   )
