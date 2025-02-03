@@ -25,6 +25,18 @@ variable "iam_openid_provider" {
   description = "The IAM OIDC provider configuration for the EKS cluster."
 }
 
+variable "create_namespace_general" {
+  type        = bool
+  default     = true
+  description = "Determines whether to create a general-purpose Kubernetes namespace. Set to 'true' to create the namespace, or 'false' to skip its creation."
+}
+
+variable "create_namespace_security" {
+  type        = bool
+  default     = true
+  description = "Determines whether to create the security-related Kubernetes namespace. Set to 'true' to create the namespace, or 'false' to skip its creation."
+}
+
 # VPC
 variable "vpc_id" {
   type        = string
@@ -48,7 +60,7 @@ variable "services" {
   type = object({
     argocd = optional(object({
       enabled                         = bool
-      helm_version                    = optional(string, "7.3.11")
+      helm_version                    = optional(string, "7.7.22")
       namespace                       = optional(string, "argocd")
       service_account_name            = optional(string, "argocd-sa")
       nodepool                        = optional(string, "system")
@@ -65,7 +77,7 @@ variable "services" {
     }), { enabled = false }),
     aws-alb-ingress-controller = optional(object({
       enabled                = bool
-      helm_version           = optional(string, "1.8.1")
+      helm_version           = optional(string, "1.9.2")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "aws-alb-ingress-controller-sa")
       nodepool               = optional(string, "system")
@@ -76,7 +88,7 @@ variable "services" {
     }), { enabled = false }),
     cluster-autoscaler = optional(object({
       enabled                = bool
-      helm_version           = optional(string, "9.37.0")
+      helm_version           = optional(string, "9.46.0")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "autoscaler-sa")
       nodepool               = optional(string, "system")
@@ -87,7 +99,7 @@ variable "services" {
     }), { enabled = false }),
     external-dns = optional(object({
       enabled                = bool
-      helm_version           = optional(string, "1.14.5")
+      helm_version           = optional(string, "1.15.1")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "external-dns-sa")
       nodepool               = optional(string, "system")
@@ -99,7 +111,7 @@ variable "services" {
     }), { enabled = false }),
     external-secrets = optional(object({
       enabled                = bool
-      helm_version           = optional(string, "0.9.20")
+      helm_version           = optional(string, "0.13.0")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "external-secrets-sa")
       nodepool               = optional(string, "system")
@@ -111,7 +123,7 @@ variable "services" {
     }), { enabled = false }),
     karpenter = optional(object({
       enabled                             = bool
-      helm_version                        = optional(string, "1.1.0")
+      helm_version                        = optional(string, "1.2.0")
       namespace                           = optional(string, "general")
       service_account_name                = optional(string, "karpenter")
       nodepool                            = optional(string, "system")
@@ -126,16 +138,24 @@ variable "services" {
       default_nodeclass_instance_cpu      = optional(list(string), ["2", "4"])
       deploy_default_nodepool             = optional(bool, true)
       default_nodepool_cpu_limit          = optional(string, "100")
-      default_nodepool_capacity_type      = optional(list(string), ["on-demand"])
-      default_nodepool_yaml               = optional(string)
-      default_nodeclass_yaml              = optional(string)
-      irsa_iam_role_name                  = optional(string)
-      node_iam_role_name                  = optional(string)
-      node_security_group_id              = optional(string)
+      enable_budgets                      = optional(bool, false)
+      budgets = optional(any, [
+        { nodes = "10%" },
+        { nodes = "3" },
+        { nodes = "0", schedule = "0 9 * * sat-sun", duration = "24h" },
+        { nodes = "0", schedule = "0 17 * * mon-fri", duration = "16h", reasons = ["Drifted"] }
+      ])
+      default_nodepool_capacity_type    = optional(list(string), ["on-demand"])
+      default_nodepool_yaml             = optional(string)
+      default_nodeclass_yaml            = optional(string)
+      irsa_iam_role_name                = optional(string)
+      node_iam_role_name                = optional(string)
+      node_iam_role_additional_policies = optional(map(string), {})
+      node_security_group_id            = optional(string)
     }), { enabled = false }),
     keda = optional(object({
       enabled                = bool
-      helm_version           = optional(string, "2.14.3")
+      helm_version           = optional(string, "2.16.1")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "keda-sa")
       nodepool               = optional(string, "system")
@@ -147,7 +167,7 @@ variable "services" {
     }), { enabled = false }),
     metrics-server = optional(object({
       enabled                = bool
-      helm_version           = optional(string, "3.12.1")
+      helm_version           = optional(string, "3.12.2")
       namespace              = optional(string, "general")
       nodepool               = optional(string, "system")
       additional_helm_values = optional(string, "")
