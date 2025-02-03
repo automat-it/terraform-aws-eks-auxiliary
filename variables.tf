@@ -143,6 +143,7 @@ variable "services" {
       irsa_role_name         = optional(string)
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
+      irsa_iam_policy_json   = optional(string)
     }), { enabled = false }),
     metrics-server = optional(object({
       enabled                = bool
