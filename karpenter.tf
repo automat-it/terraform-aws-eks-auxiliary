@@ -105,7 +105,7 @@ locals {
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
   %{if var.services.karpenter.enable_budgets}
-      budgets: ${jsonencode(var.services.karpenter.budgets)}
+        budgets: ${jsonencode(var.services.karpenter.budgets)}
   %{endif}
   YAML
 }
