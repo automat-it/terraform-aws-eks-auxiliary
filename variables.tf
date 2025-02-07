@@ -120,7 +120,7 @@ variable "services" {
       helm_version                        = optional(string, "1.2.0")
       namespace                           = optional(string, "general")
       service_account_name                = optional(string, "karpenter")
-      nodepool                            = optional(string, "system")
+      nodeselector                        = optional(map(string), { pool = "system" })
       additional_helm_values              = optional(string, "")
       deploy_default_nodeclass            = optional(bool, true)
       default_nodeclass_ami_family        = optional(string, "AL2023")
