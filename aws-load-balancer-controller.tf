@@ -4,11 +4,13 @@ locals {
   aws_lb_controller_helm_values = <<EOF
     enableServiceMutatorWebhook: false
     clusterName: ${var.cluster_name}
-    %{~if coalesce(var.services.aws-alb-ingress-controller.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.aws-alb-ingress-controller.node_selector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.aws-alb-ingress-controller.nodeselector~}
+    %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
       ${key}: ${value}
+    %{~endfor~}
     tolerations:
+    %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
       - key: dedicated
         operator: Equal
         value: ${value}

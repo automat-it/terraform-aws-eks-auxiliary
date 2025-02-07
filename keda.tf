@@ -2,11 +2,13 @@
 locals {
   # Helm override values
   keda_helm_values = <<EOF
-    %{~if coalesce(var.services.keda.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.keda.node_selector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.keda.nodeselector~}
+    %{~for key, value in var.services.keda.node_selector~}
       ${key}: ${value}
+    %{~endfor~}
     tolerations:
+    %{~for key, value in var.services.keda.node_selector~}
       - key: dedicated
         operator: Equal
         value: ${value}

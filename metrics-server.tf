@@ -2,11 +2,13 @@
 locals {
   # Helm override values
   metrics_server_helm_values = <<EOF
-    %{~if coalesce(var.services.metrics-server.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.metrics-server.node_selector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.metrics-server.nodeselector~}
+    %{~for key, value in var.services.metrics-server.node_selector~}
       ${key}: ${value}
+    %{~endfor~}
     tolerations:
+    %{~for key, value in var.services.metrics-server.node_selector~}
       - key: dedicated
         operator: Equal
         value: ${value}

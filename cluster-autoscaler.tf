@@ -7,11 +7,13 @@ locals {
     awsRegion: ${var.aws_region}
     rbac:
       create : true
-    %{~if coalesce(var.services.cluster-autoscaler.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.cluster-autoscaler.node_selector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.cluster-autoscaler.nodeselector~}
+    %{~for key, value in var.services.cluster-autoscaler.node_selector~}
       ${key}: ${value}
+    %{~endfor~}
     tolerations:
+    %{~for key, value in var.services.cluster-autoscaler.node_selector~}
       - key: dedicated
         operator: Equal
         value: ${value}

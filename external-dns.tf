@@ -8,11 +8,13 @@ locals {
       - --label-filter=external-dns-exclude notin (true)
     domainFilters:
       - ${var.domain_zone}
-    %{~if coalesce(var.services.external-dns.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.external-dns.node_selector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.external-dns.nodeselector~}
+    %{~for key, value in var.services.external-dns.node_selector~}
       ${key}: ${value}
+    %{~endfor~}
     tolerations:
+    %{~for key, value in var.services.external-dns.node_selector~}
       - key: dedicated
         operator: Equal
         value: ${value}

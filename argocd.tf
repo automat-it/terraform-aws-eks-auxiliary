@@ -29,11 +29,13 @@ locals {
   argocd_helm_values     = <<EOF
   global:
     domain: ${coalesce(var.services.argocd.argocd_url, "argocd.${var.domain_zone}")}
-    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.argocd.node_selector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.argocd.nodeselector~}
+    %{~for key, value in var.services.argocd.node_selector~}
       ${key}: ${value}
+    %{~endfor~}
     tolerations:
+    %{~for key, value in var.services.argocd.node_selector~}
       - key: dedicated
         operator: Equal
         value: ${value}

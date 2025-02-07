@@ -16,15 +16,15 @@ locals {
       %{~if try(module.karpenter[0].queue_name, "") != ""~}
       interruptionQueue: ${module.karpenter[0].queue_name}
       %{~endif~}
-    %{~if coalesce(var.services.karpenter.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.karpenter.node_selector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.karpenter.nodeselector~}
+    %{~for key, value in var.services.karpenter.node_selector~}
       ${key}: ${value}
     %{~endfor~}
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
-    %{~for key, value in var.services.karpenter.nodeselector~}
+    %{~for key, value in var.services.karpenter.node_selector~}
       - key: dedicated
         operator: Equal
         value: ${value}
