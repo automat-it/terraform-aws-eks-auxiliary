@@ -20,7 +20,11 @@ locals {
     nodeSelector:
     %{~for key, value in var.services.argocd.nodeselector~}
       ${key}: ${value}
+    %{~endfor~}
     tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    %{~for key, value in var.services.argocd.nodeselector~}
       - key: dedicated
         operator: Equal
         value: ${value}
