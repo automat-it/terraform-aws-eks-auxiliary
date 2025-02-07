@@ -16,15 +16,15 @@ locals {
       %{~if try(module.karpenter[0].queue_name, "") != ""~}
       interruptionQueue: ${module.karpenter[0].queue_name}
       %{~endif~}
-    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.karpenter.nodeselector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.argocd.nodeselector~}
+    %{~for key, value in var.services.karpenter.nodeselector~}
       ${key}: ${value}
     %{~endfor~}
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
-    %{~for key, value in var.services.argocd.nodeselector~}
+    %{~for key, value in var.services.karpenter.nodeselector~}
       - key: dedicated
         operator: Equal
         value: ${value}

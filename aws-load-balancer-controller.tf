@@ -4,9 +4,9 @@ locals {
   aws_lb_controller_helm_values = <<EOF
     enableServiceMutatorWebhook: false
     clusterName: ${var.cluster_name}
-    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.aws-alb-ingress-controller.nodeselector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.argocd.nodeselector~}
+    %{~for key, value in var.services.aws-alb-ingress-controller.nodeselector~}
       ${key}: ${value}
     tolerations:
       - key: dedicated

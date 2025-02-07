@@ -2,9 +2,9 @@
 locals {
   # Helm override values
   metrics_server_helm_values = <<EOF
-    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.metrics-server.nodeselector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.argocd.nodeselector~}
+    %{~for key, value in var.services.metrics-server.nodeselector~}
       ${key}: ${value}
     tolerations:
       - key: dedicated

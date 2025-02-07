@@ -16,9 +16,9 @@ locals {
         %{~if coalesce(var.services.external-secrets.irsa_role_arn, try(module.external-secrets[0].irsa_role_arn, "no_annotation")) != "no_annotation"~}
         eks.amazonaws.com/role-arn: ${coalesce(var.services.external-secrets.irsa_role_arn, module.external-secrets[0].irsa_role_arn)}
         %{~endif~}
-    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.external-secrets.nodeselector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.argocd.nodeselector~}
+    %{~for key, value in var.services.external-secrets.nodeselector~}
       ${key}: ${value}
     tolerations:
       - key: dedicated

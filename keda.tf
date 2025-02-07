@@ -2,9 +2,9 @@
 locals {
   # Helm override values
   keda_helm_values = <<EOF
-    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.keda.nodeselector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.argocd.nodeselector~}
+    %{~for key, value in var.services.keda.nodeselector~}
       ${key}: ${value}
     tolerations:
       - key: dedicated

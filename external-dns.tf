@@ -8,9 +8,9 @@ locals {
       - --label-filter=external-dns-exclude notin (true)
     domainFilters:
       - ${var.domain_zone}
-    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.external-dns.nodeselector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.argocd.nodeselector~}
+    %{~for key, value in var.services.external-dns.nodeselector~}
       ${key}: ${value}
     tolerations:
       - key: dedicated

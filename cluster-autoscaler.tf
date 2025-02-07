@@ -7,9 +7,9 @@ locals {
     awsRegion: ${var.aws_region}
     rbac:
       create : true
-    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
+    %{~if coalesce(var.services.cluster-autoscaler.nodeselector, {}) != {} ~}
     nodeSelector:
-    %{~for key, value in var.services.argocd.nodeselector~}
+    %{~for key, value in var.services.cluster-autoscaler.nodeselector~}
       ${key}: ${value}
     tolerations:
       - key: dedicated
