@@ -10,12 +10,6 @@ variable "cluster_name" {
   description = "The name of the Amazon EKS cluster."
 }
 
-variable "cluster_nodepool_name" {
-  type        = string
-  default     = "system"
-  description = "The node pool name in the Amazon EKS cluster where all controllers will be installed."
-}
-
 variable "iam_openid_provider" {
   type = object({
     oidc_provider_arn = string
@@ -63,7 +57,7 @@ variable "services" {
       helm_version                    = optional(string, "7.7.22")
       namespace                       = optional(string, "argocd")
       service_account_name            = optional(string, "argocd-sa")
-      nodepool                        = optional(string, "system")
+      nodeselector                    = optional(map(string), { pool = "system" })
       additional_helm_values          = optional(string, "")
       load_balancer_name              = optional(string)
       load_balancer_group_name        = optional(string, "internal")
@@ -80,7 +74,7 @@ variable "services" {
       helm_version           = optional(string, "1.9.2")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "aws-alb-ingress-controller-sa")
-      nodepool               = optional(string, "system")
+      nodeselector           = optional(map(string), { pool = "system" })
       additional_helm_values = optional(string, "")
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
@@ -91,7 +85,7 @@ variable "services" {
       helm_version           = optional(string, "9.46.0")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "autoscaler-sa")
-      nodepool               = optional(string, "system")
+      nodeselector           = optional(map(string), { pool = "system" })
       additional_helm_values = optional(string, "")
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
@@ -102,7 +96,7 @@ variable "services" {
       helm_version           = optional(string, "1.15.1")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "external-dns-sa")
-      nodepool               = optional(string, "system")
+      nodeselector           = optional(map(string), { pool = "system" })
       additional_helm_values = optional(string, "")
       irsa_role_name         = optional(string)
       irsa_role_arn          = optional(string)
@@ -114,7 +108,7 @@ variable "services" {
       helm_version           = optional(string, "0.13.0")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "external-secrets-sa")
-      nodepool               = optional(string, "system")
+      nodeselector           = optional(map(string), { pool = "system" })
       additional_helm_values = optional(string, "")
       irsa_role_name         = optional(string)
       irsa_role_arn          = optional(string)
@@ -158,7 +152,7 @@ variable "services" {
       helm_version           = optional(string, "2.16.1")
       namespace              = optional(string, "general")
       service_account_name   = optional(string, "keda-sa")
-      nodepool               = optional(string, "system")
+      nodeselector           = optional(map(string), { pool = "system" })
       additional_helm_values = optional(string, "")
       irsa_role_name         = optional(string)
       irsa_role_arn          = optional(string)
@@ -169,7 +163,7 @@ variable "services" {
       enabled                = bool
       helm_version           = optional(string, "3.12.2")
       namespace              = optional(string, "general")
-      nodepool               = optional(string, "system")
+      nodeselector           = optional(map(string), { pool = "system" })
       additional_helm_values = optional(string, "")
     }), { enabled = false }),
   })

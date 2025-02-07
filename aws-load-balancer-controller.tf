@@ -4,14 +4,16 @@ locals {
   aws_lb_controller_helm_values = <<EOF
     enableServiceMutatorWebhook: false
     clusterName: ${var.cluster_name}
-    %{~if coalesce(var.services.aws-alb-ingress-controller.nodepool, "no_pool") != "no_pool"~}
+    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
     nodeSelector:
-      pool: ${var.services.aws-alb-ingress-controller.nodepool}
+    %{~for key, value in var.services.argocd.nodeselector~}
+      ${key}: ${value}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${var.services.aws-alb-ingress-controller.nodepool}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
     %{~endif~}
     serviceAccount:
       create: true

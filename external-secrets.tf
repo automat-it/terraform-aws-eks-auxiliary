@@ -16,14 +16,16 @@ locals {
         %{~if coalesce(var.services.external-secrets.irsa_role_arn, try(module.external-secrets[0].irsa_role_arn, "no_annotation")) != "no_annotation"~}
         eks.amazonaws.com/role-arn: ${coalesce(var.services.external-secrets.irsa_role_arn, module.external-secrets[0].irsa_role_arn)}
         %{~endif~}
-    %{~if try(var.services.external-secrets.nodepool, var.cluster_nodepool_name) != ""~}
+    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
     nodeSelector:
-      pool: ${try(var.services.external-secrets.nodepool, var.cluster_nodepool_name)}
+    %{~for key, value in var.services.argocd.nodeselector~}
+      ${key}: ${value}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${try(var.services.external-secrets.nodepool, var.cluster_nodepool_name)}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
     %{~endif~}
     EOF
 

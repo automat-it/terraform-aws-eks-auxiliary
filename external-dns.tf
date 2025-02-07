@@ -8,14 +8,16 @@ locals {
       - --label-filter=external-dns-exclude notin (true)
     domainFilters:
       - ${var.domain_zone}
-    %{~if try(var.services.external-dns.nodepool, var.cluster_nodepool_name) != ""~}
+    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
     nodeSelector:
-      pool: ${try(var.services.external-dns.nodepool, var.cluster_nodepool_name)}
+    %{~for key, value in var.services.argocd.nodeselector~}
+      ${key}: ${value}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${try(var.services.external-dns.nodepool, var.cluster_nodepool_name)}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
     %{~endif~}
     policy: upsert-only
     serviceAccount:

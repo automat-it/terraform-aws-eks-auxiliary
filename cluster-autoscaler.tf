@@ -7,14 +7,16 @@ locals {
     awsRegion: ${var.aws_region}
     rbac:
       create : true
-    %{~if coalesce(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name) != ""~}
+    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
     nodeSelector:
-      pool: ${coalesce(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name)}
+    %{~for key, value in var.services.argocd.nodeselector~}
+      ${key}: ${value}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${coalesce(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name)}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
     %{~endif~}
     rbac:
       serviceAccount:

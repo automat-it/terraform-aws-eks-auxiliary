@@ -16,16 +16,16 @@ locals {
       %{~if try(module.karpenter[0].queue_name, "") != ""~}
       interruptionQueue: ${module.karpenter[0].queue_name}
       %{~endif~}
-    %{~if coalesce(var.services.karpenter.nodepool, "no_pool") != "no_pool"~}
+    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
     nodeSelector:
-      pool: ${var.services.karpenter.nodepool}
+    %{~for key, value in var.services.argocd.nodeselector~}
+      ${key}: ${value}
     tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
       - key: dedicated
         operator: Equal
-        value: ${var.services.karpenter.nodepool}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
     %{~endif~}
     EOT
 

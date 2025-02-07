@@ -2,14 +2,16 @@
 locals {
   # Helm override values
   metrics_server_helm_values = <<EOF
-    %{~if coalesce(var.services.metrics-server.nodepool, "no_pool") != "no_pool"~}
+    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
     nodeSelector:
-      pool: ${var.services.metrics-server.nodepool}
+    %{~for key, value in var.services.argocd.nodeselector~}
+      ${key}: ${value}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${var.services.metrics-server.nodepool}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
     %{~endif~}
     EOF
 }

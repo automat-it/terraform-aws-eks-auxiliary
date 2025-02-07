@@ -2,14 +2,16 @@
 locals {
   # Helm override values
   keda_helm_values = <<EOF
-    %{~if coalesce(var.services.keda.nodepool, "no_pool") != "no_pool"~}
+    %{~if coalesce(var.services.argocd.nodeselector, {}) != {} ~}
     nodeSelector:
-      pool: ${var.services.keda.nodepool}
+    %{~for key, value in var.services.argocd.nodeselector~}
+      ${key}: ${value}
     tolerations:
       - key: dedicated
         operator: Equal
-        value: ${var.services.keda.nodepool}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
     %{~endif~}
     rbac:
       create: true
