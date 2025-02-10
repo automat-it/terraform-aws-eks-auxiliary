@@ -104,6 +104,9 @@ locals {
       disruption:
         consolidationPolicy: WhenEmpty
         consolidateAfter: 30s
+  %{if var.services.karpenter.enable_budgets}
+        budgets: ${jsonencode(var.services.karpenter.budgets)}
+  %{endif}
   YAML
 }
 
@@ -152,9 +155,16 @@ module "karpenter" {
   node_iam_role_name            = coalesce(var.services.karpenter.node_iam_role_name, "${var.cluster_name}-Karpenter-Node-Role")
   node_iam_role_use_name_prefix = false
   # Used to attach additional IAM policies to the Karpenter node IAM role
-  node_iam_role_additional_policies = {
-    AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-  }
+  node_iam_role_additional_policies = merge(
+    {
+      AmazonEC2ContainerRegistryReadOnly = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
+      AmazonEKSWorkerNodePolicy          = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
+      AmazonSSMManagedInstanceCore       = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+      CloudWatchAgentServerPolicy        = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+    },
+    var.services.karpenter.node_iam_role_additional_policies
+  )
+
   node_iam_role_tags = var.tags
 
   service_account = var.services.karpenter.service_account_name
