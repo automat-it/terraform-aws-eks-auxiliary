@@ -176,7 +176,7 @@ variable "services" {
       enabled                = bool
       helm_version           = optional(string, "4.11.3")
       namespace              = optional(string, "general")
-      nodepool               = optional(string, "system")
+      node_selector          = optional(map(string), { pool = "system" })
       ingress_class_name     = optional(string, "nginx")
       create_private_class   = optional(bool, true)
       nodes_iam_roles        = optional(list(string))
