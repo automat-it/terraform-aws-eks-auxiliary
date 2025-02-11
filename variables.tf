@@ -172,7 +172,7 @@ variable "services" {
       nodepool               = optional(string, "system")
       additional_helm_values = optional(string, "")
     }), { enabled = false }),
-    nginx = optional(object({
+    nginx-ingress = optional(object({
       enabled                = bool
       helm_version           = optional(string, "4.11.3")
       namespace              = optional(string, "general")
