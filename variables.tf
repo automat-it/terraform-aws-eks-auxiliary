@@ -173,15 +173,17 @@ variable "services" {
       additional_helm_values = optional(string, "")
     }), { enabled = false }),
     nginx-ingress = optional(object({
-      enabled                = bool
-      helm_version           = optional(string, "4.11.3")
-      namespace              = optional(string, "general")
-      node_selector          = optional(map(string), { pool = "system" })
-      ingress_class_name     = optional(string, "nginx")
-      create_private_class   = optional(bool, true)
-      nodes_iam_roles        = optional(list(string))
-      node_security_group_id = optional(string)
-      additional_helm_values = optional(string, "")
+      enabled                        = bool
+      helm_version                   = optional(string, "4.11.3")
+      namespace                      = optional(string, "general")
+      node_selector                  = optional(map(string), { pool = "system" })
+      ingress_class_name             = optional(string, "nginx")
+      create_private_class           = optional(bool, true)
+      create_public_class            = optional(bool, true)
+      nodes_iam_roles                = optional(list(string))
+      node_security_group_id         = optional(string)
+      additional_private_helm_values = optional(string, "")
+      additional_public_helm_values  = optional(string, "")
     }), { enabled = false }),
   })
   description = "List of services and their parameters (version, configs, namespaces, etc.)."

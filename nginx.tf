@@ -1,6 +1,6 @@
 locals {
   nginx_private_service_account_name = "${var.services.nginx-ingress.ingress_class_name}-private-sa"
-  nginx_private_helm_values    = <<EOF
+  nginx_private_helm_values          = <<EOF
     nameOverride: ${var.services.nginx-ingress.ingress_class_name}-private
     controller:
       replicaCount: 2
@@ -31,7 +31,7 @@ locals {
     EOF
 
   nginx_public_service_account_name = "${var.services.nginx-ingress.ingress_class_name}-public-sa"
-  nginx_public_helm_values    = <<EOF
+  nginx_public_helm_values          = <<EOF
     nameOverride: ${var.services.nginx-ingress.ingress_class_name}-public
     controller:
       replicaCount: 2
@@ -80,7 +80,7 @@ locals {
 }
 
 resource "aws_security_group_rule" "allow_http_from_nodes" {
-  count       = var.services.nginx-ingress.enabled ? 1 : 0
+  count                    = var.services.nginx-ingress.enabled ? 1 : 0
   type                     = "ingress"
   from_port                = 80
   to_port                  = 80
@@ -91,7 +91,7 @@ resource "aws_security_group_rule" "allow_http_from_nodes" {
 }
 
 module "nginx_private" {
-  count                = var.services.nginx-ingress.enabled && var.services.aws-alb-ingress-controller.enabled && var.services.nginx-ingress.create_private_class ? 1 : 0
+  count                = var.services.nginx-ingress.enabled && var.services.nginx-ingress.create_private_class ? 1 : 0
   source               = "./modules/helm-chart"
   name                 = "nginx-private"
   repository           = "https://kubernetes.github.io/ingress-nginx"
@@ -104,7 +104,7 @@ module "nginx_private" {
 
   values = [
     local.nginx_private_helm_values,
-    var.services.nginx-ingress.additional_helm_values
+    var.services.nginx-ingress.additional_private_helm_values
   ]
 
   depends_on = [
@@ -114,7 +114,7 @@ module "nginx_private" {
 }
 
 module "nginx_public" {
-  count                = var.services.nginx-ingress.enabled && var.services.aws-alb-ingress-controller.enabled ? 1 : 0
+  count                = var.services.nginx-ingress.enabled && var.services.nginx-ingress.create_public_class ? 1 : 0
   source               = "./modules/helm-chart"
   name                 = "nginx-public"
   repository           = "https://kubernetes.github.io/ingress-nginx"
@@ -127,7 +127,7 @@ module "nginx_public" {
 
   values = [
     local.nginx_public_helm_values,
-    var.services.nginx-ingress.additional_helm_values
+    var.services.nginx-ingress.additional_public_helm_values
   ]
 
   depends_on = [
