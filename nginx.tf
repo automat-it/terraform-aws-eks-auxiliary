@@ -13,11 +13,13 @@ locals {
           service.beta.kubernetes.io/aws-load-balancer-scheme: internal
           service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
           service.beta.kubernetes.io/aws-load-balancer-name: "nginx-private-nlb"
+      %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
       tolerations:
-      - key: dedicated
-        operator: Equal
-        value: ${var.services.nginx-ingress.nodepool}
-        effect: NoSchedule
+        - key: dedicated
+          operator: Equal
+          value: ${value}
+          effect: NoSchedule
+      %{~endfor~}
       config:
         use-proxy-protocol: "true"
         real-ip-header: "proxy_protocol"
@@ -44,11 +46,13 @@ locals {
           service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
           service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
           service.beta.kubernetes.io/aws-load-balancer-name: "nginx-public-nlb"
+      %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
       tolerations:
-      - key: dedicated
-        operator: Equal
-        value: ${var.services.nginx-ingress.nodepool}
-        effect: NoSchedule
+        - key: dedicated
+          operator: Equal
+          value: ${value}
+          effect: NoSchedule
+      %{~endfor~}
       config:
         use-proxy-protocol: "true"
         real-ip-header: "proxy_protocol"
