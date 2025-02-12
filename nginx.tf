@@ -13,13 +13,19 @@ locals {
           service.beta.kubernetes.io/aws-load-balancer-scheme: internal
           service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
           service.beta.kubernetes.io/aws-load-balancer-name: "nginx-private-nlb"
+      %{~if coalesce(var.services.nginx-ingress.node_selector, {}) != {} ~}
+      nodeSelector:
+      %{~for key, value in var.services.nginx-ingress.node_selector~}
+        ${key}: ${value}
+      %{~endfor~}
       tolerations:
-      %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
+      %{~for key, value in var.services.nginx-ingress.node_selector~}
         - key: dedicated
           operator: Equal
           value: ${value}
           effect: NoSchedule
       %{~endfor~}
+      %{~endif~}
       config:
         use-proxy-protocol: "true"
         real-ip-header: "proxy_protocol"
@@ -46,13 +52,19 @@ locals {
           service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
           service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
           service.beta.kubernetes.io/aws-load-balancer-name: "nginx-public-nlb"
+      %{~if coalesce(var.services.nginx-ingress.node_selector, {}) != {} ~}
+      nodeSelector:
+      %{~for key, value in var.services.nginx-ingress.node_selector~}
+        ${key}: ${value}
+      %{~endfor~}
       tolerations:
-      %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
+      %{~for key, value in var.services.nginx-ingress.node_selector~}
         - key: dedicated
           operator: Equal
           value: ${value}
           effect: NoSchedule
       %{~endfor~}
+      %{~endif~}
       config:
         use-proxy-protocol: "true"
         real-ip-header: "proxy_protocol"
