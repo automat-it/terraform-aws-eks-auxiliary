@@ -13,8 +13,8 @@ locals {
           service.beta.kubernetes.io/aws-load-balancer-scheme: internal
           service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
           service.beta.kubernetes.io/aws-load-balancer-name: "nginx-private-nlb"
-      %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
       tolerations:
+      %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
         - key: dedicated
           operator: Equal
           value: ${value}
@@ -46,8 +46,8 @@ locals {
           service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
           service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
           service.beta.kubernetes.io/aws-load-balancer-name: "nginx-public-nlb"
-      %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
       tolerations:
+      %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
         - key: dedicated
           operator: Equal
           value: ${value}
