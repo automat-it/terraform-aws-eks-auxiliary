@@ -48,6 +48,12 @@ variable "force_update" {
   default     = false
 }
 
+variable "wait" {
+  description = "Whether to wait until all resources are ready."
+  type        = bool
+  default     = true
+}
+
 variable "service_account_name" {
   description = "Name of the Kubernetes service account."
   type        = string
