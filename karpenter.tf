@@ -56,7 +56,7 @@ locals {
             kubernetes.io/cluster/${var.cluster_name}: owned
             "aws:eks:cluster-name": ${var.cluster_name}
       metadataOptions:
-        httpPutResponseHopLimit: 2
+        httpPutResponseHopLimit: ${var.services.karpenter.http_put_response_hop_limit}
       blockDeviceMappings:
         - deviceName: /dev/xvda
           ebs:

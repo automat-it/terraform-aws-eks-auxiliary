@@ -11,7 +11,6 @@ resource "helm_release" "this" {
   version           = var.helm_version
   dependency_update = var.dependency_update
   force_update      = var.force_update
-  wait              = var.wait
 
   values = var.values
 }
