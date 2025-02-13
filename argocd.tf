@@ -273,6 +273,16 @@ locals {
 }
 
 ################################################################################
+# Argocd namespace
+################################################################################
+resource "kubernetes_namespace_v1" "argocd" {
+  count = var.services.argocd.enabled ? 1 : 0
+  metadata {
+    name = var.services.argocd.namespace
+  }
+}
+
+################################################################################
 # Argocd helm
 ################################################################################
 module "argocd" {
@@ -295,7 +305,7 @@ module "argocd" {
   ]
 
   depends_on = [
-    kubernetes_namespace_v1.general,
+    kubernetes_namespace_v1.argocd,
     module.aws-alb-ingress-controller
   ]
 }
