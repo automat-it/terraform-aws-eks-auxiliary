@@ -132,6 +132,7 @@ variable "services" {
       default_nodeclass_ami_family        = optional(string, "AL2023")
       default_nodeclass_ami_alias         = optional(string, "al2023@latest")
       default_nodeclass_name              = optional(string, "default")
+      http_put_response_hop_limit         = optional(string, "2")
       default_nodeclass_volume_size       = optional(string, "20Gi")
       default_nodeclass_volume_type       = optional(string, "gp3")
       default_nodeclass_instance_category = optional(list(string), ["t", "c", "m"])
