@@ -247,7 +247,7 @@ locals {
 ################################################################################
 module "aws-alb-ingress-controller" {
   source               = "./modules/helm-chart"
-  count                = var.services.aws-alb-ingress-controller.enabled ? 1 : 0
+  count                = var.services.aws-alb-ingress-controller.enabled || (var.services.nginx-ingress.enabled && var.services.nginx-ingress.create_public_class) || (var.services.nginx-ingress.enabled && var.services.nginx-ingress.create_private_class) ? 1 : 0
   name                 = "aws-alb-ingress-controller"
   repository           = "https://aws.github.io/eks-charts"
   chart                = "aws-load-balancer-controller"
