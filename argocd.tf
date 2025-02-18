@@ -276,7 +276,7 @@ locals {
 # Argocd namespace
 ################################################################################
 resource "kubernetes_namespace_v1" "argocd" {
-  count = var.services.argocd.enabled ? 1 : 0
+  count = var.services.argocd.enabled && var.services.argocd.namespace == "argocd" ? 1 : 0
   metadata {
     name = var.services.argocd.namespace
   }
