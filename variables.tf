@@ -53,11 +53,18 @@ variable "domain_zone" {
 variable "services" {
   type = object({
     argocd = optional(object({
-      enabled                         = bool
-      helm_version                    = optional(string, "7.7.22")
-      namespace                       = optional(string, "argocd")
-      service_account_name            = optional(string, "argocd-sa")
-      node_selector                   = optional(map(string), { pool = "system" })
+      enabled              = bool
+      helm_version         = optional(string, "7.7.22")
+      namespace            = optional(string, "argocd")
+      service_account_name = optional(string, "argocd-sa")
+      node_selector        = optional(map(string), { pool = "system" })
+      tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
       additional_helm_values          = optional(string, "")
       load_balancer_name              = optional(string)
       load_balancer_group_name        = optional(string, "internal")

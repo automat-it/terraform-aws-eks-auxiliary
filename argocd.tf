@@ -42,6 +42,18 @@ locals {
         effect: NoSchedule
     %{~endfor~}
     %{~endif~}
+    %{~if coalesce(var.services.argocd.tolerations, []) != []~}
+    tolerations:
+    %{~for i in var.services.argocd.tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
   server:
     serviceAccount:
       name: ${var.services.argocd.service_account_name}
