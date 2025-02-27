@@ -63,6 +63,7 @@ variable "services" {
       helm_version                    = optional(string, "7.7.22")
       namespace                       = optional(string, "argocd")
       service_account_name            = optional(string, "argocd-sa")
+      create_namespace                = optional(bool, true)
       nodepool                        = optional(string, "system")
       additional_helm_values          = optional(string, "")
       load_balancer_name              = optional(string)
