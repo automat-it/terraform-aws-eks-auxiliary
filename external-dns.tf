@@ -13,6 +13,8 @@ locals {
     %{~for key, value in var.services.external-dns.node_selector~}
       ${key}: ${value}
     %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.external-dns.node_selector, {}) != {} || coalesce(var.services.external-dns.tolerations, []) != []~}
     tolerations:
     %{~for key, value in var.services.external-dns.node_selector~}
       - key: dedicated
@@ -20,9 +22,7 @@ locals {
         value: ${value}
         effect: NoSchedule
     %{~endfor~}
-    %{~endif~}
-    %{~if coalesce(var.services.external-dns.tolerations, []) != []~}
-    tolerations:
+    %{~if var.services.external-dns.tolerations != null~}
     %{~for i in var.services.external-dns.tolerations~}
       - key: ${i.key}
         operator: ${i.operator}
@@ -32,6 +32,9 @@ locals {
         tolerationSeconds: ${i.tolerationSeconds}
         %{~endif~}
     %{~endfor~}
+    %{~endif~}
+    %{~else~}
+    tolerations: []
     %{~endif~}
     policy: upsert-only
     serviceAccount:

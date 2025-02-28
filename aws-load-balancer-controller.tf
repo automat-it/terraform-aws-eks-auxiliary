@@ -9,6 +9,8 @@ locals {
     %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
       ${key}: ${value}
     %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.aws-alb-ingress-controller.node_selector, {}) != {} || coalesce(var.services.aws-alb-ingress-controller.tolerations, []) != []~}
     tolerations:
     %{~for key, value in var.services.aws-alb-ingress-controller.node_selector~}
       - key: dedicated
@@ -16,9 +18,7 @@ locals {
         value: ${value}
         effect: NoSchedule
     %{~endfor~}
-    %{~endif~}
-    %{~if coalesce(var.services.aws-alb-ingress-controller.tolerations, []) != []~}
-    tolerations:
+    %{~if var.services.aws-alb-ingress-controller.tolerations != null~}
     %{~for i in var.services.aws-alb-ingress-controller.tolerations~}
       - key: ${i.key}
         operator: ${i.operator}
@@ -28,6 +28,9 @@ locals {
         tolerationSeconds: ${i.tolerationSeconds}
         %{~endif~}
     %{~endfor~}
+    %{~endif~}
+    %{~else~}
+    tolerations: []
     %{~endif~}
     serviceAccount:
       create: true

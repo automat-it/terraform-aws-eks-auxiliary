@@ -21,6 +21,8 @@ locals {
     %{~for key, value in var.services.karpenter.node_selector~}
       ${key}: ${value}
     %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.karpenter.node_selector, {}) != {} || coalesce(var.services.karpenter.tolerations, []) != []~}
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
@@ -30,11 +32,7 @@ locals {
         value: ${value}
         effect: NoSchedule
     %{~endfor~}
-    %{~endif~}
-    %{~if coalesce(var.services.karpenter.tolerations, []) != []~}
-    tolerations:
-      - key: CriticalAddonsOnly
-        operator: Exists
+    %{~if var.services.karpenter.tolerations != null~}
     %{~for i in var.services.karpenter.tolerations~}
       - key: ${i.key}
         operator: ${i.operator}
@@ -44,6 +42,9 @@ locals {
         tolerationSeconds: ${i.tolerationSeconds}
         %{~endif~}
     %{~endfor~}
+    %{~endif~}
+    %{~else~}
+    tolerations: []
     %{~endif~}
     EOT
 

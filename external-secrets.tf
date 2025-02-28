@@ -21,6 +21,8 @@ locals {
     %{~for key, value in var.services.external-secrets.node_selector~}
       ${key}: ${value}
     %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.external-secrets.node_selector, {}) != {} || coalesce(var.services.external-secrets.tolerations, []) != []~}
     tolerations:
     %{~for key, value in var.services.external-secrets.node_selector~}
       - key: dedicated
@@ -28,9 +30,7 @@ locals {
         value: ${value}
         effect: NoSchedule
     %{~endfor~}
-    %{~endif~}
-    %{~if coalesce(var.services.external-secrets.tolerations, []) != []~}
-    tolerations:
+    %{~if var.services.external-secrets.tolerations != null~}
     %{~for i in var.services.external-secrets.tolerations~}
       - key: ${i.key}
         operator: ${i.operator}
@@ -40,6 +40,9 @@ locals {
         tolerationSeconds: ${i.tolerationSeconds}
         %{~endif~}
     %{~endfor~}
+    %{~endif~}
+    %{~else~}
+    tolerations: []
     %{~endif~}
     EOF
 
