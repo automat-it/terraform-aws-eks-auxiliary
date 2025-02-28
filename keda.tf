@@ -8,7 +8,7 @@ locals {
       ${key}: ${value}
     %{~endfor~}
     %{~endif~}
-    %{~if coalesce(var.services.keda.node_selector, {}) != {} || coalesce(var.services.keda.tolerations, []) != []~}
+    %{~if coalesce(var.services.keda.node_selector, {}) != {} || coalesce(var.services.keda.additional_tolerations, []) != []~}
     tolerations:
     %{~for key, value in var.services.keda.node_selector~}
       - key: dedicated
@@ -16,8 +16,8 @@ locals {
         value: ${value}
         effect: NoSchedule
     %{~endfor~}
-    %{~if var.services.keda.tolerations != null~}
-    %{~for i in var.services.keda.tolerations~}
+    %{~if var.services.keda.additional_tolerations != null~}
+    %{~for i in var.services.keda.additional_tolerations~}
       - key: ${i.key}
         operator: ${i.operator}
         value: ${i.value}

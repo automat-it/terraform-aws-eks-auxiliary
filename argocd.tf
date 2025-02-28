@@ -35,7 +35,7 @@ locals {
       ${key}: ${value}
     %{~endfor~}
     %{~endif~}
-    %{~if coalesce(var.services.argocd.node_selector, {}) != {} || coalesce(var.services.argocd.tolerations, []) != []~}
+    %{~if coalesce(var.services.argocd.node_selector, {}) != {} || coalesce(var.services.argocd.additional_tolerations, []) != []~}
     tolerations:
     %{~for key, value in var.services.argocd.node_selector~}
       - key: dedicated
@@ -43,8 +43,8 @@ locals {
         value: ${value}
         effect: NoSchedule
     %{~endfor~}
-    %{~if var.services.argocd.tolerations != null~}
-    %{~for i in var.services.argocd.tolerations~}
+    %{~if var.services.argocd.additional_tolerations != null~}
+    %{~for i in var.services.argocd.additional_tolerations~}
       - key: ${i.key}
         operator: ${i.operator}
         value: ${i.value}

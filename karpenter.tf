@@ -22,7 +22,7 @@ locals {
       ${key}: ${value}
     %{~endfor~}
     %{~endif~}
-    %{~if coalesce(var.services.karpenter.node_selector, {}) != {} || coalesce(var.services.karpenter.tolerations, []) != []~}
+    %{~if coalesce(var.services.karpenter.node_selector, {}) != {} || coalesce(var.services.karpenter.additional_tolerations, []) != []~}
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
@@ -32,8 +32,8 @@ locals {
         value: ${value}
         effect: NoSchedule
     %{~endfor~}
-    %{~if var.services.karpenter.tolerations != null~}
-    %{~for i in var.services.karpenter.tolerations~}
+    %{~if var.services.karpenter.additional_tolerations != null~}
+    %{~for i in var.services.karpenter.additional_tolerations~}
       - key: ${i.key}
         operator: ${i.operator}
         value: ${i.value}

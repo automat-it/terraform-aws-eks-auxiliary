@@ -58,7 +58,7 @@ variable "services" {
       namespace            = optional(string, "argocd")
       service_account_name = optional(string, "argocd-sa")
       node_selector        = optional(map(string), { pool = "system" })
-      tolerations = optional(list(object({
+      additional_tolerations = optional(list(object({
         key               = string
         operator          = optional(string, "Equal")
         value             = string
@@ -83,7 +83,7 @@ variable "services" {
       namespace            = optional(string, "general")
       service_account_name = optional(string, "aws-alb-ingress-controller-sa")
       node_selector        = optional(map(string), { pool = "system" })
-      tolerations = optional(list(object({
+      additional_tolerations = optional(list(object({
         key               = string
         operator          = optional(string, "Equal")
         value             = string
@@ -101,7 +101,7 @@ variable "services" {
       namespace            = optional(string, "general")
       service_account_name = optional(string, "autoscaler-sa")
       node_selector        = optional(map(string), { pool = "system" })
-      tolerations = optional(list(object({
+      additional_tolerations = optional(list(object({
         key               = string
         operator          = optional(string, "Equal")
         value             = string
@@ -119,7 +119,7 @@ variable "services" {
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-dns-sa")
       node_selector        = optional(map(string), { pool = "system" })
-      tolerations = optional(list(object({
+      additional_tolerations = optional(list(object({
         key               = string
         operator          = optional(string, "Equal")
         value             = string
@@ -138,7 +138,7 @@ variable "services" {
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-secrets-sa")
       node_selector        = optional(map(string), { pool = "system" })
-      tolerations = optional(list(object({
+      additional_tolerations = optional(list(object({
         key               = string
         operator          = optional(string, "Equal")
         value             = string
@@ -157,7 +157,7 @@ variable "services" {
       namespace            = optional(string, "general")
       service_account_name = optional(string, "karpenter")
       node_selector        = optional(map(string), { pool = "system" })
-      tolerations = optional(list(object({
+      additional_tolerations = optional(list(object({
         key               = string
         operator          = optional(string, "Equal")
         value             = string
@@ -197,7 +197,7 @@ variable "services" {
       namespace            = optional(string, "general")
       service_account_name = optional(string, "keda-sa")
       node_selector        = optional(map(string), { pool = "system" })
-      tolerations = optional(list(object({
+      additional_tolerations = optional(list(object({
         key               = string
         operator          = optional(string, "Equal")
         value             = string
@@ -215,7 +215,7 @@ variable "services" {
       helm_version  = optional(string, "3.12.2")
       namespace     = optional(string, "general")
       node_selector = optional(map(string), { pool = "system" })
-      tolerations = optional(list(object({
+      additional_tolerations = optional(list(object({
         key               = string
         operator          = optional(string, "Equal")
         value             = string
