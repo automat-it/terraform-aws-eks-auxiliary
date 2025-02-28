@@ -15,6 +15,18 @@ locals {
         effect: NoSchedule
     %{~endfor~}
     %{~endif~}
+    %{~if coalesce(var.services.metrics-server.tolerations, []) != []~}
+    tolerations:
+    %{~for i in var.services.metrics-server.tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
     EOF
 }
 

@@ -31,6 +31,20 @@ locals {
         effect: NoSchedule
     %{~endfor~}
     %{~endif~}
+    %{~if coalesce(var.services.karpenter.tolerations, []) != []~}
+    tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+    %{~for i in var.services.karpenter.tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
     EOT
 
   # Default karpenter nodeclass

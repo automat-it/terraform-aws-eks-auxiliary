@@ -21,6 +21,18 @@ locals {
         effect: NoSchedule
     %{~endfor~}
     %{~endif~}
+    %{~if coalesce(var.services.external-dns.tolerations, []) != []~}
+    tolerations:
+    %{~for i in var.services.external-dns.tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
     policy: upsert-only
     serviceAccount:
       create: true

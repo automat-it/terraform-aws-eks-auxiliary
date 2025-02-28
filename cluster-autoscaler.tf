@@ -20,6 +20,18 @@ locals {
         effect: NoSchedule
     %{~endfor~}
     %{~endif~}
+    %{~if coalesce(var.services.cluster-autoscaler.tolerations, []) != []~}
+    tolerations:
+    %{~for i in var.services.cluster-autoscaler.tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
     rbac:
       serviceAccount:
         create: true

@@ -29,6 +29,18 @@ locals {
         effect: NoSchedule
     %{~endfor~}
     %{~endif~}
+    %{~if coalesce(var.services.external-secrets.tolerations, []) != []~}
+    tolerations:
+    %{~for i in var.services.external-secrets.tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
     EOF
 
   external_secrets_irsa_policy_json = <<-POLICY
