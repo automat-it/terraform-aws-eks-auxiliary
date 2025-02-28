@@ -16,16 +16,35 @@ locals {
       %{~if try(module.karpenter[0].queue_name, "") != ""~}
       interruptionQueue: ${module.karpenter[0].queue_name}
       %{~endif~}
-    %{~if coalesce(var.services.karpenter.nodepool, "no_pool") != "no_pool"~}
+    %{~if coalesce(var.services.karpenter.node_selector, {}) != {} ~}
     nodeSelector:
-      pool: ${var.services.karpenter.nodepool}
+    %{~for key, value in var.services.karpenter.node_selector~}
+      ${key}: ${value}
+    %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.karpenter.node_selector, {}) != {} || coalesce(var.services.karpenter.additional_tolerations, []) != []~}
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
+    %{~for key, value in var.services.karpenter.node_selector~}
       - key: dedicated
         operator: Equal
-        value: ${var.services.karpenter.nodepool}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
+    %{~if var.services.karpenter.additional_tolerations != null~}
+    %{~for i in var.services.karpenter.additional_tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
+    %{~else~}
+    tolerations: []
     %{~endif~}
     EOT
 

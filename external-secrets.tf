@@ -16,14 +16,33 @@ locals {
         %{~if coalesce(var.services.external-secrets.irsa_role_arn, try(module.external-secrets[0].irsa_role_arn, "no_annotation")) != "no_annotation"~}
         eks.amazonaws.com/role-arn: ${coalesce(var.services.external-secrets.irsa_role_arn, module.external-secrets[0].irsa_role_arn)}
         %{~endif~}
-    %{~if try(var.services.external-secrets.nodepool, var.cluster_nodepool_name) != ""~}
+    %{~if coalesce(var.services.external-secrets.node_selector, {}) != {} ~}
     nodeSelector:
-      pool: ${try(var.services.external-secrets.nodepool, var.cluster_nodepool_name)}
+    %{~for key, value in var.services.external-secrets.node_selector~}
+      ${key}: ${value}
+    %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.external-secrets.node_selector, {}) != {} || coalesce(var.services.external-secrets.additional_tolerations, []) != []~}
     tolerations:
+    %{~for key, value in var.services.external-secrets.node_selector~}
       - key: dedicated
         operator: Equal
-        value: ${try(var.services.external-secrets.nodepool, var.cluster_nodepool_name)}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
+    %{~if var.services.external-secrets.additional_tolerations != null~}
+    %{~for i in var.services.external-secrets.additional_tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
+    %{~else~}
+    tolerations: []
     %{~endif~}
     EOF
 

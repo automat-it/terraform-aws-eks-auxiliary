@@ -8,14 +8,33 @@ locals {
       - --label-filter=external-dns-exclude notin (true)
     domainFilters:
       - ${var.domain_zone}
-    %{~if try(var.services.external-dns.nodepool, var.cluster_nodepool_name) != ""~}
+    %{~if coalesce(var.services.external-dns.node_selector, {}) != {} ~}
     nodeSelector:
-      pool: ${try(var.services.external-dns.nodepool, var.cluster_nodepool_name)}
+    %{~for key, value in var.services.external-dns.node_selector~}
+      ${key}: ${value}
+    %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.external-dns.node_selector, {}) != {} || coalesce(var.services.external-dns.additional_tolerations, []) != []~}
     tolerations:
+    %{~for key, value in var.services.external-dns.node_selector~}
       - key: dedicated
         operator: Equal
-        value: ${try(var.services.external-dns.nodepool, var.cluster_nodepool_name)}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
+    %{~if var.services.external-dns.additional_tolerations != null~}
+    %{~for i in var.services.external-dns.additional_tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
+    %{~else~}
+    tolerations: []
     %{~endif~}
     policy: upsert-only
     serviceAccount:

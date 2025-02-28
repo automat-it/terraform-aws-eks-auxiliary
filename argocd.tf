@@ -29,14 +29,33 @@ locals {
   argocd_helm_values     = <<EOF
   global:
     domain: ${coalesce(var.services.argocd.argocd_url, "argocd.${var.domain_zone}")}
-    %{~if coalesce(var.services.argocd.nodepool, "no_pool") != "no_pool"~}
+    %{~if coalesce(var.services.argocd.node_selector, {}) != {} ~}
     nodeSelector:
-      pool: ${var.services.argocd.nodepool}
+    %{~for key, value in var.services.argocd.node_selector~}
+      ${key}: ${value}
+    %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.argocd.node_selector, {}) != {} || coalesce(var.services.argocd.additional_tolerations, []) != []~}
     tolerations:
+    %{~for key, value in var.services.argocd.node_selector~}
       - key: dedicated
         operator: Equal
-        value: ${var.services.argocd.nodepool}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
+    %{~if var.services.argocd.additional_tolerations != null~}
+    %{~for i in var.services.argocd.additional_tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
+    %{~else~}
+    tolerations: []
     %{~endif~}
   server:
     serviceAccount:
