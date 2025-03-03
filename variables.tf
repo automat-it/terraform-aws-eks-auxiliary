@@ -82,6 +82,7 @@ variable "services" {
       helm_version         = optional(string, "1.9.2")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "aws-alb-ingress-controller-sa")
+      default_ssl_policy   = optional(string, "ELBSecurityPolicy-TLS13-1-2-2021-06")
       node_selector        = optional(map(string), { pool = "system" })
       additional_tolerations = optional(list(object({
         key               = string

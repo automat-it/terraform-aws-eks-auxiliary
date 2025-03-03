@@ -39,6 +39,7 @@ locals {
       annotations:
         eks.amazonaws.com/role-arn: ${coalesce(var.services.aws-alb-ingress-controller.irsa_role_arn, module.aws-alb-ingress-controller[0].irsa_role_arn)}
       %{~endif~}
+    defaultSSLPolicy: ${var.services.aws-alb-ingress-controller.default_ssl_policy}
     vpcId: ${var.vpc_id}
     EOF
 
