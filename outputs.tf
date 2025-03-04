@@ -85,7 +85,7 @@ output "karpenter_node_iam_role_arn" {
 
 output "karpenter_node_iam_role_id" {
   description = "The ID of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts)."
-  value       = var.services.karpenter.enabled ? module.karpenter[0].node_iam_role_id : null
+  value       = var.services.karpenter.enabled ? module.karpenter[0].node_iam_role_name : null
 }
 
 output "karpenter_default_node_class_name" {
