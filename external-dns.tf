@@ -2,7 +2,7 @@
 locals {
   # Helm override values
   external_dns_helm_values = <<EOF
-    logLevel: debug
+    logLevel: info
     txtOwnerId: ${var.r53_zone_id}
     extraArgs:
       - --label-filter=external-dns-exclude notin (true)
