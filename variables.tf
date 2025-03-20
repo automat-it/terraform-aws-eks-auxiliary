@@ -196,6 +196,7 @@ variable "services" {
       irsa_iam_role_name                = optional(string)
       node_iam_role_name                = optional(string)
       node_iam_role_additional_policies = optional(map(string), {})
+      node_iam_role_additional_tags     = optional(map(string), {})
       node_security_group_id            = optional(string)
     }), { enabled = false }),
     keda = optional(object({

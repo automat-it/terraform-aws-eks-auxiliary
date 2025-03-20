@@ -190,7 +190,7 @@ module "karpenter" {
     var.services.karpenter.node_iam_role_additional_policies
   )
 
-  node_iam_role_tags = var.tags
+  node_iam_role_tags = merge(var.tags, var.services.karpenter.node_iam_role_additional_tags)
 
   service_account = var.services.karpenter.service_account_name
 
