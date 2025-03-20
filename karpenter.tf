@@ -83,13 +83,17 @@ locals {
             volumeType: ${var.services.karpenter.default_nodeclass_volume_type}
             encrypted: true
             deleteOnTermination: true
-      tags:
-        karpenter.sh/discovery: ${var.cluster_name}
-        Name: "${var.cluster_name}-Karpenter-worker"
+      tags: ${jsonencode(merge(
+  {
+    "karpenter.sh/discovery" = var.cluster_name,
+    "Name"                   = "${var.cluster_name}-Karpenter-worker"
+  },
+  var.node_class_additional_tags
+))}
   YAML
 
-  # Default karpenter nodepool
-  default_nodepool_yaml = <<-YAML
+# Default karpenter nodepool
+default_nodepool_yaml = <<-YAML
     apiVersion: karpenter.sh/v1
     kind: NodePool
     metadata:
