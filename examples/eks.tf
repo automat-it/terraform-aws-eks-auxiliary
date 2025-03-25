@@ -158,6 +158,13 @@ module "eks" {
         pool = "system"
       }
 
+      iam_role_additional_policies = merge(
+        {
+          AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        },
+        var.install_session_logger ? { SessionLoggingPolicy = aws_iam_policy.eks_session_logging_policy[0].arn } : {}
+      )
+
       taints = {
         dedicated = {
           key    = "dedicated"
@@ -181,10 +188,72 @@ module "eks" {
         pool = "worker"
       }
 
+      iam_role_additional_policies = merge(
+        {
+          AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        },
+        var.install_session_logger ? { SessionLoggingPolicy = aws_iam_policy.eks_session_logging_policy[0].arn } : {}
+      )
+
       tags = {
         pool = "worker"
       }
     }
+  }
+}
+
+resource "aws_iam_policy" "eks_session_logging_policy" {
+  count = var.install_session_logger ? 1 : 0
+
+  name   = "eks-session-logging-policy"
+  policy = data.aws_iam_policy_document.eks-session-logging-policy[0].json
+}
+
+
+# Policy document for SSM SSH session logging
+data "aws_iam_policy_document" "eks-session-logging-policy" {
+  count = var.install_session_logger ? 1 : 0
+
+  statement {
+    sid = "CloudWatchAccessForSessionManager"
+    actions = [
+      "logs:PutLogEvents",
+      "logs:CreateLogStream",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+    sid = "KMSEncryptionForSessionManager"
+    actions = [
+      "kms:DescribeKey",
+      "kms:Decrypt"
+    ]
+    resources = [
+      module.session-logger[0].kms_key
+    ]
+  }
+  statement {
+    sid = "S3BucketAccessForSessionManager"
+    actions = [
+      "s3:PutObject",
+    ]
+    resources = [
+      module.log-bucket[0].log_bucket.arn,
+      "${module.log-bucket[0].log_bucket.arn}/*",
+    ]
+  }
+  statement {
+    sid = "S3BucketEncryptionForSessionManager"
+    actions = [
+      "s3:GetEncryptionConfiguration",
+    ]
+    resources = [
+      module.log-bucket[0].log_bucket.arn
+    ]
   }
 }
 
