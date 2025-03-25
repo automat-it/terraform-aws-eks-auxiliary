@@ -52,6 +52,7 @@ You can check why these steps are necessary in [AWS Doc](https://docs.aws.amazon
 | external-dns | ./modules/helm-chart | n/a |
 | external-secrets | ./modules/helm-chart | n/a |
 | karpenter | terraform-aws-modules/eks/aws//modules/karpenter | 20.26.1 |
+| karpenter-crd-helm | ./modules/helm-chart | n/a |
 | karpenter-helm | ./modules/helm-chart | n/a |
 | keda | ./modules/helm-chart | n/a |
 | metrics-server | ./modules/helm-chart | n/a |

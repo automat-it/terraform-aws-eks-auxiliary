@@ -146,10 +146,31 @@ module "karpenter-helm" {
   chart        = "karpenter"
   namespace    = var.services.karpenter.namespace
   helm_version = var.services.karpenter.helm_version
+  skip_crds    = var.services.karpenter.manage_crd
 
   values = [
     local.karpenter_helm_values,
     var.services.karpenter.additional_helm_values
+  ]
+
+  depends_on = [kubernetes_namespace_v1.general]
+}
+
+################################################################################
+# Karpenter crd helm
+################################################################################
+module "karpenter-crd-helm" {
+  source       = "./modules/helm-chart"
+  count        = var.services.karpenter.manage_crd ? 1 : 0
+  name         = "karpenter-crd"
+  repository   = "oci://public.ecr.aws/karpenter"
+  chart        = "karpenter-crd"
+  namespace    = var.services.karpenter.namespace
+  helm_version = var.services.karpenter.helm_version
+
+  values = [
+    local.karpenter_helm_values,
+    var.services.karpenter.crd_additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]
