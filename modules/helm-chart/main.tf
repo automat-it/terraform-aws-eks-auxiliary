@@ -6,6 +6,7 @@ resource "helm_release" "this" {
   repository_password = var.repository_password
 
   chart             = var.chart
+  skip_crds         = var.skip_crds
   namespace         = var.namespace
   create_namespace  = true
   version           = var.helm_version
