@@ -31,6 +31,12 @@ variable "create_namespace_security" {
   description = "Determines whether to create the security-related Kubernetes namespace. Set to 'true' to create the namespace, or 'false' to skip its creation."
 }
 
+variable "node_class_additional_tags" {
+  type        = map(string)
+  default     = {}
+  description = "Additional tags, that will be assigned to the NodeClass."
+}
+
 # VPC
 variable "vpc_id" {
   type        = string
@@ -54,7 +60,7 @@ variable "services" {
   type = object({
     argocd = optional(object({
       enabled              = bool
-      helm_version         = optional(string, "7.7.22")
+      helm_version         = optional(string, "7.8.8")
       namespace            = optional(string, "argocd")
       service_account_name = optional(string, "argocd-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -79,7 +85,7 @@ variable "services" {
     }), { enabled = false }),
     aws-alb-ingress-controller = optional(object({
       enabled              = bool
-      helm_version         = optional(string, "1.9.2")
+      helm_version         = optional(string, "1.11.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "aws-alb-ingress-controller-sa")
       default_ssl_policy   = optional(string, "ELBSecurityPolicy-TLS13-1-2-2021-06")
@@ -98,7 +104,7 @@ variable "services" {
     }), { enabled = false }),
     cluster-autoscaler = optional(object({
       enabled              = bool
-      helm_version         = optional(string, "9.46.0")
+      helm_version         = optional(string, "9.46.2")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "autoscaler-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -116,7 +122,7 @@ variable "services" {
     }), { enabled = false }),
     external-dns = optional(object({
       enabled              = bool
-      helm_version         = optional(string, "1.15.1")
+      helm_version         = optional(string, "1.15.2")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-dns-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -135,7 +141,7 @@ variable "services" {
     }), { enabled = false }),
     external-secrets = optional(object({
       enabled              = bool
-      helm_version         = optional(string, "0.13.0")
+      helm_version         = optional(string, "0.14.3")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-secrets-sa")
       node_selector        = optional(map(string), { pool = "system" })
