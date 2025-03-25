@@ -154,8 +154,8 @@ variable "services" {
     }), { enabled = false }),
     karpenter = optional(object({
       enabled              = bool
-      helm_version         = optional(string, "1.2.0")
-      manage_crd           = optional(bool, false) # Whether manage CRD by Terraform. If false CRD will be installed by helm. If true CRD will be installed with additional helm in terraform. Reference: https://github.com/aws/karpenter-provider-aws/tree/main/charts/karpenter-crd
+      helm_version         = optional(string, "1.3.3")
+      manage_crd           = optional(bool, false) # Whether to directly manage CRD by Terraform. If false CRD will be installed by the karpenter helm by dependency. If true CRD will be installed with additional helm in terraform. Reference: https://github.com/aws/karpenter-provider-aws/tree/main/charts/karpenter-crd
       namespace            = optional(string, "general")
       service_account_name = optional(string, "karpenter")
       node_selector        = optional(map(string), { pool = "system" })
