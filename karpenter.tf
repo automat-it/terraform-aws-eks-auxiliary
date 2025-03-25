@@ -158,7 +158,7 @@ module "karpenter-helm" {
 module "karpenter-crd-helm" {
   source       = "./modules/helm-chart"
   count        = var.services.karpenter.manage_crd ? 1 : 0
-  name         = "karpenter"
+  name         = "karpenter-crd"
   repository   = "oci://public.ecr.aws/karpenter"
   chart        = "karpenter-crd"
   namespace    = var.services.karpenter.namespace
@@ -166,7 +166,7 @@ module "karpenter-crd-helm" {
 
   values = [
     local.karpenter_helm_values,
-    var.services.karpenter.additional_helm_values
+    var.services.karpenter.crd_additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]

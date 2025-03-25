@@ -167,6 +167,7 @@ variable "services" {
         tolerationSeconds = optional(number, null)
       })))
       additional_helm_values              = optional(string, "")
+      crd_additional_helm_values          = optional(string, "")
       deploy_default_nodeclass            = optional(bool, true)
       default_nodeclass_ami_family        = optional(string, "AL2023")
       default_nodeclass_ami_alias         = optional(string, "al2023@latest")
