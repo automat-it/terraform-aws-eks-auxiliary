@@ -142,7 +142,7 @@ module "karpenter-helm" {
   chart        = "karpenter"
   namespace    = var.services.karpenter.namespace
   helm_version = var.services.karpenter.helm_version
-  skip_crds    = var.services.karpenter.manage_crd ? true : false
+  skip_crds    = var.services.karpenter.manage_crd
 
   values = [
     local.karpenter_helm_values,
