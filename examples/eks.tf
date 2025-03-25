@@ -60,6 +60,38 @@ module "eks" {
   cluster_addons = {
     coredns = {
       most_recent = true
+      configuration_values = jsonencode({
+        autoScaling = { 
+          enabled     = true
+          minReplicas = 2
+          maxReplicas = 10
+        }
+        tolerations = [
+          {
+            key      = "dedicated"
+            effect   = "NoSchedule"
+            operator = "Equal"
+            value    = "system"
+          }
+        ]
+        affinity = {
+          nodeAffinity = {
+            requiredDuringSchedulingIgnoredDuringExecution = {
+              nodeSelectorTerms = [
+                {
+                  matchExpressions = [
+                    {
+                      key      = "pool"
+                      operator = "In"
+                      values   = ["system"]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      })
     }
     kube-proxy = {
       most_recent = true
