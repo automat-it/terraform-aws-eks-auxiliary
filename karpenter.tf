@@ -161,7 +161,7 @@ module "karpenter-helm" {
 ################################################################################
 module "karpenter-crd-helm" {
   source       = "./modules/helm-chart"
-  count        = var.services.karpenter.manage_crd ? 1 : 0
+  count        = var.services.karpenter.manage_crd && var.services.karpenter.enabled ? 1 : 0
   name         = "karpenter-crd"
   repository   = "oci://public.ecr.aws/karpenter"
   chart        = "karpenter-crd"
