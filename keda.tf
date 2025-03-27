@@ -68,7 +68,7 @@ locals {
 module "keda" {
   source               = "./modules/helm-chart"
   count                = var.services.keda.enabled ? 1 : 0
-  name                 = "keda"
+  name                 = coalesce(var.services.keda.chart_name, "keda")
   repository           = "https://kedacore.github.io/charts"
   chart                = "keda"
   namespace            = var.services.keda.namespace

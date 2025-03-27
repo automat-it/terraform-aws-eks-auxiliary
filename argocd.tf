@@ -307,7 +307,7 @@ resource "kubernetes_namespace_v1" "argocd" {
 module "argocd" {
   source               = "./modules/helm-chart"
   count                = var.services.argocd.enabled ? 1 : 0
-  name                 = "argocd"
+  name                 = coalesce(var.services.argocd.chart_name, "argo-cd")
   repository           = "https://argoproj.github.io/argo-helm"
   chart                = "argo-cd"
   namespace            = var.services.argocd.namespace

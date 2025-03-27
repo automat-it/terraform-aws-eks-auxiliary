@@ -75,6 +75,12 @@ variable "iam_openid_provider" {
   default = null
 }
 
+variable "create_irsa_role" {
+  description = "Whether create IRSA role."
+  type        = string
+  default     = true
+}
+
 variable "irsa_iam_role_name" {
   description = "Name of the IAM role for IRSA."
   type        = string
