@@ -17,14 +17,14 @@ resource "helm_release" "this" {
 }
 
 resource "aws_iam_role_policy" "irsa" {
-  count  = var.irsa_policy_json != null ? 1 : 0
+  count  = var.irsa_policy_json != null && var.create_irsa_role ? 1 : 0
   name   = "${var.name}-policy"
   role   = aws_iam_role.irsa[0].id
   policy = var.irsa_policy_json
 }
 
 resource "aws_iam_role" "irsa" {
-  count              = !var.enable_pod_identity && var.iam_openid_provider != null ? 1 : 0
+  count              = !var.enable_pod_identity && var.iam_openid_provider != null && var.create_irsa_role ? 1 : 0
   assume_role_policy = data.aws_iam_policy_document.oidc_assume_role_policy[0].json
   name               = var.irsa_iam_role_name
 }

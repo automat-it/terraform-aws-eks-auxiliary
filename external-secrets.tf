@@ -71,7 +71,7 @@ locals {
 module "external-secrets" {
   source               = "./modules/helm-chart"
   count                = var.services.external-secrets.enabled ? 1 : 0
-  name                 = "external-secrets"
+  name                 = var.services.external-secrets.chart_name
   repository           = "https://charts.external-secrets.io"
   chart                = "external-secrets"
   namespace            = var.services.external-secrets.namespace

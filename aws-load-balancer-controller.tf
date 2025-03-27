@@ -269,7 +269,7 @@ locals {
 module "aws-alb-ingress-controller" {
   source               = "./modules/helm-chart"
   count                = var.services.aws-alb-ingress-controller.enabled ? 1 : 0
-  name                 = "aws-alb-ingress-controller"
+  name                 = var.services.aws-alb-ingress-controller.chart_name
   repository           = "https://aws.github.io/eks-charts"
   chart                = "aws-load-balancer-controller"
   namespace            = var.services.aws-alb-ingress-controller.namespace

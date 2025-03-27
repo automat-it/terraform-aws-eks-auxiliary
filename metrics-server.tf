@@ -39,7 +39,7 @@ locals {
 module "metrics-server" {
   source       = "./modules/helm-chart"
   count        = var.services.metrics-server.enabled ? 1 : 0
-  name         = "metrics-server"
+  name         = var.services.metrics-server.chart_name
   repository   = "https://kubernetes-sigs.github.io/metrics-server"
   chart        = "metrics-server"
   namespace    = var.services.metrics-server.namespace
