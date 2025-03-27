@@ -141,7 +141,7 @@ default_nodepool_yaml = <<-YAML
 module "karpenter-helm" {
   source       = "./modules/helm-chart"
   count        = var.services.karpenter.enabled ? 1 : 0
-  name         = coalesce(var.services.karpenter.chart_name, "karpenter")
+  name         = var.services.karpenter.chart_name
   repository   = "oci://public.ecr.aws/karpenter"
   chart        = "karpenter"
   namespace    = var.services.karpenter.namespace
@@ -162,7 +162,7 @@ module "karpenter-helm" {
 module "karpenter-crd-helm" {
   source       = "./modules/helm-chart"
   count        = var.services.karpenter.manage_crd && var.services.karpenter.enabled ? 1 : 0
-  name         = coalesce(var.services.karpenter.chart_crd_name, "karpenter-crd")
+  name         = var.services.karpenter.chart_crd_name
   repository   = "oci://public.ecr.aws/karpenter"
   chart        = "karpenter-crd"
   namespace    = var.services.karpenter.namespace

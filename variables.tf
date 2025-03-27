@@ -60,7 +60,7 @@ variable "services" {
   type = object({
     argocd = optional(object({
       enabled              = bool
-      chart_name           = optional(string)
+      chart_name           = optional(string, "argocd")
       helm_version         = optional(string, "7.8.8")
       namespace            = optional(string, "argocd")
       service_account_name = optional(string, "argocd-sa")
@@ -86,7 +86,7 @@ variable "services" {
     }), { enabled = false }),
     aws-alb-ingress-controller = optional(object({
       enabled              = bool
-      chart_name           = optional(string)
+      chart_name           = optional(string, "aws-alb-ingress-controller")
       helm_version         = optional(string, "1.11.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "aws-alb-ingress-controller-sa")
@@ -106,7 +106,7 @@ variable "services" {
     }), { enabled = false }),
     cluster-autoscaler = optional(object({
       enabled              = bool
-      chart_name           = optional(string)
+      chart_name           = optional(string, "cluster-autoscaler")
       helm_version         = optional(string, "9.46.2")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "autoscaler-sa")
@@ -125,7 +125,7 @@ variable "services" {
     }), { enabled = false }),
     external-dns = optional(object({
       enabled              = bool
-      chart_name           = optional(string)
+      chart_name           = optional(string, "external-dns")
       helm_version         = optional(string, "1.15.2")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-dns-sa")
@@ -144,7 +144,7 @@ variable "services" {
       irsa_iam_policy_json   = optional(string)
     }), { enabled = false }),
     external-secrets = optional(object({
-      chart_name           = optional(string)
+      chart_name           = optional(string, "external-secrets")
       enabled              = bool
       helm_version         = optional(string, "0.14.3")
       namespace            = optional(string, "general")
@@ -164,8 +164,8 @@ variable "services" {
       irsa_iam_policy_json   = optional(string)
     }), { enabled = false }),
     karpenter = optional(object({
-      chart_name           = optional(string)
-      chart_crd_name       = optional(string)
+      chart_name           = optional(string, "karpenter")
+      chart_crd_name       = optional(string, "karpenter-crd")
       enabled              = bool
       helm_version         = optional(string, "1.3.3")
       manage_crd           = optional(bool, false) # Whether to directly manage CRD by Terraform. If false, CRD will be installed by the karpenter helm by dependency. If true, CRD will be installed with additional helm via terraform. Reference: https://github.com/aws/karpenter-provider-aws/tree/main/charts/karpenter-crd
@@ -209,7 +209,7 @@ variable "services" {
       node_security_group_id            = optional(string)
     }), { enabled = false }),
     keda = optional(object({
-      chart_name           = optional(string)
+      chart_name           = optional(string, "keda")
       enabled              = bool
       helm_version         = optional(string, "2.16.1")
       namespace            = optional(string, "general")
@@ -229,7 +229,7 @@ variable "services" {
       irsa_iam_policy_json   = optional(string)
     }), { enabled = false }),
     metrics-server = optional(object({
-      chart_name    = optional(string)
+      chart_name    = optional(string, "metrics-server")
       enabled       = bool
       helm_version  = optional(string, "3.12.2")
       namespace     = optional(string, "general")

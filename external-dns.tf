@@ -81,7 +81,7 @@ locals {
 module "external-dns" {
   source               = "./modules/helm-chart"
   count                = var.services.external-dns.enabled ? 1 : 0
-  name                 = coalesce(var.services.external-dns.chart_name, "external-dns")
+  name                 = var.services.external-dns.chart_name
   repository           = "https://kubernetes-sigs.github.io/external-dns"
   chart                = "external-dns"
   namespace            = var.services.external-dns.namespace

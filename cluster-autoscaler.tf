@@ -92,7 +92,7 @@ locals {
 module "cluster-autoscaler" {
   source               = "./modules/helm-chart"
   count                = var.services.cluster-autoscaler.enabled ? 1 : 0
-  name                 = coalesce(var.services.cluster-autoscaler.chart_name, "cluster-autoscaler")
+  name                 = var.services.cluster-autoscaler.chart_name
   repository           = "https://kubernetes.github.io/autoscaler"
   chart                = "cluster-autoscaler"
   namespace            = var.services.cluster-autoscaler.namespace
