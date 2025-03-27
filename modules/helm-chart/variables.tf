@@ -76,7 +76,7 @@ variable "iam_openid_provider" {
 }
 
 variable "create_irsa_role" {
-  description = "Whether create IRSA role."
+  description = "Whether to create an IRSA role."
   type        = string
   default     = true
 }

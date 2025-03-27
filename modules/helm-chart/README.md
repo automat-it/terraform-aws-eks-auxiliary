@@ -90,7 +90,7 @@ module "external-dns" {
 | helm_version | Helm chart version. | `string` | n/a | yes |
 | name | Name of the Helm release. | `string` | n/a | yes |
 | repository | Helm chart repository. | `string` | n/a | yes |
-| create_irsa_role | Whether create IRSA role. | `string` | `true` | no |
+| create_irsa_role | Whether to create an IRSA role. | `string` | `true` | no |
 | dependency_update | Whether to update dependencies. | `bool` | `true` | no |
 | eks_cluster_name | Name of the EKS cluster. | `string` | `null` | no |
 | enable_pod_identity | Whether to enable EKS Pod Identity. | `bool` | `false` | no |
