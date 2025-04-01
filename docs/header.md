@@ -51,9 +51,7 @@ module "eks-aux" {
     karpenter = {
       enabled                      = true
       manage_crd                   = true
-      node_security_group_id       = module.eks_dev.node_security_group_id
-      deploy_default_nodepool      = false
-      default_nodeclass_ami_family = "AL2"
+      ...
     }
     ...
 }
