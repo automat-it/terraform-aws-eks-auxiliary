@@ -13,7 +13,7 @@ Reference values could be found at [examples directory](examples).
 
 Please consider adding the proper tag for the Karpenter subnet autodiscovery. We usually associate these tags with the private AWS Subnets:
 
-```shell
+```hcl
 tags = merge(local.base_tags, {
     Tier                                              = "Private"
     "kubernetes.io/role/internal-elb"                 = "1"
