@@ -6,9 +6,11 @@ locals {
       %{~if try(module.karpenter[0].service_account, "") != ""~}
       name: ${module.karpenter[0].service_account}
       %{~endif~}
-      %{~if try(module.karpenter[0].iam_role_arn, "") != ""~}
       annotations:
+      %{~if coalesce(module.karpenter[0].iam_role_arn, "not_karpenter_iam") != "not_karpenter_iam"~}
         eks.amazonaws.com/role-arn: ${module.karpenter[0].iam_role_arn}
+        %{~else~}
+        eks.amazonaws.com/role-arn:${var.services.karpenter.irsa_iam_role_name}
       %{~endif~}
     settings:
       clusterName: ${var.cluster_name}
@@ -60,7 +62,7 @@ locals {
     %{~endif~}
       amiSelectorTerms:
         - alias: ${var.services.karpenter.default_nodeclass_ami_alias}
-      %{~if try(module.karpenter[0].node_iam_role_name, "") != ""~}
+      %{~if coalesce(module.karpenter[0].node_iam_role_name, "no_iam") != "no_iam"~}
       role: ${module.karpenter[0].node_iam_role_name}
       %{~endif~}
       subnetSelectorTerms:
@@ -194,10 +196,12 @@ module "karpenter" {
   create_pod_identity_association = true
 
   # IAM
+  create_iam_role          = var.services.karpenter.create_controller_iam_role
   iam_role_name            = coalesce(var.services.karpenter.irsa_iam_role_name, "${var.cluster_name}-Karpenter-Role")
   iam_role_use_name_prefix = false
   iam_role_tags            = var.tags
 
+  create_node_iam_role          = var.services.karpenter.create_node_iam_role
   node_iam_role_name            = coalesce(var.services.karpenter.node_iam_role_name, "${var.cluster_name}-Karpenter-Node-Role")
   node_iam_role_use_name_prefix = false
   # Used to attach additional IAM policies to the Karpenter node IAM role
@@ -219,7 +223,7 @@ module "karpenter" {
   irsa_oidc_provider_arn          = var.iam_openid_provider.oidc_provider_arn
   irsa_namespace_service_accounts = ["${var.services.karpenter.namespace}:${var.services.karpenter.service_account_name}"]
 
-  create_access_entry = true
+  create_access_entry = var.services.karpenter.create_access_entry_for_node_iam_role
 
   tags = var.tags
 }
