@@ -76,6 +76,7 @@ locals {
                     "ec2:DescribeTags",
                     "ec2:GetCoipPoolUsage",
                     "ec2:DescribeCoipPools",
+                    "ec2:GetSecurityGroupsForVpc",
                     "elasticloadbalancing:DescribeLoadBalancers",
                     "elasticloadbalancing:DescribeLoadBalancerAttributes",
                     "elasticloadbalancing:DescribeListeners",
