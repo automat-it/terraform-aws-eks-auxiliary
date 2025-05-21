@@ -199,14 +199,18 @@ variable "services" {
         { nodes = "0", schedule = "0 9 * * sat-sun", duration = "24h" },
         { nodes = "0", schedule = "0 17 * * mon-fri", duration = "16h", reasons = ["Drifted"] }
       ])
-      default_nodepool_capacity_type    = optional(list(string), ["on-demand"])
-      default_nodepool_yaml             = optional(string)
-      default_nodeclass_yaml            = optional(string)
-      irsa_iam_role_name                = optional(string)
-      node_iam_role_name                = optional(string)
-      node_iam_role_additional_policies = optional(map(string), {})
-      node_iam_role_additional_tags     = optional(map(string), {})
-      node_security_group_id            = optional(string)
+      default_nodepool_capacity_type        = optional(list(string), ["on-demand"])
+      default_nodepool_yaml                 = optional(string)
+      default_nodeclass_yaml                = optional(string)
+      create_irsa_iam_role                  = optional(bool, true)
+      irsa_iam_role_name                    = optional(string)
+      irsa_iam_role_arn                     = optional(string)
+      create_node_iam_role                  = optional(bool, true)
+      create_access_entry_for_node_iam_role = optional(bool, true)
+      node_iam_role_name                    = optional(string)
+      node_iam_role_additional_policies     = optional(map(string), {})
+      node_iam_role_additional_tags         = optional(map(string), {})
+      node_security_group_id                = optional(string)
     }), { enabled = false }),
     keda = optional(object({
       chart_name           = optional(string, "keda")

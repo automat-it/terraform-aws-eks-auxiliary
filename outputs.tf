@@ -92,3 +92,8 @@ output "karpenter_default_node_class_name" {
   description = "The ID of the IAM role used by the Karpenter for IRSA (IAM Roles for Service Accounts)."
   value       = var.services.karpenter.enabled ? var.services.karpenter.default_nodeclass_name : null
 }
+
+output "karpenter_sqs_queue_arn" {
+  description = "The ARN of the SQS queue used by the Karpenter for node termination."
+  value       = module.karpenter[0].queue_arn
+}
