@@ -63,6 +63,7 @@ locals {
             {
                 "Effect": "Allow",
                 "Action": [
+                    "ec2:GetSecurityGroupsForVpc",
                     "ec2:DescribeAccountAttributes",
                     "ec2:DescribeAddresses",
                     "ec2:DescribeAvailabilityZones",
