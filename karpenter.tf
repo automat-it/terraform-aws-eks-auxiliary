@@ -101,6 +101,7 @@ default_nodepool_yaml = <<-YAML
     spec:
       template:
         spec:
+          expireAfter: Never
           nodeClassRef:
             group: karpenter.k8s.aws
             kind: EC2NodeClass
