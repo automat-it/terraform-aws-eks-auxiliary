@@ -54,7 +54,7 @@ module "eks" {
   version = "~> 19.13.1"
 
   cluster_name                   = var.eks_cluster_name
-  cluster_version                = "1.30"
+  cluster_version                = "1.33"
   cluster_endpoint_public_access = false
 
   cluster_addons = {
