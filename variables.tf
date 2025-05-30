@@ -61,7 +61,7 @@ variable "services" {
     argocd = optional(object({
       enabled              = bool
       chart_name           = optional(string, "argocd")
-      helm_version         = optional(string, "8.0.12")
+      helm_version         = optional(string, "8.0.13")
       namespace            = optional(string, "argocd")
       service_account_name = optional(string, "argocd-sa")
       node_selector        = optional(map(string), { pool = "system" })
