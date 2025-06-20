@@ -80,7 +80,7 @@ After all steps will be done you are free to update karpenter version using this
 |------|---------|
 | terraform | ~> 1.0 |
 | aws | >= 5.0 |
-| helm | >= 2.9.0 |
+| helm | >= 3.0.0 |
 | kubectl | >= 2.0 |
 | kubernetes | >= 2.20 |
 
