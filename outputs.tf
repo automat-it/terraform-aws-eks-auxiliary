@@ -95,5 +95,5 @@ output "karpenter_default_node_class_name" {
 
 output "karpenter_sqs_queue_arn" {
   description = "The ARN of the SQS queue used by the Karpenter for node termination."
-  value       = module.karpenter[0].queue_arn
+  value       = !var.services.karpenter.enabled ? "" : module.karpenter[0].queue_arn
 }
