@@ -1,7 +1,7 @@
 # Karpenter
 locals {
   # Helm override values
-  karpenter_helm_values = <<-EOT
+  karpenter_helm_values = !var.services.karpenter.enabled ? "" : <<-EOT
     serviceAccount:
       %{~if try(module.karpenter[0].service_account, "") != ""~}
       name: ${module.karpenter[0].service_account}
@@ -51,7 +51,7 @@ locals {
     EOT
 
   # Default karpenter nodeclass
-  default_nodeclass_yaml = <<-YAML
+  default_nodeclass_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
     apiVersion: karpenter.k8s.aws/v1
     kind: EC2NodeClass
     metadata:
@@ -95,7 +95,7 @@ locals {
   YAML
 
 # Default karpenter nodepool
-default_nodepool_yaml = <<-YAML
+default_nodepool_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
     apiVersion: karpenter.sh/v1
     kind: NodePool
     metadata:

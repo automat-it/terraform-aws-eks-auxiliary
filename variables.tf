@@ -61,7 +61,7 @@ variable "services" {
     argocd = optional(object({
       enabled              = bool
       chart_name           = optional(string, "argocd")
-      helm_version         = optional(string, "7.8.8")
+      helm_version         = optional(string, "8.1.0")
       namespace            = optional(string, "argocd")
       service_account_name = optional(string, "argocd-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -87,7 +87,7 @@ variable "services" {
     aws-alb-ingress-controller = optional(object({
       enabled              = bool
       chart_name           = optional(string, "aws-alb-ingress-controller")
-      helm_version         = optional(string, "1.11.0")
+      helm_version         = optional(string, "1.13.3")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "aws-alb-ingress-controller-sa")
       default_ssl_policy   = optional(string, "ELBSecurityPolicy-TLS13-1-2-2021-06")
@@ -107,7 +107,7 @@ variable "services" {
     cluster-autoscaler = optional(object({
       enabled              = bool
       chart_name           = optional(string, "cluster-autoscaler")
-      helm_version         = optional(string, "9.46.2")
+      helm_version         = optional(string, "9.46.6")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "autoscaler-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -126,7 +126,7 @@ variable "services" {
     external-dns = optional(object({
       enabled              = bool
       chart_name           = optional(string, "external-dns")
-      helm_version         = optional(string, "1.15.2")
+      helm_version         = optional(string, "1.17.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-dns-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -146,7 +146,7 @@ variable "services" {
     external-secrets = optional(object({
       chart_name           = optional(string, "external-secrets")
       enabled              = bool
-      helm_version         = optional(string, "0.14.3")
+      helm_version         = optional(string, "0.18.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-secrets-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -167,7 +167,7 @@ variable "services" {
       chart_name           = optional(string, "karpenter")
       chart_crd_name       = optional(string, "karpenter-crd")
       enabled              = bool
-      helm_version         = optional(string, "1.4.0")
+      helm_version         = optional(string, "1.5.0")
       manage_crd           = optional(bool, false) # Whether to directly manage CRD by Terraform. If false, CRD will be installed by the karpenter helm by dependency. If true, CRD will be installed with additional helm via terraform. Reference: https://github.com/aws/karpenter-provider-aws/tree/main/charts/karpenter-crd
       namespace            = optional(string, "general")
       service_account_name = optional(string, "karpenter")
@@ -215,7 +215,7 @@ variable "services" {
     keda = optional(object({
       chart_name           = optional(string, "keda")
       enabled              = bool
-      helm_version         = optional(string, "2.16.1")
+      helm_version         = optional(string, "2.17.1")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "keda-sa")
       node_selector        = optional(map(string), { pool = "system" })

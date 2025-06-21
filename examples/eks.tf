@@ -36,7 +36,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.this.token
@@ -54,7 +54,7 @@ module "eks" {
   version = "~> 19.13.1"
 
   cluster_name                   = var.eks_cluster_name
-  cluster_version                = "1.30"
+  cluster_version                = "1.33"
   cluster_endpoint_public_access = false
 
   cluster_addons = {
