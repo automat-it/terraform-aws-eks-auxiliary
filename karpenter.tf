@@ -1,14 +1,16 @@
 # Karpenter
 locals {
   # Helm override values
-  karpenter_helm_values = <<-EOT
+  karpenter_helm_values = !var.services.karpenter.enabled ? "" : <<-EOT
     serviceAccount:
       %{~if try(module.karpenter[0].service_account, "") != ""~}
       name: ${module.karpenter[0].service_account}
       %{~endif~}
-      %{~if try(module.karpenter[0].iam_role_arn, "") != ""~}
       annotations:
+      %{~if coalesce(module.karpenter[0].iam_role_arn, "not_karpenter_iam") != "not_karpenter_iam"~}
         eks.amazonaws.com/role-arn: ${module.karpenter[0].iam_role_arn}
+        %{~else~}
+        eks.amazonaws.com/role-arn: ${var.services.karpenter.irsa_iam_role_arn}
       %{~endif~}
     settings:
       clusterName: ${var.cluster_name}
@@ -16,21 +18,40 @@ locals {
       %{~if try(module.karpenter[0].queue_name, "") != ""~}
       interruptionQueue: ${module.karpenter[0].queue_name}
       %{~endif~}
-    %{~if coalesce(var.services.karpenter.nodepool, "no_pool") != "no_pool"~}
+    %{~if coalesce(var.services.karpenter.node_selector, {}) != {} ~}
     nodeSelector:
-      pool: ${var.services.karpenter.nodepool}
+    %{~for key, value in var.services.karpenter.node_selector~}
+      ${key}: ${value}
+    %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.karpenter.node_selector, {}) != {} || coalesce(var.services.karpenter.additional_tolerations, []) != []~}
     tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
+    %{~for key, value in var.services.karpenter.node_selector~}
       - key: dedicated
         operator: Equal
-        value: ${var.services.karpenter.nodepool}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
+    %{~if var.services.karpenter.additional_tolerations != null~}
+    %{~for i in var.services.karpenter.additional_tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif~}
+    %{~else~}
+    tolerations: []
     %{~endif~}
     EOT
 
   # Default karpenter nodeclass
-  default_nodeclass_yaml = <<-YAML
+  default_nodeclass_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
     apiVersion: karpenter.k8s.aws/v1
     kind: EC2NodeClass
     metadata:
@@ -41,7 +62,7 @@ locals {
     %{~endif~}
       amiSelectorTerms:
         - alias: ${var.services.karpenter.default_nodeclass_ami_alias}
-      %{~if try(module.karpenter[0].node_iam_role_name, "") != ""~}
+      %{~if coalesce(module.karpenter[0].node_iam_role_name, "no_iam") != "no_iam"~}
       role: ${module.karpenter[0].node_iam_role_name}
       %{~endif~}
       subnetSelectorTerms:
@@ -64,13 +85,17 @@ locals {
             volumeType: ${var.services.karpenter.default_nodeclass_volume_type}
             encrypted: true
             deleteOnTermination: true
-      tags:
-        karpenter.sh/discovery: ${var.cluster_name}
-        Name: "${var.cluster_name}-Karpenter-worker"
+      tags: ${jsonencode(merge(
+  {
+    "karpenter.sh/discovery" = var.cluster_name,
+    "Name"                   = "${var.cluster_name}-Karpenter-worker"
+  },
+  var.node_class_additional_tags
+))}
   YAML
 
-  # Default karpenter nodepool
-  default_nodepool_yaml = <<-YAML
+# Default karpenter nodepool
+default_nodepool_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
     apiVersion: karpenter.sh/v1
     kind: NodePool
     metadata:
@@ -78,6 +103,7 @@ locals {
     spec:
       template:
         spec:
+          expireAfter: Never
           nodeClassRef:
             group: karpenter.k8s.aws
             kind: EC2NodeClass
@@ -118,15 +144,36 @@ locals {
 module "karpenter-helm" {
   source       = "./modules/helm-chart"
   count        = var.services.karpenter.enabled ? 1 : 0
-  name         = "karpenter"
+  name         = var.services.karpenter.chart_name
   repository   = "oci://public.ecr.aws/karpenter"
   chart        = "karpenter"
+  namespace    = var.services.karpenter.namespace
+  helm_version = var.services.karpenter.helm_version
+  skip_crds    = var.services.karpenter.manage_crd
+
+  values = [
+    local.karpenter_helm_values,
+    var.services.karpenter.additional_helm_values
+  ]
+
+  depends_on = [kubernetes_namespace_v1.general]
+}
+
+################################################################################
+# Karpenter crd helm
+################################################################################
+module "karpenter-crd-helm" {
+  source       = "./modules/helm-chart"
+  count        = var.services.karpenter.manage_crd && var.services.karpenter.enabled ? 1 : 0
+  name         = var.services.karpenter.chart_crd_name
+  repository   = "oci://public.ecr.aws/karpenter"
+  chart        = "karpenter-crd"
   namespace    = var.services.karpenter.namespace
   helm_version = var.services.karpenter.helm_version
 
   values = [
     local.karpenter_helm_values,
-    var.services.karpenter.additional_helm_values
+    var.services.karpenter.crd_additional_helm_values
   ]
 
   depends_on = [kubernetes_namespace_v1.general]
@@ -150,10 +197,12 @@ module "karpenter" {
   create_pod_identity_association = true
 
   # IAM
+  create_iam_role          = var.services.karpenter.create_irsa_iam_role
   iam_role_name            = coalesce(var.services.karpenter.irsa_iam_role_name, "${var.cluster_name}-Karpenter-Role")
   iam_role_use_name_prefix = false
   iam_role_tags            = var.tags
 
+  create_node_iam_role          = var.services.karpenter.create_node_iam_role
   node_iam_role_name            = coalesce(var.services.karpenter.node_iam_role_name, "${var.cluster_name}-Karpenter-Node-Role")
   node_iam_role_use_name_prefix = false
   # Used to attach additional IAM policies to the Karpenter node IAM role
@@ -167,7 +216,7 @@ module "karpenter" {
     var.services.karpenter.node_iam_role_additional_policies
   )
 
-  node_iam_role_tags = var.tags
+  node_iam_role_tags = merge(var.tags, var.services.karpenter.node_iam_role_additional_tags)
 
   service_account = var.services.karpenter.service_account_name
 
@@ -175,7 +224,7 @@ module "karpenter" {
   irsa_oidc_provider_arn          = var.iam_openid_provider.oidc_provider_arn
   irsa_namespace_service_accounts = ["${var.services.karpenter.namespace}:${var.services.karpenter.service_account_name}"]
 
-  create_access_entry = true
+  create_access_entry = var.services.karpenter.create_access_entry_for_node_iam_role
 
   tags = var.tags
 }

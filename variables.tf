@@ -10,12 +10,6 @@ variable "cluster_name" {
   description = "The name of the Amazon EKS cluster."
 }
 
-variable "cluster_nodepool_name" {
-  type        = string
-  default     = "system"
-  description = "The node pool name in the Amazon EKS cluster where all controllers will be installed."
-}
-
 variable "iam_openid_provider" {
   type = object({
     oidc_provider_arn = string
@@ -35,6 +29,12 @@ variable "create_namespace_security" {
   type        = bool
   default     = true
   description = "Determines whether to create the security-related Kubernetes namespace. Set to 'true' to create the namespace, or 'false' to skip its creation."
+}
+
+variable "node_class_additional_tags" {
+  type        = map(string)
+  default     = {}
+  description = "Additional tags, that will be assigned to the NodeClass."
 }
 
 # VPC
@@ -59,11 +59,20 @@ variable "domain_zone" {
 variable "services" {
   type = object({
     argocd = optional(object({
-      enabled                         = bool
-      helm_version                    = optional(string, "7.7.22")
-      namespace                       = optional(string, "argocd")
-      service_account_name            = optional(string, "argocd-sa")
-      nodepool                        = optional(string, "system")
+      enabled              = bool
+      chart_name           = optional(string, "argocd")
+      helm_version         = optional(string, "8.1.0")
+      namespace            = optional(string, "argocd")
+      service_account_name = optional(string, "argocd-sa")
+      node_selector        = optional(map(string), { pool = "system" })
+      additional_tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
+      create_namespace                = optional(bool, true)
       additional_helm_values          = optional(string, "")
       load_balancer_name              = optional(string)
       load_balancer_group_name        = optional(string, "internal")
@@ -76,33 +85,58 @@ variable "services" {
       custom_notifications            = optional(string)
     }), { enabled = false }),
     aws-alb-ingress-controller = optional(object({
-      enabled                = bool
-      helm_version           = optional(string, "1.9.2")
-      namespace              = optional(string, "general")
-      service_account_name   = optional(string, "aws-alb-ingress-controller-sa")
-      nodepool               = optional(string, "system")
+      enabled              = bool
+      chart_name           = optional(string, "aws-alb-ingress-controller")
+      helm_version         = optional(string, "1.13.3")
+      namespace            = optional(string, "general")
+      service_account_name = optional(string, "aws-alb-ingress-controller-sa")
+      default_ssl_policy   = optional(string, "ELBSecurityPolicy-TLS13-1-2-2021-06")
+      node_selector        = optional(map(string), { pool = "system" })
+      additional_tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
       additional_helm_values = optional(string, "")
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
       irsa_iam_policy_json   = optional(string)
     }), { enabled = false }),
     cluster-autoscaler = optional(object({
-      enabled                = bool
-      helm_version           = optional(string, "9.46.0")
-      namespace              = optional(string, "general")
-      service_account_name   = optional(string, "autoscaler-sa")
-      nodepool               = optional(string, "system")
+      enabled              = bool
+      chart_name           = optional(string, "cluster-autoscaler")
+      helm_version         = optional(string, "9.46.6")
+      namespace            = optional(string, "general")
+      service_account_name = optional(string, "autoscaler-sa")
+      node_selector        = optional(map(string), { pool = "system" })
+      additional_tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
       additional_helm_values = optional(string, "")
       irsa_role_arn          = optional(string)
       irsa_iam_role_name     = optional(string)
       irsa_iam_policy_json   = optional(string)
     }), { enabled = false }),
     external-dns = optional(object({
-      enabled                = bool
-      helm_version           = optional(string, "1.15.1")
-      namespace              = optional(string, "general")
-      service_account_name   = optional(string, "external-dns-sa")
-      nodepool               = optional(string, "system")
+      enabled              = bool
+      chart_name           = optional(string, "external-dns")
+      helm_version         = optional(string, "1.17.0")
+      namespace            = optional(string, "general")
+      service_account_name = optional(string, "external-dns-sa")
+      node_selector        = optional(map(string), { pool = "system" })
+      additional_tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
       additional_helm_values = optional(string, "")
       irsa_role_name         = optional(string)
       irsa_role_arn          = optional(string)
@@ -110,11 +144,19 @@ variable "services" {
       irsa_iam_policy_json   = optional(string)
     }), { enabled = false }),
     external-secrets = optional(object({
-      enabled                = bool
-      helm_version           = optional(string, "0.13.0")
-      namespace              = optional(string, "general")
-      service_account_name   = optional(string, "external-secrets-sa")
-      nodepool               = optional(string, "system")
+      chart_name           = optional(string, "external-secrets")
+      enabled              = bool
+      helm_version         = optional(string, "0.18.0")
+      namespace            = optional(string, "general")
+      service_account_name = optional(string, "external-secrets-sa")
+      node_selector        = optional(map(string), { pool = "system" })
+      additional_tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
       additional_helm_values = optional(string, "")
       irsa_role_name         = optional(string)
       irsa_role_arn          = optional(string)
@@ -122,12 +164,23 @@ variable "services" {
       irsa_iam_policy_json   = optional(string)
     }), { enabled = false }),
     karpenter = optional(object({
-      enabled                             = bool
-      helm_version                        = optional(string, "1.2.0")
-      namespace                           = optional(string, "general")
-      service_account_name                = optional(string, "karpenter")
-      nodepool                            = optional(string, "system")
+      chart_name           = optional(string, "karpenter")
+      chart_crd_name       = optional(string, "karpenter-crd")
+      enabled              = bool
+      helm_version         = optional(string, "1.5.0")
+      manage_crd           = optional(bool, false) # Whether to directly manage CRD by Terraform. If false, CRD will be installed by the karpenter helm by dependency. If true, CRD will be installed with additional helm via terraform. Reference: https://github.com/aws/karpenter-provider-aws/tree/main/charts/karpenter-crd
+      namespace            = optional(string, "general")
+      service_account_name = optional(string, "karpenter")
+      node_selector        = optional(map(string), { pool = "system" })
+      additional_tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
       additional_helm_values              = optional(string, "")
+      crd_additional_helm_values          = optional(string, "")
       deploy_default_nodeclass            = optional(bool, true)
       default_nodeclass_ami_family        = optional(string, "AL2023")
       default_nodeclass_ami_alias         = optional(string, "al2023@latest")
@@ -146,20 +199,33 @@ variable "services" {
         { nodes = "0", schedule = "0 9 * * sat-sun", duration = "24h" },
         { nodes = "0", schedule = "0 17 * * mon-fri", duration = "16h", reasons = ["Drifted"] }
       ])
-      default_nodepool_capacity_type    = optional(list(string), ["on-demand"])
-      default_nodepool_yaml             = optional(string)
-      default_nodeclass_yaml            = optional(string)
-      irsa_iam_role_name                = optional(string)
-      node_iam_role_name                = optional(string)
-      node_iam_role_additional_policies = optional(map(string), {})
-      node_security_group_id            = optional(string)
+      default_nodepool_capacity_type        = optional(list(string), ["on-demand"])
+      default_nodepool_yaml                 = optional(string)
+      default_nodeclass_yaml                = optional(string)
+      create_irsa_iam_role                  = optional(bool, true)
+      irsa_iam_role_name                    = optional(string)
+      irsa_iam_role_arn                     = optional(string)
+      create_node_iam_role                  = optional(bool, true)
+      create_access_entry_for_node_iam_role = optional(bool, true)
+      node_iam_role_name                    = optional(string)
+      node_iam_role_additional_policies     = optional(map(string), {})
+      node_iam_role_additional_tags         = optional(map(string), {})
+      node_security_group_id                = optional(string)
     }), { enabled = false }),
     keda = optional(object({
-      enabled                = bool
-      helm_version           = optional(string, "2.16.1")
-      namespace              = optional(string, "general")
-      service_account_name   = optional(string, "keda-sa")
-      nodepool               = optional(string, "system")
+      chart_name           = optional(string, "keda")
+      enabled              = bool
+      helm_version         = optional(string, "2.17.1")
+      namespace            = optional(string, "general")
+      service_account_name = optional(string, "keda-sa")
+      node_selector        = optional(map(string), { pool = "system" })
+      additional_tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
       additional_helm_values = optional(string, "")
       irsa_role_name         = optional(string)
       irsa_role_arn          = optional(string)
@@ -167,10 +233,18 @@ variable "services" {
       irsa_iam_policy_json   = optional(string)
     }), { enabled = false }),
     metrics-server = optional(object({
-      enabled                = bool
-      helm_version           = optional(string, "3.12.2")
-      namespace              = optional(string, "general")
-      nodepool               = optional(string, "system")
+      chart_name    = optional(string, "metrics-server")
+      enabled       = bool
+      helm_version  = optional(string, "3.12.2")
+      namespace     = optional(string, "general")
+      node_selector = optional(map(string), { pool = "system" })
+      additional_tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
       additional_helm_values = optional(string, "")
     }), { enabled = false }),
     nginx-ingress = optional(object({

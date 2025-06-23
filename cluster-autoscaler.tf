@@ -7,14 +7,33 @@ locals {
     awsRegion: ${var.aws_region}
     rbac:
       create : true
-    %{~if coalesce(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name) != ""~}
+    %{~if coalesce(var.services.cluster-autoscaler.node_selector, {}) != {} ~}
     nodeSelector:
-      pool: ${coalesce(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name)}
+    %{~for key, value in var.services.cluster-autoscaler.node_selector~}
+      ${key}: ${value}
+    %{~endfor~}
+    %{~endif~}
+    %{~if coalesce(var.services.cluster-autoscaler.node_selector, {}) != {} || coalesce(var.services.cluster-autoscaler.additional_tolerations, []) != []~}
     tolerations:
+    %{~for key, value in var.services.cluster-autoscaler.node_selector~}
       - key: dedicated
         operator: Equal
-        value: ${coalesce(var.services.cluster-autoscaler.nodepool, var.cluster_nodepool_name)}
+        value: ${value}
         effect: NoSchedule
+    %{~endfor~}
+    %{~if var.services.aws-alb-ingress-controller.additional_tolerations != null~}
+    %{~for i in var.services.aws-alb-ingress-controller.additional_tolerations~}
+      - key: ${i.key}
+        operator: ${i.operator}
+        value: ${i.value}
+        effect: ${i.effect}
+        %{~if i.tolerationSeconds != null~}
+        tolerationSeconds: ${i.tolerationSeconds}
+        %{~endif~}
+    %{~endfor~}
+    %{~endif}
+    %{~else~}
+    tolerations: []
     %{~endif~}
     rbac:
       serviceAccount:
@@ -73,7 +92,7 @@ locals {
 module "cluster-autoscaler" {
   source               = "./modules/helm-chart"
   count                = var.services.cluster-autoscaler.enabled ? 1 : 0
-  name                 = "cluster-autoscaler"
+  name                 = var.services.cluster-autoscaler.chart_name
   repository           = "https://kubernetes.github.io/autoscaler"
   chart                = "cluster-autoscaler"
   namespace            = var.services.cluster-autoscaler.namespace

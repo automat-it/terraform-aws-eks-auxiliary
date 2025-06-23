@@ -25,6 +25,12 @@ variable "chart" {
   type        = string
 }
 
+variable "skip_crds" {
+  description = "Skip CRDs installing if they doesn't exist"
+  type        = bool
+  default     = false
+}
+
 variable "namespace" {
   description = "Kubernetes namespace to install the release into. Creates one if not present."
   type        = string
@@ -61,11 +67,18 @@ variable "values" {
 }
 
 variable "iam_openid_provider" {
+  description = "EKS oidc provider values"
   type = object({
     oidc_provider_arn = string
     oidc_provider     = string
   })
   default = null
+}
+
+variable "create_irsa_role" {
+  description = "Whether to create an IRSA role."
+  type        = string
+  default     = true
 }
 
 variable "irsa_iam_role_name" {

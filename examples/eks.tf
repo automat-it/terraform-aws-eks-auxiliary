@@ -36,7 +36,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     host                   = module.eks.cluster_endpoint
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.this.token
@@ -54,12 +54,44 @@ module "eks" {
   version = "~> 19.13.1"
 
   cluster_name                   = var.eks_cluster_name
-  cluster_version                = "1.30"
+  cluster_version                = "1.33"
   cluster_endpoint_public_access = false
 
   cluster_addons = {
     coredns = {
       most_recent = true
+      configuration_values = jsonencode({
+        autoScaling = { 
+          enabled     = true
+          minReplicas = 2
+          maxReplicas = 10
+        }
+        tolerations = [
+          {
+            key      = "dedicated"
+            effect   = "NoSchedule"
+            operator = "Equal"
+            value    = "system"
+          }
+        ]
+        affinity = {
+          nodeAffinity = {
+            requiredDuringSchedulingIgnoredDuringExecution = {
+              nodeSelectorTerms = [
+                {
+                  matchExpressions = [
+                    {
+                      key      = "pool"
+                      operator = "In"
+                      values   = ["system"]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      })
     }
     kube-proxy = {
       most_recent = true
@@ -126,6 +158,13 @@ module "eks" {
         pool = "system"
       }
 
+      iam_role_additional_policies = merge(
+        {
+          AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        },
+        var.install_session_logger ? { SessionLoggingPolicy = aws_iam_policy.eks_session_logging_policy[0].arn } : {}
+      )
+
       taints = {
         dedicated = {
           key    = "dedicated"
@@ -149,10 +188,72 @@ module "eks" {
         pool = "worker"
       }
 
+      iam_role_additional_policies = merge(
+        {
+          AmazonSSMManagedInstanceCore = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+        },
+        var.install_session_logger ? { SessionLoggingPolicy = aws_iam_policy.eks_session_logging_policy[0].arn } : {}
+      )
+
       tags = {
         pool = "worker"
       }
     }
+  }
+}
+
+resource "aws_iam_policy" "eks_session_logging_policy" {
+  count = var.install_session_logger ? 1 : 0
+
+  name   = "eks-session-logging-policy"
+  policy = data.aws_iam_policy_document.eks-session-logging-policy[0].json
+}
+
+
+# Policy document for SSM SSH session logging
+data "aws_iam_policy_document" "eks-session-logging-policy" {
+  count = var.install_session_logger ? 1 : 0
+
+  statement {
+    sid = "CloudWatchAccessForSessionManager"
+    actions = [
+      "logs:PutLogEvents",
+      "logs:CreateLogStream",
+      "logs:DescribeLogGroups",
+      "logs:DescribeLogStreams"
+    ]
+    resources = [
+      "*"
+    ]
+  }
+  statement {
+    sid = "KMSEncryptionForSessionManager"
+    actions = [
+      "kms:DescribeKey",
+      "kms:Decrypt"
+    ]
+    resources = [
+      module.session-logger[0].kms_key
+    ]
+  }
+  statement {
+    sid = "S3BucketAccessForSessionManager"
+    actions = [
+      "s3:PutObject",
+    ]
+    resources = [
+      module.log-bucket[0].log_bucket.arn,
+      "${module.log-bucket[0].log_bucket.arn}/*",
+    ]
+  }
+  statement {
+    sid = "S3BucketEncryptionForSessionManager"
+    actions = [
+      "s3:GetEncryptionConfiguration",
+    ]
+    resources = [
+      module.log-bucket[0].log_bucket.arn
+    ]
   }
 }
 

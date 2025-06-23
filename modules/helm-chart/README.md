@@ -59,6 +59,16 @@ module "external-dns" {
 }
 ```
 
+## Requirements
+
+| Name | Version |
+|------|---------|
+| terraform | ~> 1.0 |
+| aws | >= 5.0 |
+| helm | >= 2.9.0 |
+| kubectl | >= 2.0 |
+| kubernetes | >= 2.20 |
+
 ## Resources
 
 | Name | Type |
@@ -80,17 +90,19 @@ module "external-dns" {
 | helm_version | Helm chart version. | `string` | n/a | yes |
 | name | Name of the Helm release. | `string` | n/a | yes |
 | repository | Helm chart repository. | `string` | n/a | yes |
+| create_irsa_role | Whether to create an IRSA role. | `string` | `true` | no |
 | dependency_update | Whether to update dependencies. | `bool` | `true` | no |
 | eks_cluster_name | Name of the EKS cluster. | `string` | `null` | no |
 | enable_pod_identity | Whether to enable EKS Pod Identity. | `bool` | `false` | no |
 | force_update | Whether to force update the Helm release. | `bool` | `false` | no |
-| iam_openid_provider | n/a | ```object({ oidc_provider_arn = string oidc_provider = string })``` | `null` | no |
+| iam_openid_provider | EKS oidc provider values | ```object({ oidc_provider_arn = string oidc_provider = string })``` | `null` | no |
 | irsa_iam_role_name | Name of the IAM role for IRSA. | `string` | `null` | no |
 | irsa_policy_json | JSON policy document for IRSA IAM role. | `string` | `null` | no |
 | namespace | Kubernetes namespace to install the release into. Creates one if not present. | `string` | `"default"` | no |
 | repository_password | Helm chart repository password. | `string` | `null` | no |
 | repository_username | Helm chart repository username. | `string` | `null` | no |
 | service_account_name | Name of the Kubernetes service account. | `string` | `null` | no |
+| skip_crds | Skip CRDs installing if they doesn't exist | `bool` | `false` | no |
 | values | List of paths to Helm values files. | `list(string)` | `[]` | no |
 
 ## Outputs
