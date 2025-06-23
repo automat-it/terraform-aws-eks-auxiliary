@@ -61,7 +61,7 @@ module "eks" {
     coredns = {
       most_recent = true
       configuration_values = jsonencode({
-        autoScaling = { 
+        autoScaling = {
           enabled     = true
           minReplicas = 2
           maxReplicas = 10

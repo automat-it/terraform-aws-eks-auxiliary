@@ -4,9 +4,9 @@ module "secure-eks" {
   # Components
   services = {
     argocd = {
-      enabled  = true
-      nodepool = ""
-      version  = "7.3.7"
+      enabled                = true
+      nodepool               = ""
+      version                = "7.3.7"
       additional_helm_values = <<-EOF
         server:
           ingress:
@@ -63,7 +63,7 @@ module "secure-eks" {
     Environment = "Development"
   }
 
-    depends_on = [
+  depends_on = [
     module.eks,
     module.vpc,
     module.private-subnets,
