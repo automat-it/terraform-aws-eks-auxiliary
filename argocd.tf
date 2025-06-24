@@ -324,6 +324,9 @@ module "argocd" {
   ]
 
   depends_on = [
-    module.aws-alb-ingress-controller
+    kubernetes_namespace_v1.argocd,
+    module.aws-alb-ingress-controller,
+    module.nginx_private,
+    module.nginx_public
   ]
 }
