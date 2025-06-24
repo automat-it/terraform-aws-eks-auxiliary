@@ -192,7 +192,8 @@ locals {
                     "elasticloadbalancing:CreateListener",
                     "elasticloadbalancing:DeleteListener",
                     "elasticloadbalancing:CreateRule",
-                    "elasticloadbalancing:DeleteRule"
+                    "elasticloadbalancing:DeleteRule",
+                    "elasticloadbalancing:SetRulePriorities"
                 ],
                 "Resource": "*"
             },
