@@ -70,6 +70,7 @@ locals {
                     "ec2:DescribeInternetGateways",
                     "ec2:DescribeVpcs",
                     "ec2:DescribeVpcPeeringConnections",
+                    "ec2:DescribeRouteTables",
                     "ec2:DescribeSubnets",
                     "ec2:DescribeSecurityGroups",
                     "ec2:DescribeInstances",
