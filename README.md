@@ -37,6 +37,8 @@ docker logout public.ecr.aws
 
 You can check why these steps are necessary in [AWS Doc](https://docs.aws.amazon.com/AmazonECR/latest/public/public-troubleshooting.html#public-troubleshooting-authentication), [Karpenter official manual](https://karpenter.sh/docs/getting-started/getting-started-with-karpenter/#4-install-karpenter), [Karpenter troubleshooting](https://karpenter.sh/docs/troubleshooting/#missing-service-linked-role)
 
+`"alekc/kubectl"` is the only tested source for the `kubectl` TF provider.
+
 ### Karpenter CRD migration
 
 In v1.31.2 karpenter crd installation as separate helm chart was introduced. It was done to handle crd update issue in karpenter future karpenter updates.
