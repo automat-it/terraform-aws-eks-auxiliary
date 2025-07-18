@@ -36,7 +36,7 @@ provider "helm" {
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.this.token
   }
-  registries = [ 
+  registries = [
     {
       url      = "oci://public.ecr.aws"
       username = data.aws_ecrpublic_authorization_token.token.user_name
@@ -111,11 +111,11 @@ module "eks" {
   subnet_ids               = module.private-subnets.subnets.ids
   control_plane_subnet_ids = module.private-subnets.subnets.ids
 
-# Consider to hardcode the addons version for the producation environment with "addon_version". See coredns addon below as an example.
+  # Consider to hardcode the addons version for the producation environment with "addon_version". See coredns addon below as an example.
   cluster_addons = {
     coredns = {
       most_recent = true
-#     addon_version  = "v1.18.6-eksbuild.1"
+      #     addon_version  = "v1.18.6-eksbuild.1"
     }
     kube-proxy = {
       most_recent = true
