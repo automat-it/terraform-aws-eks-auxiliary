@@ -9,6 +9,32 @@ Include a reference to the directory of your Terraform environment where you con
 
 Reference values could be found at [examples directory](examples).
 
+### ⚠️ Important: Module Dependencies
+
+**CRITICAL**: When using this auxiliary module, you must specify explicit dependencies on specific EKS module outputs, not the entire module. Using `depends_on = [module.eks]` will cause unnecessary Karpenter IAM role re-deployments during EKS addon updates.
+
+**✅ Correct approach:**
+```hcl
+module "secure-eks" {
+  source = "github.com/automat-it/terraform-aws-eks-auxiliary.git?ref=vX.X.X"
+  # ... your configuration ...
+  depends_on = [
+    module.eks.cluster_name,
+    module.eks.oidc_provider_arn
+  ]
+}
+```
+
+**❌ Avoid this:**
+```hcl
+module "secure-eks" {
+  # This causes Karpenter IAM role re-deployment
+  depends_on = [module.eks]
+}
+```
+
+This explicit dependency approach ensures that only the necessary EKS resources are tracked for changes, preventing unnecessary infrastructure updates.
+
 ### Karpenter preparation
 
 Please consider adding the proper tag for the Karpenter subnet autodiscovery. We usually associate these tags with the private AWS Subnets:

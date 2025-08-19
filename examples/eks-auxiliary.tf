@@ -61,6 +61,7 @@ module "eks-aux" {
   }
 
   depends_on = [
-    module.eks
+    module.eks.cluster_name,
+    module.eks.oidc_provider_arn
   ]
 }
