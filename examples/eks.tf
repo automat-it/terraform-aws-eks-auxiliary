@@ -8,6 +8,8 @@ variable "eks_system_min_size" { type = number }
 variable "eks_system_max_size" { type = number }
 variable "eks_system_desired_size" { type = number }
 variable "eks_system_instance_types" { type = list(string) }
+variable "install_session_logger" { type = bool }
+variable "cluster_iam_role_name" { type = string }
 # Worker
 variable "eks_worker_min_size" { type = number }
 variable "eks_worker_max_size" { type = number }
@@ -51,7 +53,7 @@ data "aws_availability_zones" "available" {}
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.13.1"
+  version = "~> v20.0"
 
   cluster_name                   = var.eks_cluster_name
   cluster_version                = "1.33"
@@ -61,7 +63,7 @@ module "eks" {
     coredns = {
       most_recent = true
       configuration_values = jsonencode({
-        autoScaling = { 
+        autoScaling = {
           enabled     = true
           minReplicas = 2
           maxReplicas = 10
@@ -108,6 +110,13 @@ module "eks" {
   vpc_id     = var.vpc_id
   subnet_ids = var.subnet_ids # module.private-subnets.subnets.ids
 
+  ### IAM Role cluser
+  iam_role_use_name_prefix = false
+  iam_role_name            = var.cluster_iam_role_name
+  iam_role_additional_policies = {
+    amazon_eks_service_policy = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
+  }
+
   # Fargate profiles use the cluster primary security group so these are not utilized
   create_cluster_security_group = true
   create_node_security_group    = false
@@ -122,22 +131,37 @@ module "eks" {
       cidr_blocks = [var.vpc_cidr]
     }
   }
+  authentication_mode = "API"
 
-  # aws-auth
-  manage_aws_auth_configmap = true
-  create_aws_auth_configmap = false
-  aws_auth_roles = [
-    {
-      rolearn  = "arn:aws:iam::${var.aws_account_id}:role/OneLogin-AIT-AdministratorAccess"
-      username = "terraform"
-      groups   = ["system:masters"]
-    },
-    {
-      rolearn  = "${var.eks_cluster_name}-EKS-Admin-ROLE"
-      username = "admin"
-      groups   = ["system:masters"]
+  access_entries = {
+    terraform = {
+      principal_arn = "arn:aws:iam::${var.aws_account_id}:role/terraform"
+      type          = "STANDARD"
+
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
     }
-  ]
+
+    onelogin-admin = {
+      principal_arn = "arn:aws:iam::${var.aws_account_id}:role/OneLogin-AIT-AdministratorAccess"
+      type          = "STANDARD"
+
+      policy_associations = {
+        admin = {
+          policy_arn = "arn:${data.aws_partition.current.partition}:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+          access_scope = {
+            type = "cluster"
+          }
+        }
+      }
+    }
+  }
 
   # EKS Managed Node Group(s)
   eks_managed_node_group_defaults = {
@@ -209,7 +233,6 @@ resource "aws_iam_policy" "eks_session_logging_policy" {
   policy = data.aws_iam_policy_document.eks-session-logging-policy[0].json
 }
 
-
 # Policy document for SSM SSH session logging
 data "aws_iam_policy_document" "eks-session-logging-policy" {
   count = var.install_session_logger ? 1 : 0
@@ -262,5 +285,4 @@ resource "aws_security_group" "alb-controller-sg" {
   name        = "cluster-alb-controller-sg"
   description = "SG to work with the EKS ALB ingress controller"
   vpc_id      = var.vpc_id
-  # tags        = local.base_tags
 }
