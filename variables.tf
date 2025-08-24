@@ -4,10 +4,21 @@ variable "aws_region" {
   description = "The AWS region where resources will be provisioned."
 }
 
+
+variable "account_id" {
+  type        = string
+  description = "The AWS account id where resources will be provisioned."
+}
+
 # EKS
 variable "cluster_name" {
   type        = string
   description = "The name of the Amazon EKS cluster."
+}
+
+variable "cluster_endpoint" {
+  type        = string
+  description = "The endpoint of the Amazon EKS cluster."
 }
 
 variable "iam_openid_provider" {

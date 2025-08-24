@@ -40,7 +40,7 @@ locals {
         create: true
         name: ${try(var.services.cluster-autoscaler.service_account_name, null) != null ? var.services.cluster-autoscaler.service_account_name : ""}
         annotations:
-          eks.amazonaws.com/role-arn: ${try(var.services.cluster-autoscaler.irsa_role_arn, null) != null ? var.services.cluster-autoscaler.irsa_role_arn : "arn:aws:iam::${data.aws_caller_identity.current.id}:role/${var.cluster_name}-cluster-autoscaler-iam-role"}
+          eks.amazonaws.com/role-arn: ${try(var.services.cluster-autoscaler.irsa_role_arn, null) != null ? var.services.cluster-autoscaler.irsa_role_arn : "arn:aws:iam::${var.account_id}:role/${var.cluster_name}-cluster-autoscaler-iam-role"}
     EOF
 
   # AWS IAM IRSA
@@ -73,7 +73,7 @@ locals {
             "autoscaling:PutScheduledUpdateGroupAction",
             "eks:DescribeNodegroup"
           ],
-          "Resource": "arn:aws:autoscaling:${var.aws_region}:${data.aws_caller_identity.current.account_id}:autoScalingGroup:*:autoScalingGroupName/*",
+          "Resource": "arn:aws:autoscaling:${var.aws_region}:${var.account_id}:autoScalingGroup:*:autoScalingGroupName/*",
           "Condition": {
             "StringEquals": {
               "aws:ResourceTag/k8s.io/cluster-autoscaler/enabled": "true",

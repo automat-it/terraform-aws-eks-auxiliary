@@ -14,7 +14,7 @@ locals {
       %{~endif~}
     settings:
       clusterName: ${var.cluster_name}
-      clusterEndpoint: ${data.aws_eks_cluster.this.endpoint}
+      clusterEndpoint: ${var.cluster_endpoint}
       %{~if try(module.karpenter[0].queue_name, "") != ""~}
       interruptionQueue: ${module.karpenter[0].queue_name}
       %{~endif~}
