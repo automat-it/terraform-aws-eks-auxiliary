@@ -33,9 +33,4 @@ module "eks-aux-simple" {
     Managed_by  = "Terraform"
     Environment = "Development"
   }
-
-  depends_on = [
-    module.eks.cluster_name,
-    module.eks.oidc_provider_arn
-  ]
 }
