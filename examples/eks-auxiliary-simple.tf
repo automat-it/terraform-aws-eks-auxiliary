@@ -14,9 +14,11 @@ module "eks-aux-simple" {
 
   # AWS
   aws_region = var.aws_region
+  account_id = var.account_id
 
   # EKS
   cluster_name        = module.eks.cluster_name
+  cluster_endpoint    = module.eks.cluster_endpoint
   iam_openid_provider = module.eks
 
   # VPC
