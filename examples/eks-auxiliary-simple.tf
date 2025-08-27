@@ -19,7 +19,10 @@ module "eks-aux-simple" {
   # EKS
   cluster_name        = module.eks.cluster_name
   cluster_endpoint    = module.eks.cluster_endpoint
-  iam_openid_provider = module.eks
+  iam_openid_provider = {
+    oidc_provider_arn = module.eks.oidc_provider_arn
+    oidc_provider     = module.eks.oidc_provider
+  }
 
   # VPC
   vpc_id = var.vpc_id
