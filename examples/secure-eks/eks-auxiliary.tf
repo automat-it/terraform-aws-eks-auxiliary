@@ -46,10 +46,15 @@ module "secure-eks" {
 
   # AWS
   aws_region = local.aws_region
+  account_id = var.account_id
 
   # EKS
   cluster_name        = module.eks.cluster_name
-  iam_openid_provider = module.eks
+  cluster_endpoint    = module.eks.cluster_endpoint
+  iam_openid_provider = {
+    oidc_provider_arn = module.eks.oidc_provider_arn
+    oidc_provider     = module.eks.oidc_provider
+  }
 
   # VPC
   vpc_id = module.vpc.vpc.id
@@ -62,17 +67,4 @@ module "secure-eks" {
     Managed_by  = "Terraform"
     Environment = "Development"
   }
-
-    depends_on = [
-    module.eks,
-    module.vpc,
-    module.private-subnets,
-    module.isolated-subnets,
-    module.public-subnets,
-    module.tgw-attachment,
-    module.tgw-sharing-attachment,
-    module.tgw-peering-attachment,
-    module.tgw-peering,
-    module.tgw
-  ]
 }

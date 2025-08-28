@@ -14,10 +14,15 @@ module "eks-aux-simple" {
 
   # AWS
   aws_region = var.aws_region
+  account_id = var.account_id
 
   # EKS
   cluster_name        = module.eks.cluster_name
-  iam_openid_provider = module.eks
+  cluster_endpoint    = module.eks.cluster_endpoint
+  iam_openid_provider = {
+    oidc_provider_arn = module.eks.oidc_provider_arn
+    oidc_provider     = module.eks.oidc_provider
+  }
 
   # VPC
   vpc_id = var.vpc_id
@@ -31,9 +36,4 @@ module "eks-aux-simple" {
     Managed_by  = "Terraform"
     Environment = "Development"
   }
-
-  depends_on = [
-    module.eks.cluster_name,
-    module.eks.oidc_provider_arn
-  ]
 }

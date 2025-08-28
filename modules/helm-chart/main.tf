@@ -1,3 +1,43 @@
+locals {
+  # Important! Currently works with metadata manifests v1 only
+  pod_identity_assume_role_policy_json = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "pods.eks.amazonaws.com"
+        }
+        Action = [
+          "sts:AssumeRole",
+          "sts:TagSession"
+        ]
+      }
+    ]
+  })
+
+  oidc_assume_role_policy_json = (
+    var.enable_pod_identity == false && var.iam_openid_provider != null && var.service_account_name != null ?
+    jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Effect = "Allow"
+          Action = ["sts:AssumeRoleWithWebIdentity"]
+          Principal = {
+            Federated = var.iam_openid_provider.oidc_provider_arn
+          }
+          Condition = {
+            StringEquals = {
+              "${var.iam_openid_provider.oidc_provider}:sub" = "system:serviceaccount:${var.namespace}:${var.service_account_name}"
+            }
+          }
+        }
+      ]
+    }) : null
+  )
+}
+
 resource "helm_release" "this" {
   name       = var.name
   repository = var.repository
@@ -25,7 +65,7 @@ resource "aws_iam_role_policy" "irsa" {
 
 resource "aws_iam_role" "irsa" {
   count              = !var.enable_pod_identity && var.iam_openid_provider != null && var.create_irsa_role ? 1 : 0
-  assume_role_policy = data.aws_iam_policy_document.oidc_assume_role_policy[0].json
+  assume_role_policy = local.oidc_assume_role_policy_json
   name               = var.irsa_iam_role_name
 }
 
@@ -34,7 +74,7 @@ resource "aws_iam_role" "irsa" {
 
 resource "aws_iam_role" "pod_identity" {
   count              = var.enable_pod_identity ? 1 : 0
-  assume_role_policy = data.aws_iam_policy_document.pod_identity[0].json
+  assume_role_policy = local.pod_identity_assume_role_policy_json
   name               = var.irsa_iam_role_name
 }
 
