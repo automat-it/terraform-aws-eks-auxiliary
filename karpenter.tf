@@ -185,16 +185,13 @@ module "karpenter-crd-helm" {
 
 module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version = "20.26.1"
+  version = "21.1.5"
 
   count = var.services.karpenter.enabled ? 1 : 0
 
-  cluster_name = var.cluster_name
-
-  enable_v1_permissions = true
-
-  enable_pod_identity             = true
-  create_pod_identity_association = true
+  cluster_name    = var.cluster_name
+  namespace       = var.services.karpenter.namespace
+  service_account = var.services.karpenter.service_account_name
 
   # IAM
   create_iam_role          = var.services.karpenter.create_irsa_iam_role
@@ -217,12 +214,6 @@ module "karpenter" {
   )
 
   node_iam_role_tags = merge(var.tags, var.services.karpenter.node_iam_role_additional_tags)
-
-  service_account = var.services.karpenter.service_account_name
-
-  enable_irsa                     = true
-  irsa_oidc_provider_arn          = var.iam_openid_provider.oidc_provider_arn
-  irsa_namespace_service_accounts = ["${var.services.karpenter.namespace}:${var.services.karpenter.service_account_name}"]
 
   create_access_entry = var.services.karpenter.create_access_entry_for_node_iam_role
 

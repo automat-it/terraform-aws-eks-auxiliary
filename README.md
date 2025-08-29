@@ -82,10 +82,10 @@ After all steps will be done you are free to update karpenter version using this
 | Name | Version |
 |------|---------|
 | terraform | ~> 1.0 |
-| aws | >= 5.0 |
+| aws | >= 6.0 |
 | helm | >= 3.0.0 |
 | kubectl | >= 2.0 |
-| kubernetes | >= 2.20 |
+| kubernetes | >= 2.38 |
 
 ## Modules
 
@@ -96,7 +96,7 @@ After all steps will be done you are free to update karpenter version using this
 | cluster-autoscaler | ./modules/helm-chart | n/a |
 | external-dns | ./modules/helm-chart | n/a |
 | external-secrets | ./modules/helm-chart | n/a |
-| karpenter | terraform-aws-modules/eks/aws//modules/karpenter | 20.26.1 |
+| karpenter | terraform-aws-modules/eks/aws//modules/karpenter | 21.1.5 |
 | karpenter-crd-helm | ./modules/helm-chart | n/a |
 | karpenter-helm | ./modules/helm-chart | n/a |
 | keda | ./modules/helm-chart | n/a |
