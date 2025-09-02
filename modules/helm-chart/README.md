@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Terraform Auxiliary Module: Helm Release with AWS IRSA
+# Terraform Auxiliary Module: Helm Release with AWS IAM Roles and Pod Identities
 
 This Terraform module creates a Helm release and associated resources in an AWS environment, with support for IAM Roles for Service Accounts (IRSA) and EKS Pod Identity (currently in testing, for manifests v1 only).
 
@@ -24,7 +24,7 @@ module "external-dns" {
   helm_version         = "external-dns-sa"
   service_account_name = "external-dns-sa"
 
-  irsa_iam_role_name   = "external-dns-irsa-role"
+  iam_role_name   = "external-dns-irsa-role"
   irsa_policy_json     = <<-POLICY
     {
       "Version": "2012-10-17",
@@ -64,8 +64,8 @@ module "external-dns" {
 | Name | Version |
 |------|---------|
 | terraform | ~> 1.0 |
-| aws | >= 5.0 |
-| helm | >= 2.9.0 |
+| aws | >= 6.0 |
+| helm | >= 3.0.0 |
 | kubectl | >= 2.0 |
 | kubernetes | >= 2.20 |
 
@@ -74,13 +74,11 @@ module "external-dns" {
 | Name | Type |
 |------|------|
 | [aws_eks_pod_identity_association.pod_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/eks_pod_identity_association) | resource |
-| [aws_iam_role.irsa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
 | [aws_iam_role.pod_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy.irsa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
+| [aws_iam_role.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [helm_release.this](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [kubernetes_service_account.pod_identity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account) | resource |
-| [aws_iam_policy_document.oidc_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.pod_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs
 
@@ -90,14 +88,14 @@ module "external-dns" {
 | helm_version | Helm chart version. | `string` | n/a | yes |
 | name | Name of the Helm release. | `string` | n/a | yes |
 | repository | Helm chart repository. | `string` | n/a | yes |
-| create_irsa_role | Whether to create an IRSA role. | `string` | `true` | no |
+| create_iam_role | Whether to create an IAM role. | `string` | `true` | no |
 | dependency_update | Whether to update dependencies. | `bool` | `true` | no |
 | eks_cluster_name | Name of the EKS cluster. | `string` | `null` | no |
 | enable_pod_identity | Whether to enable EKS Pod Identity. | `bool` | `false` | no |
 | force_update | Whether to force update the Helm release. | `bool` | `false` | no |
 | iam_openid_provider | EKS oidc provider values | ```object({ oidc_provider_arn = string oidc_provider = string })``` | `null` | no |
-| irsa_iam_role_name | Name of the IAM role for IRSA. | `string` | `null` | no |
-| irsa_policy_json | JSON policy document for IRSA IAM role. | `string` | `null` | no |
+| iam_policy_json | JSON policy document for IAM role. | `string` | `null` | no |
+| iam_role_name | Name of the IAM role. | `string` | `null` | no |
 | namespace | Kubernetes namespace to install the release into. Creates one if not present. | `string` | `"default"` | no |
 | repository_password | Helm chart repository password. | `string` | `null` | no |
 | repository_username | Helm chart repository username. | `string` | `null` | no |
@@ -109,8 +107,8 @@ module "external-dns" {
 
 | Name | Description |
 |------|-------------|
-| irsa_role_arn | The ARN of the IAM role for IAM Roles for Service Accounts (IRSA), if created. |
-| irsa_role_id | The ID of the IAM role for IAM Roles for Service Accounts (IRSA), if created. |
+| iam_role_arn | The ARN of the IAM role for IAM Roles for Service Accounts if created. |
+| iam_role_id | The ID of the IAM role for IAM Roles for Service Accounts if created. |
 
 ## How to Contribute
 

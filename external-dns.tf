@@ -41,13 +41,13 @@ locals {
       create: true
       name: ${var.services.external-dns.service_account_name}
       annotations:
-        %{~if coalesce(var.services.external-dns.irsa_role_arn, try(module.external-dns[0].irsa_role_arn, "no_annotation")) != "no_annotation"~}
-        eks.amazonaws.com/role-arn: ${coalesce(var.services.external-dns.irsa_role_arn, module.external-dns[0].irsa_role_arn)}
+        %{~if coalesce(var.services.external-dns.iam_role_arn, try(module.external-dns[0].iam_role_arn, "no_annotation")) != "no_annotation"~}
+        eks.amazonaws.com/role-arn: ${coalesce(var.services.external-dns.iam_role_arn, module.external-dns[0].iam_role_arn)}
         %{~endif~}
     EOF
 
-  # AWS IAM IRSA
-  external_dns_irsa_policy_json = <<-POLICY
+  # AWS IAM
+  external_dns_iam_policy_json = <<-POLICY
     {
       "Version": "2012-10-17",
       "Statement": [
@@ -87,9 +87,9 @@ module "external-dns" {
   namespace            = var.services.external-dns.namespace
   helm_version         = var.services.external-dns.helm_version
   service_account_name = var.services.external-dns.service_account_name
-  create_irsa_role     = var.services.external-dns.irsa_role_arn == null ? 1 : 0
-  irsa_iam_role_name   = coalesce(var.services.external-dns.irsa_iam_role_name, "${var.cluster_name}-external-dns-iam-role")
-  irsa_policy_json     = coalesce(var.services.external-dns.irsa_iam_policy_json, local.external_dns_irsa_policy_json)
+  create_iam_role      = var.services.external-dns.iam_role_arn == null ? 1 : 0
+  iam_role_name        = coalesce(var.services.external-dns.iam_role_name, "${var.cluster_name}-external-dns-iam-role")
+  iam_policy_json      = coalesce(var.services.external-dns.iam_policy_json, local.external_dns_iam_policy_json)
   iam_openid_provider  = var.iam_openid_provider
   values = [
     local.external_dns_helm_values,
