@@ -10,7 +10,7 @@ locals {
       %{~if coalesce(module.karpenter[0].iam_role_arn, "not_karpenter_iam") != "not_karpenter_iam"~}
         eks.amazonaws.com/role-arn: ${module.karpenter[0].iam_role_arn}
         %{~else~}
-        eks.amazonaws.com/role-arn: ${var.services.karpenter.irsa_iam_role_arn}
+        eks.amazonaws.com/role-arn: ${var.services.karpenter.iam_role_arn}
       %{~endif~}
     settings:
       clusterName: ${var.cluster_name}
@@ -194,8 +194,8 @@ module "karpenter" {
   service_account = var.services.karpenter.service_account_name
 
   # IAM
-  create_iam_role          = var.services.karpenter.create_irsa_iam_role
-  iam_role_name            = coalesce(var.services.karpenter.irsa_iam_role_name, "${var.cluster_name}-Karpenter-Role")
+  create_iam_role          = var.services.karpenter.create_iam_role
+  iam_role_name            = coalesce(var.services.karpenter.iam_role_name, "${var.cluster_name}-Karpenter-Role")
   iam_role_use_name_prefix = false
   iam_role_tags            = var.tags
 
