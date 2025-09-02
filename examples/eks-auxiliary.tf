@@ -33,7 +33,8 @@ module "eks-aux" {
       enabled = true
     }
     keda = {
-      enabled = false
+      enabled         = false
+      iam_policy_json = data.aws_iam_policy_document.this.json
     }
     metrics-server = {
       enabled = true
@@ -45,8 +46,8 @@ module "eks-aux" {
   account_id = var.account_id
 
   # EKS
-  cluster_name        = module.eks.cluster_name
-  cluster_endpoint    = module.eks.cluster_endpoint
+  cluster_name     = module.eks.cluster_name
+  cluster_endpoint = module.eks.cluster_endpoint
   iam_openid_provider = {
     oidc_provider_arn = module.eks.oidc_provider_arn
     oidc_provider     = module.eks.oidc_provider
