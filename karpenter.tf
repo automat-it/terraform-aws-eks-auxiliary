@@ -185,7 +185,7 @@ module "karpenter-crd-helm" {
 
 module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version = "21.1.5"
+  version = "21.3.1"
 
   count = var.services.karpenter.enabled ? 1 : 0
 
