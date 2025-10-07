@@ -219,7 +219,7 @@ variable "services" {
       node_iam_role_name                    = optional(string)
       node_iam_role_additional_policies     = optional(map(string), {})
       node_iam_role_additional_tags         = optional(map(string), {})
-      node_security_group_id                = string
+      node_security_group_id                = optional(string)
     }), { enabled = false }),
     keda = optional(object({
       chart_name           = optional(string, "keda")
@@ -257,6 +257,17 @@ variable "services" {
     }), { enabled = false }),
   })
   description = "List of services and their parameters (version, configs, namespaces, etc.)."
+  
+  validation {
+    condition = (
+      !try(var.services.karpenter.enabled, false)
+      || (
+        try(var.services.karpenter.enabled, false)
+        && try(var.services.karpenter.node_security_group_id != null && var.services.karpenter.node_security_group_id != "", false)
+      )
+    )
+    error_message = "When karpenter.enabled = true, you must set karpenter.node_security_group_id."
+  }
 }
 
 variable "tags" {
