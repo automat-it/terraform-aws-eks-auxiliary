@@ -3,6 +3,8 @@
 
 The provided Terraform code defines Helm charts and infrastructure components for managing EKS cluster along with associated resources such as IAM roles, Kubernetes namespaces, and monitoring according to Automat-IT best practices. It provides infrastructure components (like Ingress, load balancing, scaling, monitoring, secrets, and DNS) necessary for setting up and managing EKS cluster.
 
+> **Note:** Main branch is following Terraform AWS 6.x Provider Version, and latest version of EKS. To work with 5.x terraform provider version please checkout on - `main-terraform-aws-v5-provider`
+
 ## Usage
 
 Include a reference to the directory of your Terraform environment where you configured the Amazon Elastic Kubernetes Service (EKS) cluster setup and set correct variables.
@@ -188,4 +190,9 @@ output "new_service_iam_role_id" {
 ```
 4. Thoroughly test your changes to ensure proper functionality.
 5. Once you've completed testing, submit a pull request with your changes for review and integration.
+
+## Provider Versions
+
+Main branch is following Terraform AWS 6.x Provider Version, and latest version of EKS.
+To work with 5.x terraform provider version please checkout on - `main-terraform-aws-v5-provider`
 <!-- END_TF_DOCS -->
