@@ -260,6 +260,17 @@ variable "services" {
     }), { enabled = false }),
   })
   description = "List of services and their parameters (version, configs, namespaces, etc.)."
+  
+  validation {
+    condition = (
+      !try(var.services.karpenter.enabled, false)
+      || (
+        try(var.services.karpenter.enabled, false)
+        && try(var.services.karpenter.node_security_group_id != null && var.services.karpenter.node_security_group_id != "", false)
+      )
+    )
+    error_message = "When karpenter.enabled = true, you must set karpenter.node_security_group_id."
+  }
 }
 
 variable "tags" {
