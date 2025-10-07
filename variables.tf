@@ -220,7 +220,7 @@ variable "services" {
       node_iam_role_additional_policies     = optional(map(string), {})
       node_iam_role_additional_tags         = optional(map(string), {})
       node_security_group_id                = string
-    })),
+    }), { enabled = false }),
     keda = optional(object({
       chart_name           = optional(string, "keda")
       enabled              = bool
