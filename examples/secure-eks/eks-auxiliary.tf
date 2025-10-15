@@ -1,6 +1,6 @@
 module "secure-eks" {
   source     = "github.com/automat-it/terraform-aws-eks-auxiliary.git?ref=v1.33.1"
-  depends_on = [module.eks]
+  depends_on = [module.eks, module.mgmt-peering]
 
   # Components
   services = {
