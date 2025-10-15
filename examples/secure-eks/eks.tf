@@ -36,7 +36,7 @@ provider "helm" {
     cluster_ca_certificate = base64decode(module.eks.cluster_certificate_authority_data)
     token                  = data.aws_eks_cluster_auth.this.token
   }
-  registries = [ 
+  registries = [
     {
       url      = "oci://public.ecr.aws"
       username = data.aws_ecrpublic_authorization_token.token.user_name
@@ -99,11 +99,11 @@ resource "kubernetes_storage_class" "gp3" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> 20.31.4"
+  version = "21.3.2"
 
-  cluster_name                   = local.eks_cluster_name
-  cluster_version                = "1.32"
-  cluster_endpoint_public_access = false
+  name                   = local.eks_cluster_name
+  kubernetes_version     = "1.34"
+  endpoint_public_access = false
 
   enable_cluster_creator_admin_permissions = true
 
@@ -111,11 +111,30 @@ module "eks" {
   subnet_ids               = module.private-subnets.subnets.ids
   control_plane_subnet_ids = module.private-subnets.subnets.ids
 
-# Consider to hardcode the addons version for the producation environment with "addon_version". See coredns addon below as an example.
-  cluster_addons = {
+  # Consider to hardcode the addons version for the producation environment with "addon_version". See coredns addon below as an example.
+  addons = {
     coredns = {
       most_recent = true
-#     addon_version  = "v1.18.6-eksbuild.1"
+      # addon_version  = "v1.18.6-eksbuild.1"
+      configuration_values = jsonencode({
+        "nodeSelector" : {
+          "pool" : "system"
+        },
+        "tolerations" : [
+          {
+            "key" : "dedicated",
+            "effect" : "NoSchedule",
+            "operator" : "Equal",
+            "value" : "system"
+          },
+          {
+            "effect" : "NoExecute",
+            "operator" : "Exists",
+            "tolerationSeconds" : 300
+          }
+        ]
+      })
+
     }
     kube-proxy = {
       most_recent = true
@@ -125,15 +144,34 @@ module "eks" {
       before_compute = true
     }
     aws-ebs-csi-driver = {
-      most_recent = true
+      most_recent              = true
+      service_account_role_arn = module.iam_role_ebs_csi_addon.arn
+      configuration_values = jsonencode({
+        "controller" : {
+          "nodeSelector" : {
+            "pool" : "system"
+          },
+          "tolerations" : [
+            {
+              "key" : "dedicated",
+              "effect" : "NoSchedule",
+              "operator" : "Equal",
+              "value" : "system"
+            },
+            {
+              "effect" : "NoExecute",
+              "operator" : "Exists",
+              "tolerationSeconds" : 300
+            }
+          ]
+        }
+      })
     }
   }
 
   # Fargate profiles use the cluster primary security group so these are not utilized
-  create_cluster_security_group = true
-  create_node_security_group    = true
 
-  cluster_security_group_additional_rules = {
+  security_group_additional_rules = {
     ingress_nodes_ephemeral_ports_tcp = {
       description = "Access from MGMT environment"
       protocol    = "tcp"
@@ -174,18 +212,14 @@ module "eks" {
   }
 
   # EKS Managed Node Group(s)
-  eks_managed_node_group_defaults = {
-    ami_type       = var.eks_ami_type
-    instance_types = var.eks_instance_types
-
-    attach_cluster_primary_security_group = var.eks_attach_cluster_primary_security_group
-  }
-
   eks_managed_node_groups = {
     system = {
-      min_size     = var.eks_system_min_size
-      max_size     = var.eks_system_max_size
-      desired_size = var.eks_system_desired_size
+      ami_type                              = var.eks_ami_type
+      instance_types                        = var.eks_instance_types
+      attach_cluster_primary_security_group = var.eks_attach_cluster_primary_security_group
+      min_size                              = var.eks_system_min_size
+      max_size                              = var.eks_system_max_size
+      desired_size                          = var.eks_system_desired_size
 
       instance_types = var.eks_system_instance_types
       labels = {
@@ -219,6 +253,20 @@ module "eks" {
         pool = "worker"
       }
     }
+  }
+}
+
+module "iam_role_ebs_csi_addon" {
+  source             = "terraform-aws-modules/iam/aws//modules/iam-role"
+  version            = "6.2.1"
+  create             = true
+  oidc_provider_urls = [module.eks.oidc_provider]
+  name               = "${local.basename}-ebs-csi-driver-role"
+  oidc_subjects      = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
+  oidc_audiences     = ["sts.amazonaws.com"]
+  enable_oidc        = true
+  policies = {
+    "AmazonEBSCSIDriverPolicy" = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   }
 }
 
