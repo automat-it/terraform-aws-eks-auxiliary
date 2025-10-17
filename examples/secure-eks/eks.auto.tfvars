@@ -1,6 +1,6 @@
 ### EKS
 # Common
-eks_ami_type                              = "AL2_x86_64"
+eks_ami_type                              = "AL2023_x86_64_STANDARD"
 eks_instance_types                        = ["t3.medium"]
 eks_attach_cluster_primary_security_group = false
 # System

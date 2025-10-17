@@ -103,10 +103,11 @@ resource "kubernetes_storage_class" "gp3" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> v21.3.2"
+  version = "21.3.2"
 
   name                   = local.eks_cluster_name
-  kubernetes_version     = "1.32"
+  kubernetes_version     = "1.34"
+  
   endpoint_public_access = false
 
   enable_cluster_creator_admin_permissions = true
@@ -119,7 +120,25 @@ module "eks" {
   addons = {
     coredns = {
       most_recent = true
-      #     addon_version  = "v1.18.6-eksbuild.1"
+      # addon_version  = "v1.18.6-eksbuild.1"
+      configuration_values = jsonencode({
+        "nodeSelector" : {
+          "pool" : "system"
+        },
+        "tolerations" : [
+          {
+            "key" : "dedicated",
+            "effect" : "NoSchedule",
+            "operator" : "Equal",
+            "value" : "system"
+          },
+          {
+            "effect" : "NoExecute",
+            "operator" : "Exists",
+            "tolerationSeconds" : 300
+          }
+        ]
+      })
     }
     kube-proxy = {
       most_recent = true
@@ -129,7 +148,28 @@ module "eks" {
       before_compute = true
     }
     aws-ebs-csi-driver = {
-      most_recent = true
+      most_recent              = true
+      service_account_role_arn = module.iam_role_ebs_csi_addon.arn
+      configuration_values = jsonencode({
+        "controller" : {
+          "nodeSelector" : {
+            "pool" : "system"
+          },
+          "tolerations" : [
+            {
+              "key" : "dedicated",
+              "effect" : "NoSchedule",
+              "operator" : "Equal",
+              "value" : "system"
+            },
+            {
+              "effect" : "NoExecute",
+              "operator" : "Exists",
+              "tolerationSeconds" : 300
+            }
+          ]
+        }
+      })
     }
   }
 
@@ -180,22 +220,21 @@ module "eks" {
   # EKS Managed Node Group(s)
   eks_managed_node_groups = {
     system = {
+      ami_type                              = var.eks_ami_type
+      attach_cluster_primary_security_group = var.eks_attach_cluster_primary_security_group
+      use_latest_ami_release_version        = false
+      ami_release_version                   = var.ami_release_version
+      
+      min_size                              = var.eks_system_min_size
+      max_size                              = var.eks_system_max_size
+      desired_size                          = var.eks_system_desired_size
+      
       metadata_options = {
         http_put_response_hop_limit = 2
       }
       enable_monitoring = true
       name              = var.system_node_group_name
       use_name_prefix   = false
-      #Node Group Settings
-      use_latest_ami_release_version        = false
-      ami_release_version                   = var.ami_release_version
-      ami_type                              = var.ami_type
-      instance_types                        = var.instance_types
-      attach_cluster_primary_security_group = true
-
-      min_size     = var.eks_system_min_size
-      max_size     = var.eks_system_max_size
-      desired_size = var.eks_system_desired_size
 
       instance_types = var.eks_system_instance_types
       labels = {
@@ -229,6 +268,20 @@ module "eks" {
         pool = "worker"
       }
     }
+  }
+}
+
+module "iam_role_ebs_csi_addon" {
+  source             = "terraform-aws-modules/iam/aws//modules/iam-role"
+  version            = "6.2.1"
+  create             = true
+  oidc_provider_urls = [module.eks.oidc_provider]
+  name               = "${local.basename}-ebs-csi-driver-role"
+  oidc_subjects      = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
+  oidc_audiences     = ["sts.amazonaws.com"]
+  enable_oidc        = true
+  policies = {
+    "AmazonEBSCSIDriverPolicy" = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
   }
 }
 
