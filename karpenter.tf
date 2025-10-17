@@ -121,10 +121,10 @@ locals {
               values: ["amd64"]
             - key: "karpenter.k8s.aws/instance-category"
               operator: In
-              values: ${jsonencode(var.services.karpenter.default_nodeclass_instance_category)}
+              values: ${jsonencode(var.services.karpenter.default_nodepool_instance_category)}
             - key: "karpenter.k8s.aws/instance-cpu"
               operator: In
-              values: ${jsonencode(var.services.karpenter.default_nodeclass_instance_cpu)}
+              values: ${jsonencode(var.services.karpenter.default_nodepool_instance_cpu)}
             - key: "karpenter.k8s.aws/instance-hypervisor"
               operator: In
               values: ["nitro"]

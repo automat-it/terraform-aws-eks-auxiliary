@@ -199,9 +199,9 @@ variable "services" {
       http_put_response_hop_limit         = optional(string, "2")
       default_nodeclass_volume_size       = optional(string, "20Gi")
       default_nodeclass_volume_type       = optional(string, "gp3")
-      default_nodeclass_instance_category = optional(list(string), ["t", "c", "m"])
-      default_nodeclass_instance_cpu      = optional(list(string), ["2", "4"])
       deploy_default_nodepool             = optional(bool, true)
+      default_nodepool_instance_category  = optional(list(string), ["t", "c", "m"])
+      default_nodepool_instance_cpu       = optional(list(string), ["2", "4"])
       default_nodepool_cpu_limit          = optional(string, "100")
       enable_budgets                      = optional(bool, false)
       budgets = optional(any, [
