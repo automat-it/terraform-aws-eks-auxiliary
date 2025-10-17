@@ -35,16 +35,16 @@ locals {
     serviceAccount:
       create: true
       name: ${var.services.aws-alb-ingress-controller.service_account_name}
-      %{~if coalesce(var.services.aws-alb-ingress-controller.irsa_role_arn, try(module.aws-alb-ingress-controller[0].irsa_role_arn, "no_role")) != "no_role"~}
+      %{~if coalesce(var.services.aws-alb-ingress-controller.iam_role_arn, try(module.aws-alb-ingress-controller[0].iam_role_arn, "no_role")) != "no_role"~}
       annotations:
-        eks.amazonaws.com/role-arn: ${coalesce(var.services.aws-alb-ingress-controller.irsa_role_arn, module.aws-alb-ingress-controller[0].irsa_role_arn)}
+        eks.amazonaws.com/role-arn: ${coalesce(var.services.aws-alb-ingress-controller.iam_role_arn, module.aws-alb-ingress-controller[0].iam_role_arn)}
       %{~endif~}
     defaultSSLPolicy: ${var.services.aws-alb-ingress-controller.default_ssl_policy}
     vpcId: ${var.vpc_id}
     EOF
 
-  # AWS IAM IRSA
-  aws_lb_controller_irsa_policy_json = <<-EOF
+  # AWS IAM
+  aws_lb_controller_iam_policy_json = <<-EOF
     {
         "Version": "2012-10-17",
         "Statement": [
@@ -278,8 +278,8 @@ module "aws-alb-ingress-controller" {
   namespace            = var.services.aws-alb-ingress-controller.namespace
   helm_version         = var.services.aws-alb-ingress-controller.helm_version
   service_account_name = var.services.aws-alb-ingress-controller.service_account_name
-  irsa_iam_role_name   = coalesce(var.services.aws-alb-ingress-controller.irsa_iam_role_name, "${var.cluster_name}-aws-alb-ingress-controller-iam-role")
-  irsa_policy_json     = coalesce(var.services.aws-alb-ingress-controller.irsa_iam_policy_json, local.aws_lb_controller_irsa_policy_json)
+  iam_role_name        = coalesce(var.services.aws-alb-ingress-controller.iam_role_name, "${var.cluster_name}-aws-alb-ingress-controller-iam-role")
+  iam_policy_json      = coalesce(var.services.aws-alb-ingress-controller.iam_policy_json, local.aws_lb_controller_iam_policy_json)
   iam_openid_provider  = var.iam_openid_provider
 
   values = [

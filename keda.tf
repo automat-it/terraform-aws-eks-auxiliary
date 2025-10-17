@@ -37,22 +37,22 @@ locals {
         create: true
         name: ${var.services.keda.service_account_name}
         annotations:
-          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation"}
-          eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, ""))}
+          %{~if coalesce(var.services.keda.iam_role_arn, try(module.keda[0].iam_role_arn, null), "no_annotation") != "no_annotation"}
+          eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.iam_role_arn, try(module.keda[0].iam_role_arn, ""))}
           %{~endif~}
       metricServer:
         create: false
         name: ${var.services.keda.service_account_name}
         annotations:
-          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation"}
-          eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, ""))}
+          %{~if coalesce(var.services.keda.iam_role_arn, try(module.keda[0].iam_role_arn, null), "no_annotation") != "no_annotation"}
+          eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.iam_role_arn, try(module.keda[0].iam_role_arn, ""))}
           %{~endif~}
       webhooks:
         create: false
         name: ${var.services.keda.service_account_name}
         annotations:
-          %{~if coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, null), "no_annotation") != "no_annotation"}
-          eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.irsa_role_arn, try(module.keda[0].irsa_role_arn, ""))}
+          %{~if coalesce(var.services.keda.iam_role_arn, try(module.keda[0].iam_role_arn, null), "no_annotation") != "no_annotation"}
+          eks.amazonaws.com/role-arn: ${coalesce(var.services.keda.iam_role_arn, try(module.keda[0].iam_role_arn, ""))}
           %{~endif~}
     prometheus:
       metricServer:
@@ -74,8 +74,8 @@ module "keda" {
   namespace            = var.services.keda.namespace
   helm_version         = var.services.keda.helm_version
   service_account_name = var.services.keda.service_account_name
-  irsa_iam_role_name   = coalesce(var.services.keda.irsa_iam_role_name, "${var.cluster_name}-keda-iam-role")
-  irsa_policy_json     = try(var.services.keda.irsa_iam_policy_json, null)
+  iam_role_name        = coalesce(var.services.keda.iam_role_name, "${var.cluster_name}-keda-iam-role")
+  iam_policy_json      = try(var.services.keda.iam_policy_json, null)
   iam_openid_provider  = var.iam_openid_provider
 
   values = [

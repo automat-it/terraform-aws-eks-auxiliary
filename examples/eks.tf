@@ -26,6 +26,10 @@ variable "r53_zone_id" { type = string }
 variable "aws_account_id" { type = string }
 variable "aws_region" { type = string }
 variable "eks_cluster_name" { type = string }
+variable "system_node_group_name" { type = string }
+variable "ami_release_version" { type = string }
+variable "ami_type" { type = string }
+variable "instance_types" { type = list(string) }
 
 data "aws_eks_cluster_auth" "this" {
   name = var.eks_cluster_name
@@ -47,19 +51,21 @@ provider "helm" {
 
 data "aws_availability_zones" "available" {}
 
+data "aws_partition" "current" {}
+
 ################################################################################
 # EKS Module
 ################################################################################
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> v20.0"
+  version = "~> v21.3.2"
 
-  cluster_name                   = var.eks_cluster_name
-  cluster_version                = "1.33"
-  cluster_endpoint_public_access = false
+  name                   = var.eks_cluster_name
+  kubernetes_version     = "1.34"
+  endpoint_public_access = false
 
-  cluster_addons = {
+  addons = {
     coredns = {
       most_recent = true
       configuration_values = jsonencode({
@@ -118,10 +124,10 @@ module "eks" {
   }
 
   # Fargate profiles use the cluster primary security group so these are not utilized
-  create_cluster_security_group = true
-  create_node_security_group    = false
+  create_security_group      = true
+  create_node_security_group = false
 
-  cluster_security_group_additional_rules = {
+  security_group_additional_rules = {
     ingress_nodes_ephemeral_ports_tcp = {
       description = "Access from MGMT environment"
       protocol    = "tcp"
@@ -164,15 +170,21 @@ module "eks" {
   }
 
   # EKS Managed Node Group(s)
-  eks_managed_node_group_defaults = {
-    ami_type       = var.eks_ami_type
-    instance_types = var.eks_instance_types
-
-    attach_cluster_primary_security_group = var.eks_attach_cluster_primary_security_group
-  }
-
   eks_managed_node_groups = {
     system = {
+      metadata_options = {
+        http_put_response_hop_limit = 2
+      }
+      enable_monitoring = true
+      name              = var.system_node_group_name
+      use_name_prefix   = false
+      #Node Group Settings
+      use_latest_ami_release_version        = false
+      ami_release_version                   = var.ami_release_version
+      ami_type                              = var.ami_type
+      instance_types                        = var.instance_types
+      attach_cluster_primary_security_group = true
+
       min_size     = var.eks_system_min_size
       max_size     = var.eks_system_max_size
       desired_size = var.eks_system_desired_size

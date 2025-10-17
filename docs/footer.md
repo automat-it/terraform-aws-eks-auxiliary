@@ -19,15 +19,20 @@ variable "services" {
 ```
 3. Add outputs for new service to [outputs.tf](outputs.tf) file, like:
 ```hcl
-output "new_service_irsa_role_arn" {
-  description = "The ARN of the IAM role used by the New service for IRSA (IAM Roles for Service Accounts)."
-  value       = var.services.new_service.enabled ? module.new_service[0].irsa_role_arn : null
+output "new_service_iam_role_arn" {
+  description = "The ARN of the IAM role used by the New service (IAM Roles for Service Accounts)."
+  value       = var.services.new_service.enabled ? module.new_service[0].iam_role_arn : null
 }
 
-output "new_service_irsa_role_id" {
-  description = "The ID of the IAM role used by the New service for IRSA (IAM Roles for Service Accounts)."
-  value       = var.services.new_service.enabled ? module.new_service[0].irsa_role_id : null
+output "new_service_iam_role_id" {
+  description = "The ID of the IAM role used by the New service (IAM Roles for Service Accounts)."
+  value       = var.services.new_service.enabled ? module.new_service[0].iam_role_id : null
 }
 ```
 4. Thoroughly test your changes to ensure proper functionality.
 5. Once you've completed testing, submit a pull request with your changes for review and integration.
+
+## Provider Versions
+
+Main branch is following Terraform AWS 6.x Provider Version, and latest version of EKS.
+To work with 5.x terraform provider version please checkout on - `main-terraform-aws-v5-provider`
