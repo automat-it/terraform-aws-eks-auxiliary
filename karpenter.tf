@@ -57,6 +57,15 @@ locals {
     metadata:
       name: ${var.services.karpenter.default_nodeclass_name}
     spec:
+    %{~if coalesce(var.services.karpenter.default_nodeclass_max_pods, "default") != "default" || coalesce(var.services.karpenter.default_nodeclass_pods_per_core, "default") != "default"~}
+      kubelet:
+        %{~if coalesce(var.services.karpenter.default_nodeclass_pods_per_core, "default") != "default"~}
+        podsPerCore: ${var.services.karpenter.default_nodeclass_pods_per_core}
+        %{~endif~}
+        %{~if coalesce(var.services.karpenter.default_nodeclass_max_pods, "default") != "default"~}
+        maxPods: ${var.services.karpenter.default_nodeclass_max_pods}
+        %{~endif~}
+    %{~endif~}
     %{~if coalesce(var.services.karpenter.default_nodeclass_ami_family, "no_nodeclass") != "no_nodeclass"~}
       amiFamily: ${var.services.karpenter.default_nodeclass_ami_family}
     %{~endif~}
@@ -92,8 +101,8 @@ locals {
 ))}
   YAML
 
-# Default karpenter nodepool
-default_nodepool_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
+  # Default karpenter nodepool
+  default_nodepool_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
     apiVersion: karpenter.sh/v1
     kind: NodePool
     metadata:
