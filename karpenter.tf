@@ -69,9 +69,7 @@ locals {
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
       securityGroupSelectorTerms:
-        %{~if coalesce(var.services.karpenter.node_security_group_id, "no_sg") != "no_sg"~}
         - id: ${var.services.karpenter.node_security_group_id}
-        %{~endif~}
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
             kubernetes.io/cluster/${var.cluster_name}: owned

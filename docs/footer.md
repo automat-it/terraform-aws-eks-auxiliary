@@ -31,3 +31,8 @@ output "new_service_irsa_role_id" {
 ```
 4. Thoroughly test your changes to ensure proper functionality.
 5. Once you've completed testing, submit a pull request with your changes for review and integration.
+
+## Provider Versions
+
+This branch is following Terraform AWS 5.x Provider Version ONLY.
+For AWS Provider 6.x compatibility, please checkout the `main` branch.
