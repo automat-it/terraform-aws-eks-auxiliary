@@ -13,8 +13,8 @@ locals {
       create: true
       name: "${var.services.external-secrets.service_account_name}"
       annotations:
-        %{~if coalesce(var.services.external-secrets.irsa_role_arn, try(module.external-secrets[0].irsa_role_arn, "no_annotation")) != "no_annotation"~}
-        eks.amazonaws.com/role-arn: ${coalesce(var.services.external-secrets.irsa_role_arn, module.external-secrets[0].irsa_role_arn)}
+        %{~if coalesce(var.services.external-secrets.iam_role_arn, try(module.external-secrets[0].iam_role_arn, "no_annotation")) != "no_annotation"~}
+        eks.amazonaws.com/role-arn: ${coalesce(var.services.external-secrets.iam_role_arn, module.external-secrets[0].iam_role_arn)}
         %{~endif~}
     %{~if coalesce(var.services.external-secrets.node_selector, {}) != {} ~}
     nodeSelector:
@@ -46,7 +46,7 @@ locals {
     %{~endif~}
     EOF
 
-  external_secrets_irsa_policy_json = <<-POLICY
+  external_secrets_iam_policy_json = <<-POLICY
     {
       "Version": "2012-10-17",
       "Statement": [
@@ -77,8 +77,8 @@ module "external-secrets" {
   namespace            = var.services.external-secrets.namespace
   helm_version         = var.services.external-secrets.helm_version
   service_account_name = var.services.external-secrets.service_account_name
-  irsa_iam_role_name   = coalesce(var.services.external-secrets.irsa_iam_role_name, "${var.cluster_name}-external-secrets-iam-role")
-  irsa_policy_json     = coalesce(var.services.external-secrets.irsa_iam_policy_json, local.external_secrets_irsa_policy_json)
+  iam_role_name        = coalesce(var.services.external-secrets.iam_role_name, "${var.cluster_name}-external-secrets-iam-role")
+  iam_policy_json      = coalesce(var.services.external-secrets.iam_policy_json, local.external_secrets_iam_policy_json)
   iam_openid_provider  = var.iam_openid_provider
 
   values = [

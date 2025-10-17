@@ -40,11 +40,11 @@ locals {
         create: true
         name: ${try(var.services.cluster-autoscaler.service_account_name, null) != null ? var.services.cluster-autoscaler.service_account_name : ""}
         annotations:
-          eks.amazonaws.com/role-arn: ${try(var.services.cluster-autoscaler.irsa_role_arn, null) != null ? var.services.cluster-autoscaler.irsa_role_arn : "arn:aws:iam::${var.account_id}:role/${var.cluster_name}-cluster-autoscaler-iam-role"}
+          eks.amazonaws.com/role-arn: ${try(var.services.cluster-autoscaler.iam_role_arn, null) != null ? var.services.cluster-autoscaler.iam_role_arn : "arn:aws:iam::${var.account_id}:role/${var.cluster_name}-cluster-autoscaler-iam-role"}
     EOF
 
-  # AWS IAM IRSA
-  cluster_autoscaler_irsa_policy_json = <<-EOF
+  # AWS IAM IAM
+  cluster_autoscaler_iam_policy_json = <<-EOF
     {
       "Version": "2012-10-17",
       "Statement": [
@@ -98,8 +98,8 @@ module "cluster-autoscaler" {
   namespace            = var.services.cluster-autoscaler.namespace
   helm_version         = var.services.cluster-autoscaler.helm_version
   service_account_name = var.services.cluster-autoscaler.service_account_name
-  irsa_iam_role_name   = coalesce(var.services.cluster-autoscaler.irsa_iam_role_name, "${var.cluster_name}-cluster-autoscaler-iam-role")
-  irsa_policy_json     = coalesce(var.services.cluster-autoscaler.irsa_iam_policy_json, local.cluster_autoscaler_irsa_policy_json)
+  iam_role_name        = coalesce(var.services.cluster-autoscaler.iam_role_name, "${var.cluster_name}-cluster-autoscaler-iam-role")
+  iam_policy_json      = coalesce(var.services.cluster-autoscaler.iam_policy_json, local.cluster_autoscaler_iam_policy_json)
   iam_openid_provider  = var.iam_openid_provider
 
   values = [

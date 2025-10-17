@@ -1,4 +1,4 @@
-# Terraform Auxiliary Module: Helm Release with AWS IRSA
+# Terraform Auxiliary Module: Helm Release with AWS IAM Roles and Pod Identities
 
 This Terraform module creates a Helm release and associated resources in an AWS environment, with support for IAM Roles for Service Accounts (IRSA) and EKS Pod Identity (currently in testing, for manifests v1 only).
 
@@ -24,7 +24,7 @@ module "external-dns" {
   helm_version         = "external-dns-sa"
   service_account_name = "external-dns-sa"
 
-  irsa_iam_role_name   = "external-dns-irsa-role"
+  iam_role_name   = "external-dns-irsa-role"
   irsa_policy_json     = <<-POLICY
     {
       "Version": "2012-10-17",

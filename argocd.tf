@@ -60,9 +60,9 @@ locals {
   server:
     serviceAccount:
       name: ${var.services.argocd.service_account_name}
-      %{~if coalesce(var.services.argocd.irsa_role_arn, try(module.argocd[0].irsa_role_arn, "no_iam_role")) != "no_iam_role"~}
+      %{~if coalesce(var.services.argocd.iam_role_arn, try(module.argocd[0].iam_role_arn, "no_iam_role")) != "no_iam_role"~}
       annotations:
-        eks.amazonaws.com/role-arn: ${coalesce(var.services.argocd.irsa_role_arn, module.argocd[0].irsa_role_arn)}
+        eks.amazonaws.com/role-arn: ${coalesce(var.services.argocd.iam_role_arn, module.argocd[0].iam_role_arn)}
       %{~endif~}
   controller:
     serviceAccount:
@@ -313,7 +313,7 @@ module "argocd" {
   namespace            = var.services.argocd.namespace
   helm_version         = var.services.argocd.helm_version
   service_account_name = var.services.argocd.service_account_name
-  irsa_iam_role_name   = var.services.argocd.irsa_iam_role_name
+  iam_role_name        = var.services.argocd.iam_role_name
   iam_openid_provider  = var.iam_openid_provider
 
   values = [

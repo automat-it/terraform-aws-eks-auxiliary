@@ -56,17 +56,17 @@ resource "helm_release" "this" {
   values = var.values
 }
 
-resource "aws_iam_role_policy" "irsa" {
-  count  = var.irsa_policy_json != null && var.create_irsa_role ? 1 : 0
+resource "aws_iam_role_policy" "this" {
+  count  = var.iam_policy_json != null && var.create_iam_role ? 1 : 0
   name   = "${var.name}-policy"
-  role   = aws_iam_role.irsa[0].id
-  policy = var.irsa_policy_json
+  role   = aws_iam_role.this[0].id
+  policy = var.iam_policy_json
 }
 
-resource "aws_iam_role" "irsa" {
-  count              = !var.enable_pod_identity && var.iam_openid_provider != null && var.create_irsa_role ? 1 : 0
+resource "aws_iam_role" "this" {
+  count              = !var.enable_pod_identity && var.iam_openid_provider != null && var.create_iam_role ? 1 : 0
   assume_role_policy = local.oidc_assume_role_policy_json
-  name               = var.irsa_iam_role_name
+  name               = var.iam_role_name
 }
 
 # EKS Pod Identity template
@@ -75,7 +75,7 @@ resource "aws_iam_role" "irsa" {
 resource "aws_iam_role" "pod_identity" {
   count              = var.enable_pod_identity ? 1 : 0
   assume_role_policy = local.pod_identity_assume_role_policy_json
-  name               = var.irsa_iam_role_name
+  name               = var.iam_role_name
 }
 
 resource "aws_eks_pod_identity_association" "pod_identity" {

@@ -17,6 +17,10 @@ variable "eks_worker_max_size" { type = number }
 variable "eks_worker_desired_size" { type = number }
 variable "eks_worker_instance_types" { type = list(string) }
 variable "eks_worker_capacity_type" { type = string }
+variable "system_node_group_name" { type = string }
+variable "ami_release_version" { type = string }
+variable "ami_type" { type = string }
+variable "instance_types" { type = list(string) }
 
 provider "kubernetes" {
   host                   = module.eks.cluster_endpoint
@@ -103,6 +107,7 @@ module "eks" {
 
   name                   = local.eks_cluster_name
   kubernetes_version     = "1.34"
+  
   endpoint_public_access = false
 
   enable_cluster_creator_admin_permissions = true
@@ -134,7 +139,6 @@ module "eks" {
           }
         ]
       })
-
     }
     kube-proxy = {
       most_recent = true
@@ -170,6 +174,8 @@ module "eks" {
   }
 
   # Fargate profiles use the cluster primary security group so these are not utilized
+  create_security_group      = true
+  create_node_security_group = true
 
   security_group_additional_rules = {
     ingress_nodes_ephemeral_ports_tcp = {
@@ -215,11 +221,20 @@ module "eks" {
   eks_managed_node_groups = {
     system = {
       ami_type                              = var.eks_ami_type
-      instance_types                        = var.eks_instance_types
       attach_cluster_primary_security_group = var.eks_attach_cluster_primary_security_group
+      use_latest_ami_release_version        = false
+      ami_release_version                   = var.ami_release_version
+      
       min_size                              = var.eks_system_min_size
       max_size                              = var.eks_system_max_size
       desired_size                          = var.eks_system_desired_size
+      
+      metadata_options = {
+        http_put_response_hop_limit = 2
+      }
+      enable_monitoring = true
+      name              = var.system_node_group_name
+      use_name_prefix   = false
 
       instance_types = var.eks_system_instance_types
       labels = {

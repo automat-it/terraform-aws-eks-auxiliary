@@ -90,8 +90,8 @@ variable "services" {
       load_balancer_scheme            = optional(string, "internal")
       notification_slack_token_secret = optional(string)
       argocd_url                      = optional(string)
-      irsa_role_arn                   = optional(string)
-      irsa_iam_role_name              = optional(string)
+      iam_role_arn                    = optional(string)
+      iam_role_name                   = optional(string)
       custom_ingress                  = optional(string)
       custom_notifications            = optional(string)
     }), { enabled = false }),
@@ -111,9 +111,9 @@ variable "services" {
         tolerationSeconds = optional(number, null)
       })))
       additional_helm_values = optional(string, "")
-      irsa_role_arn          = optional(string)
-      irsa_iam_role_name     = optional(string)
-      irsa_iam_policy_json   = optional(string)
+      iam_role_arn           = optional(string)
+      iam_role_name          = optional(string)
+      iam_policy_json        = optional(string)
     }), { enabled = false }),
     cluster-autoscaler = optional(object({
       enabled              = bool
@@ -130,9 +130,9 @@ variable "services" {
         tolerationSeconds = optional(number, null)
       })))
       additional_helm_values = optional(string, "")
-      irsa_role_arn          = optional(string)
-      irsa_iam_role_name     = optional(string)
-      irsa_iam_policy_json   = optional(string)
+      iam_role_arn           = optional(string)
+      iam_role_name          = optional(string)
+      iam_policy_json        = optional(string)
     }), { enabled = false }),
     external-dns = optional(object({
       enabled              = bool
@@ -149,10 +149,9 @@ variable "services" {
         tolerationSeconds = optional(number, null)
       })))
       additional_helm_values = optional(string, "")
-      irsa_role_name         = optional(string)
-      irsa_role_arn          = optional(string)
-      irsa_iam_role_name     = optional(string)
-      irsa_iam_policy_json   = optional(string)
+      iam_role_arn           = optional(string)
+      iam_role_name          = optional(string)
+      iam_policy_json        = optional(string)
     }), { enabled = false }),
     external-secrets = optional(object({
       chart_name           = optional(string, "external-secrets")
@@ -169,16 +168,15 @@ variable "services" {
         tolerationSeconds = optional(number, null)
       })))
       additional_helm_values = optional(string, "")
-      irsa_role_name         = optional(string)
-      irsa_role_arn          = optional(string)
-      irsa_iam_role_name     = optional(string)
-      irsa_iam_policy_json   = optional(string)
+      iam_role_arn           = optional(string)
+      iam_role_name          = optional(string)
+      iam_policy_json        = optional(string)
     }), { enabled = false }),
     karpenter = optional(object({
       chart_name           = optional(string, "karpenter")
       chart_crd_name       = optional(string, "karpenter-crd")
       enabled              = bool
-      helm_version         = optional(string, "1.6.0")
+      helm_version         = optional(string, "1.8.1")
       manage_crd           = optional(bool, false) # Whether to directly manage CRD by Terraform. If false, CRD will be installed by the karpenter helm by dependency. If true, CRD will be installed with additional helm via terraform. Reference: https://github.com/aws/karpenter-provider-aws/tree/main/charts/karpenter-crd
       namespace            = optional(string, "general")
       service_account_name = optional(string, "karpenter")
@@ -213,9 +211,9 @@ variable "services" {
       default_nodepool_capacity_type        = optional(list(string), ["on-demand"])
       default_nodepool_yaml                 = optional(string)
       default_nodeclass_yaml                = optional(string)
-      create_irsa_iam_role                  = optional(bool, true)
-      irsa_iam_role_name                    = optional(string)
-      irsa_iam_role_arn                     = optional(string)
+      create_iam_role                       = optional(bool, true)
+      iam_role_name                         = optional(string)
+      iam_role_arn                          = optional(string)
       create_node_iam_role                  = optional(bool, true)
       create_access_entry_for_node_iam_role = optional(bool, true)
       node_iam_role_name                    = optional(string)
@@ -238,10 +236,9 @@ variable "services" {
         tolerationSeconds = optional(number, null)
       })))
       additional_helm_values = optional(string, "")
-      irsa_role_name         = optional(string)
-      irsa_role_arn          = optional(string)
-      irsa_iam_role_name     = optional(string)
-      irsa_iam_policy_json   = optional(string)
+      iam_role_arn           = optional(string)
+      iam_role_name          = optional(string)
+      iam_policy_json        = optional(string)
     }), { enabled = false }),
     metrics-server = optional(object({
       chart_name    = optional(string, "metrics-server")
@@ -260,6 +257,17 @@ variable "services" {
     }), { enabled = false }),
   })
   description = "List of services and their parameters (version, configs, namespaces, etc.)."
+
+  validation {
+    condition = (
+      !try(var.services.karpenter.enabled, false)
+      || (
+        try(var.services.karpenter.enabled, false)
+        && try(var.services.karpenter.node_security_group_id != null && var.services.karpenter.node_security_group_id != "", false)
+      )
+    )
+    error_message = "When karpenter.enabled = true, you must set karpenter.node_security_group_id."
+  }
 }
 
 variable "tags" {

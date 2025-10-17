@@ -10,7 +10,7 @@ locals {
       %{~if coalesce(module.karpenter[0].iam_role_arn, "not_karpenter_iam") != "not_karpenter_iam"~}
         eks.amazonaws.com/role-arn: ${module.karpenter[0].iam_role_arn}
         %{~else~}
-        eks.amazonaws.com/role-arn: ${var.services.karpenter.irsa_iam_role_arn}
+        eks.amazonaws.com/role-arn: ${var.services.karpenter.iam_role_arn}
       %{~endif~}
     settings:
       clusterName: ${var.cluster_name}
@@ -69,9 +69,7 @@ locals {
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
       securityGroupSelectorTerms:
-        %{~if coalesce(var.services.karpenter.node_security_group_id, "no_sg") != "no_sg"~}
         - id: ${var.services.karpenter.node_security_group_id}
-        %{~endif~}
         - tags:
             karpenter.sh/discovery: ${var.cluster_name}
             kubernetes.io/cluster/${var.cluster_name}: owned
@@ -185,20 +183,17 @@ module "karpenter-crd-helm" {
 
 module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version = "20.26.1"
+  version = "21.4.0"
 
   count = var.services.karpenter.enabled ? 1 : 0
 
-  cluster_name = var.cluster_name
-
-  enable_v1_permissions = true
-
-  enable_pod_identity             = true
-  create_pod_identity_association = true
+  cluster_name    = var.cluster_name
+  namespace       = var.services.karpenter.namespace
+  service_account = var.services.karpenter.service_account_name
 
   # IAM
-  create_iam_role          = var.services.karpenter.create_irsa_iam_role
-  iam_role_name            = coalesce(var.services.karpenter.irsa_iam_role_name, "${var.cluster_name}-Karpenter-Role")
+  create_iam_role          = var.services.karpenter.create_iam_role
+  iam_role_name            = coalesce(var.services.karpenter.iam_role_name, "${var.cluster_name}-Karpenter-Role")
   iam_role_use_name_prefix = false
   iam_role_tags            = var.tags
 
@@ -217,12 +212,6 @@ module "karpenter" {
   )
 
   node_iam_role_tags = merge(var.tags, var.services.karpenter.node_iam_role_additional_tags)
-
-  service_account = var.services.karpenter.service_account_name
-
-  enable_irsa                     = true
-  irsa_oidc_provider_arn          = var.iam_openid_provider.oidc_provider_arn
-  irsa_namespace_service_accounts = ["${var.services.karpenter.namespace}:${var.services.karpenter.service_account_name}"]
 
   create_access_entry = var.services.karpenter.create_access_entry_for_node_iam_role
 
