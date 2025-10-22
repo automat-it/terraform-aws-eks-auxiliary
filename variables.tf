@@ -178,7 +178,7 @@ variable "services" {
       chart_name           = optional(string, "karpenter")
       chart_crd_name       = optional(string, "karpenter-crd")
       enabled              = bool
-      helm_version         = optional(string, "1.6.0")
+      helm_version         = optional(string, "1.8.1")
       manage_crd           = optional(bool, false) # Whether to directly manage CRD by Terraform. If false, CRD will be installed by the karpenter helm by dependency. If true, CRD will be installed with additional helm via terraform. Reference: https://github.com/aws/karpenter-provider-aws/tree/main/charts/karpenter-crd
       namespace            = optional(string, "general")
       service_account_name = optional(string, "karpenter")
@@ -216,6 +216,7 @@ variable "services" {
       create_irsa_iam_role                  = optional(bool, true)
       irsa_iam_role_name                    = optional(string)
       irsa_iam_role_arn                     = optional(string)
+      irsa_iam_role_additional_policies     = optional(map(string), {})
       create_node_iam_role                  = optional(bool, true)
       create_access_entry_for_node_iam_role = optional(bool, true)
       node_iam_role_name                    = optional(string)
@@ -274,7 +275,7 @@ variable "services" {
 }
 
 variable "tags" {
-  default     = {}
   type        = any
+  default     = {}
   description = "Resource tags."
 }
