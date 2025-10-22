@@ -216,6 +216,7 @@ variable "services" {
       create_iam_role                       = optional(bool, true)
       iam_role_name                         = optional(string)
       iam_role_arn                          = optional(string)
+      irsa_iam_role_additional_policies     = optional(map(string), {})
       create_node_iam_role                  = optional(bool, true)
       create_access_entry_for_node_iam_role = optional(bool, true)
       node_iam_role_name                    = optional(string)
@@ -273,7 +274,7 @@ variable "services" {
 }
 
 variable "tags" {
-  default     = {}
   type        = any
+  default     = {}
   description = "Resource tags."
 }
