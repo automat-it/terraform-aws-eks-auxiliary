@@ -197,7 +197,7 @@ module "karpenter" {
   # IAM
   create_iam_role          = var.services.karpenter.create_irsa_iam_role
   iam_role_name            = coalesce(var.services.karpenter.irsa_iam_role_name, "${var.cluster_name}-Karpenter-Role")
-  iam_role_policies        = var.irsa_additional_karpenter_role_policies
+  iam_role_policies        = var.services.karpenter.irsa_iam_role_additional_policies
   iam_role_use_name_prefix = false
   iam_role_tags            = var.tags
 

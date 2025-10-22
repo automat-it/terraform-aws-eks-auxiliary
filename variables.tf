@@ -216,6 +216,7 @@ variable "services" {
       create_irsa_iam_role                  = optional(bool, true)
       irsa_iam_role_name                    = optional(string)
       irsa_iam_role_arn                     = optional(string)
+      irsa_iam_role_additional_policies     = optional(map(string), {})
       create_node_iam_role                  = optional(bool, true)
       create_access_entry_for_node_iam_role = optional(bool, true)
       node_iam_role_name                    = optional(string)
@@ -277,10 +278,4 @@ variable "tags" {
   type        = any
   default     = {}
   description = "Resource tags."
-}
-
-variable "irsa_additional_karpenter_role_policies" {
-  type        = map(string)
-  default     = {}
-  description = "Policies to attach to the IAM role in `{'static_name' = 'policy_arn'}` format"
 }
