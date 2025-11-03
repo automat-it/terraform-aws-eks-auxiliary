@@ -116,12 +116,22 @@ default_nodepool_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
             - key: "karpenter.k8s.aws/instance-cpu"
               operator: In
               values: ${jsonencode(var.services.karpenter.default_nodeclass_instance_cpu)}
+    %{if length(var.services.karpenter.default_nodeclass_instance_cpu_manufacturer) > 0}
+            - key: "karpenter.k8s.aws/instance-cpu-manufacturer"
+              operator: In
+              values: ${jsonencode(var.services.karpenter.default_nodeclass_instance_cpu_manufacturer)}
+    %{endif}
             - key: "karpenter.k8s.aws/instance-hypervisor"
               operator: In
               values: ["nitro"]
             - key: "karpenter.k8s.aws/instance-generation"
+    %{if length(var.services.karpenter.default_nodeclass_instance_generation) > 0}
+              operator: In
+              values: ${jsonencode(var.services.karpenter.default_nodeclass_instance_generation)}
+    %{else}
               operator: Gt
               values: ["2"]
+    %{endif}
             - key: "karpenter.sh/capacity-type"
               operator: In
               values:  ${jsonencode(var.services.karpenter.default_nodepool_capacity_type)}
