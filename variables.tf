@@ -72,7 +72,7 @@ variable "services" {
     argocd = optional(object({
       enabled              = bool
       chart_name           = optional(string, "argocd")
-      helm_version         = optional(string, "8.2.5")
+      helm_version         = optional(string, "9.0.5")
       namespace            = optional(string, "argocd")
       service_account_name = optional(string, "argocd-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -98,7 +98,7 @@ variable "services" {
     aws-alb-ingress-controller = optional(object({
       enabled              = bool
       chart_name           = optional(string, "aws-alb-ingress-controller")
-      helm_version         = optional(string, "1.13.3")
+      helm_version         = optional(string, "1.14.1")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "aws-alb-ingress-controller-sa")
       default_ssl_policy   = optional(string, "ELBSecurityPolicy-TLS13-1-2-2021-06")
@@ -118,7 +118,7 @@ variable "services" {
     cluster-autoscaler = optional(object({
       enabled              = bool
       chart_name           = optional(string, "cluster-autoscaler")
-      helm_version         = optional(string, "9.48.0")
+      helm_version         = optional(string, "9.52.1")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "autoscaler-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -137,7 +137,7 @@ variable "services" {
     external-dns = optional(object({
       enabled              = bool
       chart_name           = optional(string, "external-dns")
-      helm_version         = optional(string, "1.18.0")
+      helm_version         = optional(string, "1.19.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-dns-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -157,7 +157,7 @@ variable "services" {
     external-secrets = optional(object({
       chart_name           = optional(string, "external-secrets")
       enabled              = bool
-      helm_version         = optional(string, "0.18.2")
+      helm_version         = optional(string, "0.20.4")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-secrets-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -178,7 +178,7 @@ variable "services" {
       chart_name           = optional(string, "karpenter")
       chart_crd_name       = optional(string, "karpenter-crd")
       enabled              = bool
-      helm_version         = optional(string, "1.8.1")
+      helm_version         = optional(string, "1.8.2")
       manage_crd           = optional(bool, false) # Whether to directly manage CRD by Terraform. If false, CRD will be installed by the karpenter helm by dependency. If true, CRD will be installed with additional helm via terraform. Reference: https://github.com/aws/karpenter-provider-aws/tree/main/charts/karpenter-crd
       namespace            = optional(string, "general")
       service_account_name = optional(string, "karpenter")
@@ -190,22 +190,22 @@ variable "services" {
         effect            = optional(string, "NoSchedule")
         tolerationSeconds = optional(number, null)
       })))
-      additional_helm_values                      = optional(string, "")
-      crd_additional_helm_values                  = optional(string, "")
-      deploy_default_nodeclass                    = optional(bool, true)
-      default_nodeclass_ami_family                = optional(string, "AL2023")
-      default_nodeclass_ami_alias                 = optional(string, "al2023@latest")
-      default_nodeclass_name                      = optional(string, "default")
-      http_put_response_hop_limit                 = optional(string, "2")
-      default_nodeclass_volume_size               = optional(string, "20Gi")
-      default_nodeclass_volume_type               = optional(string, "gp3")
-      default_nodeclass_instance_category         = optional(list(string), ["t", "c", "m"])
-      default_nodeclass_instance_cpu              = optional(list(string), ["2", "4"])
-      default_nodeclass_instance_generation       = optional(list(string), [])
-      default_nodeclass_instance_cpu_manufacturer = optional(list(string), [])
-      deploy_default_nodepool                     = optional(bool, true)
-      default_nodepool_cpu_limit                  = optional(string, "100")
-      enable_budgets                              = optional(bool, false)
+      additional_helm_values             = optional(string, "")
+      crd_additional_helm_values         = optional(string, "")
+      deploy_default_nodeclass           = optional(bool, true)
+      default_nodeclass_max_pods         = optional(string)
+      default_nodeclass_pods_per_core    = optional(string)
+      default_nodeclass_ami_family       = optional(string, "AL2023")
+      default_nodeclass_ami_alias        = optional(string, "al2023@latest")
+      default_nodeclass_name             = optional(string, "default")
+      http_put_response_hop_limit        = optional(string, "2")
+      default_nodeclass_volume_size      = optional(string, "20Gi")
+      default_nodeclass_volume_type      = optional(string, "gp3")
+      deploy_default_nodepool            = optional(bool, true)
+      default_nodepool_instance_category = optional(list(string), ["t", "c", "m"])
+      default_nodepool_instance_cpu      = optional(list(string), ["2", "4"])
+      default_nodepool_cpu_limit         = optional(string, "100")
+      enable_budgets                     = optional(bool, false)
       budgets = optional(any, [
         { nodes = "10%" },
         { nodes = "3" },
@@ -229,7 +229,7 @@ variable "services" {
     keda = optional(object({
       chart_name           = optional(string, "keda")
       enabled              = bool
-      helm_version         = optional(string, "2.17.2")
+      helm_version         = optional(string, "2.18.1")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "keda-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -263,7 +263,7 @@ variable "services" {
     }), { enabled = false }),
   })
   description = "List of services and their parameters (version, configs, namespaces, etc.)."
-  
+
   validation {
     condition = (
       !try(var.services.karpenter.enabled, false)
