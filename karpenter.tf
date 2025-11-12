@@ -147,7 +147,9 @@ locals {
       limits:
         cpu: ${var.services.karpenter.default_nodepool_cpu_limit}
       disruption:
-        consolidationPolicy: WhenEmpty
+  %{if coalesce(var.services.karpenter.consolidation_policy, "default") != "default"~}
+        consolidationPolicy: ${var.services.karpenter.consolidation_policy}
+  %{endif}
         consolidateAfter: 30s
   %{if var.services.karpenter.enable_budgets}
         budgets: ${jsonencode(var.services.karpenter.budgets)}
