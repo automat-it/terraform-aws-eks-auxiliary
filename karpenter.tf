@@ -154,7 +154,7 @@ default_nodepool_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
   %{endif}
   YAML
 
-node_pools = var.services.karpenter.enabled && var.services.karpenter.deploy_default_nodepool ? merge({ default = coalesce(var.services.karpenter.default_nodepool_yaml, local.default_nodepool_yaml) }, var.services.karpenter.additional_node_pools) : var.services.karpenter.additional_node_pools
+node_pools = var.services.karpenter.enabled && var.services.karpenter.deploy_default_nodepool ? merge({ default = coalesce(var.services.karpenter.default_nodepool_yaml, local.default_nodepool_yaml) }, var.services.karpenter.additional_nodepools_yaml) : var.services.karpenter.additional_nodepools_yaml
 }
 
 ################################################################################
