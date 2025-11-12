@@ -205,6 +205,7 @@ variable "services" {
       default_nodeclass_instance_cpu_manufacturer = optional(list(string), [])
       deploy_default_nodepool                     = optional(bool, true)
       default_nodepool_cpu_limit                  = optional(string, "100")
+      consolidation_policy                        = optional(string)
       enable_budgets                              = optional(bool, false)
       budgets = optional(any, [
         { nodes = "10%" },
