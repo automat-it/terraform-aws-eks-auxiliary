@@ -205,6 +205,7 @@ variable "services" {
       default_nodepool_instance_generation       = optional(list(string), [])
       default_nodepool_instance_cpu_manufacturer = optional(list(string), [])
       default_nodepool_cpu_limit                 = optional(string, "100")
+      additional_node_pools                      = optional(map(any), {})
       enable_budgets                             = optional(bool, false)
       budgets = optional(any, [
         { nodes = "10%" },

@@ -101,8 +101,8 @@ locals {
 ))}
   YAML
 
-  # Default karpenter nodepool
-  default_nodepool_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
+# Default karpenter nodepool
+default_nodepool_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
     apiVersion: karpenter.sh/v1
     kind: NodePool
     metadata:
@@ -153,6 +153,8 @@ locals {
         budgets: ${jsonencode(var.services.karpenter.budgets)}
   %{endif}
   YAML
+
+node_pools = var.services.karpenter.enabled && var.services.karpenter.deploy_default_nodepool ? merge({ default = coalesce(var.services.karpenter.default_nodepool_yaml, local.default_nodepool_yaml) }, var.services.karpenter.additional_node_pools) : var.services.karpenter.additional_node_pools
 }
 
 ################################################################################
@@ -253,11 +255,10 @@ resource "kubectl_manifest" "karpenter_default_node_class" {
   ]
 }
 
-resource "kubectl_manifest" "karpenter_default_node_pool" {
+resource "kubectl_manifest" "karpenter_node_pools" {
+  for_each = local.node_pools
 
-  count = var.services.karpenter.enabled && var.services.karpenter.deploy_default_nodepool ? 1 : 0
-
-  yaml_body = coalesce(var.services.karpenter.default_nodepool_yaml, local.default_nodepool_yaml)
+  yaml_body = each.value
 
   depends_on = [
     kubectl_manifest.karpenter_default_node_class
