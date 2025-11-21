@@ -206,6 +206,7 @@ variable "services" {
       default_nodepool_instance_cpu_manufacturer = optional(list(string), [])
       default_nodepool_cpu_limit                 = optional(string, "100")
       consolidation_policy                       = optional(string)
+      additional_nodepools_yaml                  = optional(map(any), {})
       enable_budgets                             = optional(bool, false)
       budgets = optional(any, [
         { nodes = "10%" },
