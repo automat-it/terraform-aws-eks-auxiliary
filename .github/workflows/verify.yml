@@ -3,9 +3,9 @@ name: Verify
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main-terraform-aws-v5-provider" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main-terraform-aws-v5-provider" ]
 
   workflow_dispatch:
 
