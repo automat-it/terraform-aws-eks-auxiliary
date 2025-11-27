@@ -147,7 +147,7 @@ default_nodepool_yaml = !var.services.karpenter.enabled ? "" : <<-YAML
       limits:
         cpu: ${var.services.karpenter.default_nodepool_cpu_limit}
       disruption:
-  %{if coalesce(var.services.karpenter.consolidation_policy, "default") != "default"~}
+  %{if coalesce(var.services.karpenter.consolidation_policy, "default") != "default"}
         consolidationPolicy: ${var.services.karpenter.consolidation_policy}
   %{endif}
         consolidateAfter: 30s
