@@ -1,0 +1,47 @@
+serviceAccount:
+  create: false
+  annotations: {}
+  name: "node-local-dns"
+
+image:
+  repository: ""
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+localIP: "169.254.20.10"
+clusterDomain: "cluster.local"
+
+# Optional Service for node-local-dns (disabled by default)
+service:
+  enabled: false
+  type: ClusterIP
+  clusterIP: ""   # leave empty to let K8s allocate; must be within service CIDR if set
+
+# Upstream resolver for NodeLocal to forward to
+upstream:
+  useService: true
+  serviceName: "kube-dns"     # set to "coredns" if your Service is named that
+  namespace: "kube-system"
+  clusterIP: ""
+  ips: []                      # if useService=false, list one or more CoreDNS ClusterIPs
+
+# Corefile knobs
+cacheTTL: 3600      # Default cache TTL for all other zones
+zones:
+  clusterLocalCacheTTL: 60
+  extra: []   # e.g. [{ name: "aws.com", cacheTTL: 3600 }, { name: "prod.local", cacheTTL: 3600 }]
+
+priorityClassName: "system-node-critical"
+
+tolerations:
+  # Tolerate any taint - universal catch-all for all node pools
+  - operator: "Exists"
+
+resources: {}
+
+# Optionally mount the CoreDNS ConfigMap for node-cache to watch/sync (enables -kubednscm)
+corednsConfig:
+  enabled: false
+  name: "coredns"           # ConfigMap name in kube-system
+  namespace: "kube-system"  # informational; volumes are namespace-scoped to the Pod
+  mountPath: "/etc/coredns"

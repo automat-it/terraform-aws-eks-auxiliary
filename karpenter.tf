@@ -57,8 +57,13 @@ locals {
     metadata:
       name: ${var.services.karpenter.default_nodeclass_name}
     spec:
-    %{~if coalesce(var.services.karpenter.default_nodeclass_max_pods, "default") != "default" || coalesce(var.services.karpenter.default_nodeclass_pods_per_core, "default") != "default"~}
       kubelet:
+        %{~if var.services.local-dns.enabled~}
+        clusterDNS:
+          - "${var.services.local-dns.local_ip}"
+          - "${var.services.local-dns.upstream_cluster_ip}"
+        %{~endif~}
+    %{~if coalesce(var.services.karpenter.default_nodeclass_max_pods, "default") != "default" || coalesce(var.services.karpenter.default_nodeclass_pods_per_core, "default") != "default"~}
         %{~if coalesce(var.services.karpenter.default_nodeclass_pods_per_core, "default") != "default"~}
         podsPerCore: ${var.services.karpenter.default_nodeclass_pods_per_core}
         %{~endif~}

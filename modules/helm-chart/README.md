@@ -101,6 +101,8 @@ module "external-dns" {
 | repository_username | Helm chart repository username. | `string` | `null` | no |
 | service_account_name | Name of the Kubernetes service account. | `string` | `null` | no |
 | skip_crds | Skip CRDs installing if they doesn't exist | `bool` | `false` | no |
+| take_ownership | If set, allows Helm to adopt existing resources not marked as managed by the release. | `bool` | `true` | no |
+| upgrade_install | If true, the provider will install the release at the specified version even if a release not controlled by the provider is present: this is equivalent to running 'helm upgrade --install' with the Helm CLI. | `bool` | `true` | no |
 | values | List of paths to Helm values files. | `list(string)` | `[]` | no |
 
 ## Outputs

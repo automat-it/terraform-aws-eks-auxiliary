@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "application.name" . }}
+  namespace: kube-system
+  labels:
+    k8s-app: node-local-dns
+    {{- include "application.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: node-local-dns
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 10%
+  template:
+    metadata:
+      labels:
+        k8s-app: node-local-dns
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      enableServiceLinks: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+      containers:
+        - name: node-cache
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "-localip={{ .Values.localIP }}"
+            - "-conf=/etc/coredns/Corefile"
+            - "-corefile=/etc/coredns/Corefile"
+            - "-setupiptables=true"
+            - "-upstreamsvc={{ .Values.upstream.serviceName }}"
+            - "-kubednscm=/etc/coredns"
+          env:
+            - name: KUBE_DNS_SERVICE_HOST
+              value: "{{ include "nodelocal.resolveUpstream" . }}"
+            - name: KUBE_DNS_KUBE_SYSTEM_SVC_CLUSTER_LOCAL_SERVICE_HOST
+              value: "{{ include "nodelocal.resolveUpstream" . }}"
+            - name: KUBE_DNS_SERVICE_PORT
+              value: "53"
+          ports:
+            - name: dns-udp
+              containerPort: 53
+              protocol: UDP
+            - name: dns-tcp
+              containerPort: 53
+              protocol: TCP
+            - name: metrics
+              containerPort: 9253
+              protocol: TCP
+            - name: health
+              containerPort: 8080
+              protocol: TCP
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN", "NET_RAW"]
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/node-local-dns
+            {{- if .Values.corednsConfig.enabled }}
+            - name: coredns-config
+              mountPath: {{ .Values.corednsConfig.mountPath }}
+              readOnly: true
+            {{- else }}
+            - name: config-volume
+              mountPath: /etc/coredns
+              readOnly: true
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: config-volume
+          configMap:
+            name: {{ include "application.name" . }}-config
+        {{- if .Values.corednsConfig.enabled }}
+        - name: coredns-config
+          configMap:
+            name: {{ .Values.corednsConfig.name }}
+        {{- end }}

@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "application.name" . }}-config
+  namespace: kube-system
+  labels:
+    {{- include "application.labels" . | nindent 4 }}
+data:
+  Corefile: |
+    {{- $up := include "nodelocal.resolveUpstream" . -}}
+    {{- $cluster := .Values.clusterDomain -}}
+    {{- $clTtl := .Values.zones.clusterLocalCacheTTL | default 60 -}}
+    {{- range $z := .Values.zones.extra }}
+    {{ $z.name }}:53 {
+        bind {{ $.Values.localIP }}
+        forward . {{ $up }} {
+            prefer_udp
+        }
+        cache {{ $z.cacheTTL }}
+    }
+    {{- end }}
+    {{ $cluster }}:53 {
+        bind {{ .Values.localIP }}
+        forward . {{ $up }} {
+            prefer_udp
+        }
+        cache {{ $clTtl }}
+    }
+    .:53 {
+        errors
+        reload
+        loop
+        bind {{ .Values.localIP }}
+        forward . {{ $up }} {
+            prefer_udp
+        }
+        cache {{ .Values.cacheTTL }}
+        prometheus :9253
+        health
+    }
+  Corefile.base: |
+    {{- $up := include "nodelocal.resolveUpstream" . -}}
+    {{- $cluster := .Values.clusterDomain -}}
+    {{- $clTtl := .Values.zones.clusterLocalCacheTTL | default 60 -}}
+    {{- range $z := .Values.zones.extra }}
+    {{ $z.name }}:53 {
+        bind {{ $.Values.localIP }}
+        forward . {{ $up }} {
+            prefer_udp
+        }
+        cache {{ $z.cacheTTL }}
+    }
+    {{- end }}
+    {{ $cluster }}:53 {
+        bind {{ .Values.localIP }}
+        forward . {{ $up }} {
+            prefer_udp
+        }
+        cache {{ $clTtl }}
+    }
+    .:53 {
+        errors
+        reload
+        loop
+        bind {{ .Values.localIP }}
+        forward . {{ $up }} {
+            prefer_udp
+        }
+        cache {{ .Values.cacheTTL }}
+        prometheus :9253
+        health
+    }
