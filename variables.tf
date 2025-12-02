@@ -263,6 +263,35 @@ variable "services" {
       })))
       additional_helm_values = optional(string, "")
     }), { enabled = false }),
+    local-dns = optional(object({
+      enabled                   = bool
+      chart_name                = optional(string, "node-local-dns")
+      helm_version              = optional(string, "0.1.0")
+      namespace                 = optional(string, "kube-system")
+      service_account_name      = optional(string, "node-local-dns-sa")
+      image_repository          = optional(string, "registry.k8s.io/dns/k8s-dns-node-cache")
+      image_tag                 = optional(string, "1.23.0")
+      local_ip                  = optional(string, "169.254.20.10")
+      cluster_domain            = optional(string, "cluster.local")
+      cache_ttl                 = optional(number, 3600)
+      cluster_local_cache_ttl   = optional(number, 65)
+      upstream_cluster_ip       = optional(string)
+      upstream_service_name     = optional(string, "kube-dns")
+      upstream_namespace        = optional(string, "kube-system")
+      upstream_ips              = optional(list(string), [])
+      coredns_config_enabled    = optional(bool, false)
+      coredns_config_name       = optional(string, "coredns")
+      coredns_config_namespace  = optional(string, "kube-system")
+      coredns_config_mount_path = optional(string, "/etc/coredns")
+      extra_zones = optional(list(object({
+        name     = string
+        cacheTTL = number
+      })), [])
+      additional_helm_values = optional(string, "")
+      irsa_role_arn          = optional(string)
+      irsa_iam_role_name     = optional(string)
+      irsa_iam_policy_json   = optional(string)
+    }), { enabled = false }),
   })
   description = "List of services and their parameters (version, configs, namespaces, etc.)."
 
@@ -275,6 +304,17 @@ variable "services" {
       )
     )
     error_message = "When karpenter.enabled = true, you must set karpenter.node_security_group_id."
+  }
+
+  validation {
+    condition = (
+      !try(var.services.local-dns.enabled, false)
+      || (
+        try(var.services.local-dns.enabled, false)
+        && try(var.services.local-dns.upstream_cluster_ip != null && var.services.local-dns.upstream_cluster_ip != "", false)
+      )
+    )
+    error_message = "When local-dns.enabled = true, you must set local-dns.upstream_cluster_ip."
   }
 }
 

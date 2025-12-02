@@ -57,6 +57,12 @@ locals {
     metadata:
       name: ${var.services.karpenter.default_nodeclass_name}
     spec:
+      kubelet:
+        %{~if var.services.local-dns.enabled~}
+        clusterDNS:
+          - "${var.services.local-dns.local_ip}"
+          - "${var.services.local-dns.upstream_cluster_ip}"
+        %{~endif~}
     %{~if coalesce(var.services.karpenter.default_nodeclass_ami_family, "no_nodeclass") != "no_nodeclass"~}
       amiFamily: ${var.services.karpenter.default_nodeclass_ami_family}
     %{~endif~}

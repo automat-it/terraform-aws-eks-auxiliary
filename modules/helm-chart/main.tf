@@ -47,6 +47,8 @@ resource "helm_release" "this" {
 
   chart             = var.chart
   skip_crds         = var.skip_crds
+  take_ownership    = var.take_ownership
+  upgrade_install   = var.upgrade_install
   namespace         = var.namespace
   create_namespace  = true
   version           = var.helm_version
