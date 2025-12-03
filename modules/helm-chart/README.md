@@ -65,7 +65,7 @@ module "external-dns" {
 |------|---------|
 | terraform | ~> 1.0 |
 | aws | >= 5.0 |
-| helm | >= 3.1.0 |
+| helm | >= 3.0.0 |
 | kubectl | >= 2.0 |
 | kubernetes | >= 2.20 |
 
