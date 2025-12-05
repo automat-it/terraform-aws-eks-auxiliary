@@ -31,6 +31,18 @@ variable "skip_crds" {
   default     = false
 }
 
+variable "take_ownership" {
+  description = "If set, allows Helm to adopt existing resources not marked as managed by the release."
+  type        = bool
+  default     = true
+}
+
+variable "upgrade_install" {
+  description = "If true, the provider will install the release at the specified version even if a release not controlled by the provider is present: this is equivalent to running 'helm upgrade --install' with the Helm CLI."
+  type        = bool
+  default     = true
+}
+
 variable "namespace" {
   description = "Kubernetes namespace to install the release into. Creates one if not present."
   type        = string
