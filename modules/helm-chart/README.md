@@ -65,7 +65,7 @@ module "external-dns" {
 |------|---------|
 | terraform | ~> 1.0 |
 | aws | >= 5.0 |
-| helm | >= 2.9.0 |
+| helm | >= 3.0.0 |
 | kubectl | >= 2.0 |
 | kubernetes | >= 2.20 |
 
@@ -79,8 +79,6 @@ module "external-dns" {
 | [aws_iam_role_policy.irsa](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy) | resource |
 | [helm_release.this](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [kubernetes_service_account.pod_identity](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/service_account) | resource |
-| [aws_iam_policy_document.oidc_assume_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
-| [aws_iam_policy_document.pod_identity](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/iam_policy_document) | data source |
 
 ## Inputs
 
@@ -103,6 +101,8 @@ module "external-dns" {
 | repository_username | Helm chart repository username. | `string` | `null` | no |
 | service_account_name | Name of the Kubernetes service account. | `string` | `null` | no |
 | skip_crds | Skip CRDs installing if they doesn't exist | `bool` | `false` | no |
+| take_ownership | If set, allows Helm to adopt existing resources not marked as managed by the release. | `bool` | `true` | no |
+| upgrade_install | If true, the provider will install the release at the specified version even if a release not controlled by the provider is present: this is equivalent to running 'helm upgrade --install' with the Helm CLI. | `bool` | `true` | no |
 | values | List of paths to Helm values files. | `list(string)` | `[]` | no |
 
 ## Outputs
