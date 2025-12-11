@@ -203,6 +203,8 @@ variable "services" {
       default_nodeclass_instance_cpu              = optional(list(string), ["2", "4"])
       default_nodeclass_instance_generation       = optional(list(string), [])
       default_nodeclass_instance_cpu_manufacturer = optional(list(string), [])
+      default_nodeclass_pods_per_core             = optional(string)
+      default_nodeclass_max_pods                  = optional(string)
       deploy_default_nodepool                     = optional(bool, true)
       default_nodepool_cpu_limit                  = optional(string, "100")
       additional_nodepools_yaml                   = optional(map(any), {})

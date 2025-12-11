@@ -63,6 +63,12 @@ locals {
           - "${var.services.local-dns.local_ip}"
           - "${var.services.local-dns.upstream_cluster_ip}"
         %{~endif~}
+        %{~if try(var.services.karpenter.default_nodeclass_pods_per_core, null) != null ~}
+        podsPerCore: ${var.services.karpenter.default_nodeclass_pods_per_core}
+        %{~endif~}
+        %{~if try(var.services.karpenter.default_nodeclass_max_pods, null) != null ~}
+        maxPods: ${var.services.karpenter.default_nodeclass_max_pods}
+        %{~endif~}
     %{~if coalesce(var.services.karpenter.default_nodeclass_ami_family, "no_nodeclass") != "no_nodeclass"~}
       amiFamily: ${var.services.karpenter.default_nodeclass_ami_family}
     %{~endif~}
