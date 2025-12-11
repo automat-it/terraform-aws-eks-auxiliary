@@ -1,6 +1,7 @@
 ### EKS
 # Common
 eks_ami_type                              = "AL2023_x86_64_STANDARD"
+ami_release_version                       = "1.51.0-47438798"
 eks_instance_types                        = ["t3.medium"]
 eks_attach_cluster_primary_security_group = false
 # System
