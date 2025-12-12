@@ -218,7 +218,7 @@ module "eks" {
     system = {
       ami_type                              = var.eks_ami_type
       attach_cluster_primary_security_group = var.eks_attach_cluster_primary_security_group
-      use_latest_ami_release_version        = false
+      use_latest_ami_release_version        = true
 
       min_size     = var.eks_system_min_size
       max_size     = var.eks_system_max_size
