@@ -105,7 +105,7 @@ module "eks" {
   kubernetes_version = "1.34"
 
   endpoint_public_access = false
-
+  enabled_log_types      = []
   enable_cluster_creator_admin_permissions = true
 
   vpc_id                   = module.vpc.vpc.id
