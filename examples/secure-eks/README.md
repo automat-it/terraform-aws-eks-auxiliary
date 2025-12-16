@@ -79,3 +79,57 @@ services = {
 }
 ```
 
+
+<!-- BEGIN_TF_DOCS -->
+## Requirements
+
+No requirements.
+
+## Providers
+
+| Name | Version |
+|------|---------|
+| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws.us-east-1"></a> [aws.us-east-1](#provider\_aws.us-east-1) | n/a |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | n/a |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | 21.3.2 |
+| <a name="module_iam_role_ebs_csi_addon"></a> [iam\_role\_ebs\_csi\_addon](#module\_iam\_role\_ebs\_csi\_addon) | terraform-aws-modules/iam/aws//modules/iam-role | 6.2.1 |
+| <a name="module_secure-eks"></a> [secure-eks](#module\_secure-eks) | github.com/automat-it/terraform-aws-eks-auxiliary.git | v1.33.1 |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [aws_security_group.alb-controller-sg](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [kubernetes_storage_class.gp3](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/storage_class) | resource |
+| [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
+| [aws_ecrpublic_authorization_token.token](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/ecrpublic_authorization_token) | data source |
+| [aws_eks_cluster_auth.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/eks_cluster_auth) | data source |
+| [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_eks_ami_type"></a> [eks\_ami\_type](#input\_eks\_ami\_type) | ## EKS Common | `string` | n/a | yes |
+| <a name="input_eks_attach_cluster_primary_security_group"></a> [eks\_attach\_cluster\_primary\_security\_group](#input\_eks\_attach\_cluster\_primary\_security\_group) | n/a | `bool` | n/a | yes |
+| <a name="input_eks_instance_types"></a> [eks\_instance\_types](#input\_eks\_instance\_types) | n/a | `list(string)` | n/a | yes |
+| <a name="input_eks_system_desired_size"></a> [eks\_system\_desired\_size](#input\_eks\_system\_desired\_size) | n/a | `number` | n/a | yes |
+| <a name="input_eks_system_instance_types"></a> [eks\_system\_instance\_types](#input\_eks\_system\_instance\_types) | n/a | `list(string)` | n/a | yes |
+| <a name="input_eks_system_max_size"></a> [eks\_system\_max\_size](#input\_eks\_system\_max\_size) | n/a | `number` | n/a | yes |
+| <a name="input_eks_system_min_size"></a> [eks\_system\_min\_size](#input\_eks\_system\_min\_size) | System | `number` | n/a | yes |
+| <a name="input_eks_worker_capacity_type"></a> [eks\_worker\_capacity\_type](#input\_eks\_worker\_capacity\_type) | n/a | `string` | n/a | yes |
+| <a name="input_eks_worker_desired_size"></a> [eks\_worker\_desired\_size](#input\_eks\_worker\_desired\_size) | n/a | `number` | n/a | yes |
+| <a name="input_eks_worker_instance_types"></a> [eks\_worker\_instance\_types](#input\_eks\_worker\_instance\_types) | n/a | `list(string)` | n/a | yes |
+| <a name="input_eks_worker_max_size"></a> [eks\_worker\_max\_size](#input\_eks\_worker\_max\_size) | n/a | `number` | n/a | yes |
+| <a name="input_eks_worker_min_size"></a> [eks\_worker\_min\_size](#input\_eks\_worker\_min\_size) | Worker | `number` | n/a | yes |
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->
