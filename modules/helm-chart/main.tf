@@ -88,7 +88,7 @@ resource "aws_eks_pod_identity_association" "pod_identity" {
   role_arn        = aws_iam_role.pod_identity[0].arn
 }
 
-resource "kubernetes_service_account" "pod_identity" {
+resource "kubernetes_service_account_v1" "pod_identity" {
   count = var.enable_pod_identity ? 1 : 0
   metadata {
     name      = var.service_account_name
