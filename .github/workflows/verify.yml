@@ -3,7 +3,7 @@ name: Verify
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/bump-helm-versions" ]
   pull_request:
     branches: [ "main" ]
 
