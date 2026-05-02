@@ -68,6 +68,73 @@ locals {
     serviceAccount:
       create: false
       name: ${var.services.argocd.service_account_name}
+    %{~if var.services.argocd.service_monitor.enabled~}
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        %{~if var.services.argocd.service_monitor.namespace != ""~}
+        namespace: ${var.services.argocd.service_monitor.namespace}
+        %{~endif~}
+        interval: ${var.services.argocd.service_monitor.interval}
+        scrapeTimeout: ${var.services.argocd.service_monitor.scrape_timeout}
+        %{~if length(var.services.argocd.service_monitor.labels) > 0~}
+        additionalLabels:
+        %{~for key, value in var.services.argocd.service_monitor.labels~}
+          ${key}: "${value}"
+        %{~endfor~}
+        %{~endif~}
+    %{~endif~}
+  %{~if var.services.argocd.service_monitor.enabled~}
+  server:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        %{~if var.services.argocd.service_monitor.namespace != ""~}
+        namespace: ${var.services.argocd.service_monitor.namespace}
+        %{~endif~}
+        interval: ${var.services.argocd.service_monitor.interval}
+        scrapeTimeout: ${var.services.argocd.service_monitor.scrape_timeout}
+        %{~if length(var.services.argocd.service_monitor.labels) > 0~}
+        additionalLabels:
+        %{~for key, value in var.services.argocd.service_monitor.labels~}
+          ${key}: "${value}"
+        %{~endfor~}
+        %{~endif~}
+  repoServer:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        %{~if var.services.argocd.service_monitor.namespace != ""~}
+        namespace: ${var.services.argocd.service_monitor.namespace}
+        %{~endif~}
+        interval: ${var.services.argocd.service_monitor.interval}
+        scrapeTimeout: ${var.services.argocd.service_monitor.scrape_timeout}
+        %{~if length(var.services.argocd.service_monitor.labels) > 0~}
+        additionalLabels:
+        %{~for key, value in var.services.argocd.service_monitor.labels~}
+          ${key}: "${value}"
+        %{~endfor~}
+        %{~endif~}
+  applicationSet:
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+        %{~if var.services.argocd.service_monitor.namespace != ""~}
+        namespace: ${var.services.argocd.service_monitor.namespace}
+        %{~endif~}
+        interval: ${var.services.argocd.service_monitor.interval}
+        scrapeTimeout: ${var.services.argocd.service_monitor.scrape_timeout}
+        %{~if length(var.services.argocd.service_monitor.labels) > 0~}
+        additionalLabels:
+        %{~for key, value in var.services.argocd.service_monitor.labels~}
+          ${key}: "${value}"
+        %{~endfor~}
+        %{~endif~}
+  %{~endif~}
   configs:
     cm:
       exec.enabled: "true"

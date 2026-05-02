@@ -30,6 +30,21 @@ locals {
     %{~else~}
     tolerations: []
     %{~endif~}
+    %{~if var.services.metrics-server.service_monitor.enabled~}
+    serviceMonitor:
+      enabled: true
+      %{~if var.services.metrics-server.service_monitor.namespace != ""~}
+      namespace: ${var.services.metrics-server.service_monitor.namespace}
+      %{~endif~}
+      interval: ${var.services.metrics-server.service_monitor.interval}
+      scrapeTimeout: ${var.services.metrics-server.service_monitor.scrape_timeout}
+      %{~if length(var.services.metrics-server.service_monitor.labels) > 0~}
+      additionalLabels:
+      %{~for key, value in var.services.metrics-server.service_monitor.labels~}
+        ${key}: "${value}"
+      %{~endfor~}
+      %{~endif~}
+    %{~endif~}
     EOF
 }
 

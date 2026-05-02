@@ -41,6 +41,21 @@ locals {
       %{~endif~}
     defaultSSLPolicy: ${var.services.aws-alb-ingress-controller.default_ssl_policy}
     vpcId: ${var.vpc_id}
+    %{~if var.services.aws-alb-ingress-controller.service_monitor.enabled~}
+    serviceMonitor:
+      enabled: true
+      %{~if var.services.aws-alb-ingress-controller.service_monitor.namespace != ""~}
+      namespace: ${var.services.aws-alb-ingress-controller.service_monitor.namespace}
+      %{~endif~}
+      interval: ${var.services.aws-alb-ingress-controller.service_monitor.interval}
+      scrapeTimeout: ${var.services.aws-alb-ingress-controller.service_monitor.scrape_timeout}
+      %{~if length(var.services.aws-alb-ingress-controller.service_monitor.labels) > 0~}
+      additionalLabels:
+      %{~for key, value in var.services.aws-alb-ingress-controller.service_monitor.labels~}
+        ${key}: "${value}"
+      %{~endfor~}
+      %{~endif~}
+    %{~endif~}
     EOF
 
   # AWS IAM

@@ -48,6 +48,21 @@ locals {
     %{~else~}
     tolerations: []
     %{~endif~}
+    %{~if var.services.karpenter.service_monitor.enabled~}
+    serviceMonitor:
+      enabled: true
+      %{~if var.services.karpenter.service_monitor.namespace != ""~}
+      namespace: ${var.services.karpenter.service_monitor.namespace}
+      %{~endif~}
+      interval: ${var.services.karpenter.service_monitor.interval}
+      scrapeTimeout: ${var.services.karpenter.service_monitor.scrape_timeout}
+      %{~if length(var.services.karpenter.service_monitor.labels) > 0~}
+      additionalLabels:
+      %{~for key, value in var.services.karpenter.service_monitor.labels~}
+        ${key}: "${value}"
+      %{~endfor~}
+      %{~endif~}
+    %{~endif~}
     EOT
 
   # Default karpenter nodeclass
