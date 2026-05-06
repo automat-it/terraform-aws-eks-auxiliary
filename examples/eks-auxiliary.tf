@@ -39,6 +39,9 @@ module "eks-aux" {
     metrics-server = {
       enabled = true
     }
+    reloader = {
+      enabled = true
+    }
   }
 
   # AWS
