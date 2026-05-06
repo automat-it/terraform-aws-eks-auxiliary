@@ -262,6 +262,21 @@ variable "services" {
       })))
       additional_helm_values = optional(string, "")
     }), { enabled = false }),
+    reloader = optional(object({
+      chart_name    = optional(string, "reloader")
+      enabled       = bool
+      helm_version  = optional(string, "2.2.11")
+      namespace     = optional(string, "general")
+      node_selector = optional(map(string), { pool = "system" })
+      additional_tolerations = optional(list(object({
+        key               = string
+        operator          = optional(string, "Equal")
+        value             = string
+        effect            = optional(string, "NoSchedule")
+        tolerationSeconds = optional(number, null)
+      })))
+      additional_helm_values = optional(string, "")
+    }), { enabled = false }),
     local-dns = optional(object({
       enabled                   = bool
       chart_name                = optional(string, "node-local-dns")
