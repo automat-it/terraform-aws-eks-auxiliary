@@ -3,15 +3,16 @@ locals {
   # Helm override values
   reloader_helm_values = <<EOF
     reloader:
-      %{~if coalesce(var.services.reloader.node_selector, {}) != {} ~}
+      %{~if coalesce(var.services.reloader.node_selector, {}) != {} || coalesce(var.services.reloader.additional_tolerations, []) != [] ~}
       deployment:
+        %{~if coalesce(var.services.reloader.node_selector, {}) != {} ~}
         nodeSelector:
         %{~for key, value in var.services.reloader.node_selector~}
           ${key}: ${value}
         %{~endfor~}
-        %{~if coalesce(var.services.reloader.node_selector, {}) != {} || coalesce(var.services.reloader.additional_tolerations, []) != []~}
+        %{~endif~}
         tolerations:
-        %{~for key, value in var.services.reloader.node_selector~}
+        %{~for key, value in coalesce(var.services.reloader.node_selector, {})~}
           - key: dedicated
             operator: Equal
             value: ${value}
@@ -27,9 +28,6 @@ locals {
             tolerationSeconds: ${i.tolerationSeconds}
             %{~endif~}
         %{~endfor~}
-        %{~endif~}
-        %{~else~}
-        tolerations: []
         %{~endif~}
       %{~else~}
       deployment:
