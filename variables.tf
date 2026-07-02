@@ -72,7 +72,7 @@ variable "services" {
     argocd = optional(object({
       enabled              = bool
       chart_name           = optional(string, "argocd")
-      helm_version         = optional(string, "9.5.21")
+      helm_version         = optional(string, "10.1.0")
       namespace            = optional(string, "argocd")
       service_account_name = optional(string, "argocd-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -118,7 +118,7 @@ variable "services" {
     cluster-autoscaler = optional(object({
       enabled              = bool
       chart_name           = optional(string, "cluster-autoscaler")
-      helm_version         = optional(string, "9.57.0")
+      helm_version         = optional(string, "9.58.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "autoscaler-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -156,7 +156,7 @@ variable "services" {
     external-secrets = optional(object({
       chart_name           = optional(string, "external-secrets")
       enabled              = bool
-      helm_version         = optional(string, "2.6.0")
+      helm_version         = optional(string, "2.7.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-secrets-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -265,7 +265,7 @@ variable "services" {
     reloader = optional(object({
       chart_name    = optional(string, "reloader")
       enabled       = bool
-      helm_version  = optional(string, "2.2.12")
+      helm_version  = optional(string, "2.2.14")
       namespace     = optional(string, "general")
       node_selector = optional(map(string), { pool = "system" })
       additional_tolerations = optional(list(object({
