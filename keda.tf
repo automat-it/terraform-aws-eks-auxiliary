@@ -57,8 +57,38 @@ locals {
     prometheus:
       metricServer:
         enabled: true
+        serviceMonitor:
+          enabled: ${var.services.keda.service_monitor.enabled}
+          %{~if var.services.keda.service_monitor.enabled~}
+          %{~if var.services.keda.service_monitor.namespace != ""~}
+          namespace: ${var.services.keda.service_monitor.namespace}
+          %{~endif~}
+          interval: ${var.services.keda.service_monitor.interval}
+          scrapeTimeout: ${var.services.keda.service_monitor.scrape_timeout}
+          %{~if length(var.services.keda.service_monitor.labels) > 0~}
+          additionalLabels:
+          %{~for key, value in var.services.keda.service_monitor.labels~}
+            ${key}: "${value}"
+          %{~endfor~}
+          %{~endif~}
+          %{~endif~}
       operator:
-        enabled: false
+        enabled: ${var.services.keda.service_monitor.enabled}
+        %{~if var.services.keda.service_monitor.enabled~}
+        serviceMonitor:
+          enabled: true
+          %{~if var.services.keda.service_monitor.namespace != ""~}
+          namespace: ${var.services.keda.service_monitor.namespace}
+          %{~endif~}
+          interval: ${var.services.keda.service_monitor.interval}
+          scrapeTimeout: ${var.services.keda.service_monitor.scrape_timeout}
+          %{~if length(var.services.keda.service_monitor.labels) > 0~}
+          additionalLabels:
+          %{~for key, value in var.services.keda.service_monitor.labels~}
+            ${key}: "${value}"
+          %{~endfor~}
+          %{~endif~}
+        %{~endif~}
     EOF
 }
 

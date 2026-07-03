@@ -41,6 +41,22 @@ locals {
         name: ${try(var.services.cluster-autoscaler.service_account_name, null) != null ? var.services.cluster-autoscaler.service_account_name : ""}
         annotations:
           eks.amazonaws.com/role-arn: ${try(var.services.cluster-autoscaler.iam_role_arn, null) != null ? var.services.cluster-autoscaler.iam_role_arn : "arn:aws:iam::${var.account_id}:role/${var.cluster_name}-cluster-autoscaler-iam-role"}
+    %{~if var.services.cluster-autoscaler.service_monitor.enabled~}
+    serviceMonitor:
+      enabled: true
+      %{~if var.services.cluster-autoscaler.service_monitor.namespace != ""~}
+      namespace: ${var.services.cluster-autoscaler.service_monitor.namespace}
+      %{~endif~}
+      interval: ${var.services.cluster-autoscaler.service_monitor.interval}
+      scrapeTimeout: ${var.services.cluster-autoscaler.service_monitor.scrape_timeout}
+      %{~if length(var.services.cluster-autoscaler.service_monitor.labels) > 0~}
+      selector:
+        matchLabels:
+        %{~for key, value in var.services.cluster-autoscaler.service_monitor.labels~}
+          ${key}: "${value}"
+        %{~endfor~}
+      %{~endif~}
+    %{~endif~}
     EOF
 
   # AWS IAM IAM

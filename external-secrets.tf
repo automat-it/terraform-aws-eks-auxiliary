@@ -7,6 +7,21 @@ locals {
       create: false
     certController:
       create: false
+    %{~if var.services.external-secrets.service_monitor.enabled~}
+    serviceMonitor:
+      enabled: true
+      %{~if var.services.external-secrets.service_monitor.namespace != ""~}
+      namespace: ${var.services.external-secrets.service_monitor.namespace}
+      %{~endif~}
+      interval: ${var.services.external-secrets.service_monitor.interval}
+      scrapeTimeout: ${var.services.external-secrets.service_monitor.scrape_timeout}
+      %{~if length(var.services.external-secrets.service_monitor.labels) > 0~}
+      additionalLabels:
+      %{~for key, value in var.services.external-secrets.service_monitor.labels~}
+        ${key}: "${value}"
+      %{~endfor~}
+      %{~endif~}
+    %{~endif~}
     env:
       AWS_REGION: ${var.aws_region}
     serviceAccount:
