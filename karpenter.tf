@@ -224,7 +224,7 @@ module "karpenter-crd-helm" {
 
 module "karpenter" {
   source  = "terraform-aws-modules/eks/aws//modules/karpenter"
-  version = "21.4.0"
+  version = "21.24.0"
 
   count = var.services.karpenter.enabled ? 1 : 0
 
@@ -252,6 +252,8 @@ module "karpenter" {
     },
     var.services.karpenter.node_iam_role_additional_policies
   )
+
+  enable_inline_policy = true
 
   node_iam_role_tags = merge(var.tags, var.services.karpenter.node_iam_role_additional_tags)
 
