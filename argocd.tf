@@ -322,7 +322,7 @@ locals {
       defaultTriggers: |
         - on-sync-status-unknown
   extraObjects:
-    - apiVersion: external-secrets.io/v1beta1
+    - apiVersion: external-secrets.io/v1
       kind: SecretStore
       metadata:
         name: argocd-secret-store-aws-secret
@@ -335,7 +335,7 @@ locals {
                   name: ${var.services.argocd.service_account_name}
             region: ${var.aws_region}
             service: SecretsManager
-    - apiVersion: external-secrets.io/v1beta1
+    - apiVersion: external-secrets.io/v1
       kind: ExternalSecret
       metadata:
         name: argocd-ext-aws-secret-slack
