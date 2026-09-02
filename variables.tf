@@ -72,7 +72,7 @@ variable "services" {
     argocd = optional(object({
       enabled              = bool
       chart_name           = optional(string, "argocd")
-      helm_version         = optional(string, "10.1.0")
+      helm_version         = optional(string, "10.6.3")
       namespace            = optional(string, "argocd")
       service_account_name = optional(string, "argocd-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -105,7 +105,7 @@ variable "services" {
     aws-alb-ingress-controller = optional(object({
       enabled              = bool
       chart_name           = optional(string, "aws-alb-ingress-controller")
-      helm_version         = optional(string, "3.4.0")
+      helm_version         = optional(string, "3.5.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "aws-alb-ingress-controller-sa")
       default_ssl_policy   = optional(string, "ELBSecurityPolicy-TLS13-1-2-2021-06")
@@ -132,7 +132,7 @@ variable "services" {
     cluster-autoscaler = optional(object({
       enabled              = bool
       chart_name           = optional(string, "cluster-autoscaler")
-      helm_version         = optional(string, "9.58.0")
+      helm_version         = optional(string, "9.59.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "autoscaler-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -184,7 +184,7 @@ variable "services" {
     external-secrets = optional(object({
       chart_name           = optional(string, "external-secrets")
       enabled              = bool
-      helm_version         = optional(string, "2.7.0")
+      helm_version         = optional(string, "2.10.0")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "external-secrets-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -211,7 +211,7 @@ variable "services" {
       chart_name           = optional(string, "karpenter")
       chart_crd_name       = optional(string, "karpenter-crd")
       enabled              = bool
-      helm_version         = optional(string, "1.13.0")
+      helm_version         = optional(string, "1.14.1")
       manage_crd           = optional(bool, false) # Whether to directly manage CRD by Terraform. If false, CRD will be installed by the karpenter helm by dependency. If true, CRD will be installed with additional helm via terraform. Reference: https://github.com/aws/karpenter-provider-aws/tree/main/charts/karpenter-crd
       namespace            = optional(string, "general")
       service_account_name = optional(string, "karpenter")
@@ -273,7 +273,7 @@ variable "services" {
     keda = optional(object({
       chart_name           = optional(string, "keda")
       enabled              = bool
-      helm_version         = optional(string, "2.20.1")
+      helm_version         = optional(string, "2.20.2")
       namespace            = optional(string, "general")
       service_account_name = optional(string, "keda-sa")
       node_selector        = optional(map(string), { pool = "system" })
@@ -299,7 +299,7 @@ variable "services" {
     metrics-server = optional(object({
       chart_name    = optional(string, "metrics-server")
       enabled       = bool
-      helm_version  = optional(string, "3.13.1")
+      helm_version  = optional(string, "3.14.0")
       namespace     = optional(string, "general")
       node_selector = optional(map(string), { pool = "system" })
       additional_tolerations = optional(list(object({
@@ -321,7 +321,7 @@ variable "services" {
     reloader = optional(object({
       chart_name    = optional(string, "reloader")
       enabled       = bool
-      helm_version  = optional(string, "2.2.14")
+      helm_version  = optional(string, "2.2.16")
       namespace     = optional(string, "general")
       node_selector = optional(map(string), { pool = "system" })
       additional_tolerations = optional(list(object({
