@@ -3,7 +3,7 @@ locals {
   # Helm override values
   reloader_helm_values = <<EOF
     reloader:
-      %{~if coalesce(var.services.reloader.node_selector, {}) != {} || coalesce(var.services.reloader.additional_tolerations, []) != [] ~}
+      %{~if coalesce(var.services.reloader.node_selector, {}) != {} || coalesce(var.services.reloader.additional_tolerations, []) != []~}
       deployment:
         %{~if coalesce(var.services.reloader.node_selector, {}) != {} ~}
         nodeSelector:
