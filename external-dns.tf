@@ -100,7 +100,7 @@ module "external-dns" {
   repository           = "https://kubernetes-sigs.github.io/external-dns"
   chart                = "external-dns"
   namespace            = var.services.external-dns.namespace
-  helm_version         = var.services.external-dns.helm_version
+  helm_version         = coalesce(var.services.external-dns.helm_version, local.chart_versions["external-dns"])
   service_account_name = var.services.external-dns.service_account_name
   create_iam_role      = var.services.external-dns.iam_role_arn == null ? 1 : 0
   iam_role_name        = coalesce(var.services.external-dns.iam_role_name, "${var.cluster_name}-external-dns-iam-role")

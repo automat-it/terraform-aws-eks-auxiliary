@@ -1,0 +1,42 @@
+# Tracking chart - NEVER installed or deployed.
+#
+# Single source of truth for the default Helm chart versions used by this module.
+# Dependabot (helm ecosystem, see .github/dependabot.yml) opens PRs bumping the
+# dependency versions below. Terraform reads them via yamldecode() in
+# chart-versions.tf and uses them when services.<key>.helm_version is not set.
+#
+# local-dns is not listed: it is a local chart (helm-charts/node-local-dns) and
+# its default version stays in variables.tf.
+apiVersion: v2
+name: chart-versions
+version: 0.0.0
+type: application
+description: Tracking chart (not deployed) pinning default chart versions for terraform-aws-eks-auxiliary.
+dependencies:
+  - name: argo-cd
+    repository: https://argoproj.github.io/argo-helm
+    version: "10.6.3"
+  - name: aws-load-balancer-controller
+    repository: https://aws.github.io/eks-charts
+    version: "3.5.0"
+  - name: cluster-autoscaler
+    repository: https://kubernetes.github.io/autoscaler
+    version: "9.59.0"
+  - name: external-dns
+    repository: https://kubernetes-sigs.github.io/external-dns
+    version: "1.21.1"
+  - name: external-secrets
+    repository: https://charts.external-secrets.io
+    version: "2.10.0"
+  - name: karpenter
+    repository: oci://public.ecr.aws/karpenter
+    version: "1.14.1"
+  - name: keda
+    repository: https://kedacore.github.io/charts
+    version: "2.20.2"
+  - name: metrics-server
+    repository: https://kubernetes-sigs.github.io/metrics-server
+    version: "3.14.0"
+  - name: reloader
+    repository: https://stakater.github.io/stakater-charts
+    version: "2.2.16"

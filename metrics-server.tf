@@ -58,7 +58,7 @@ module "metrics-server" {
   repository   = "https://kubernetes-sigs.github.io/metrics-server"
   chart        = "metrics-server"
   namespace    = var.services.metrics-server.namespace
-  helm_version = var.services.metrics-server.helm_version
+  helm_version = coalesce(var.services.metrics-server.helm_version, local.chart_versions["metrics-server"])
 
   values = [
     local.metrics_server_helm_values,

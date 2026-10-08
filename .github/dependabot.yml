@@ -1,0 +1,78 @@
+---
+# Dependabot configuration
+# Docs: https://docs.github.com/en/code-security/dependabot/working-with-dependabot/dependabot-options-reference
+version: 2
+
+updates:
+  # Terraform providers (versions.tf) and registry/git modules (module "x" { version = ... })
+  - package-ecosystem: "terraform"
+    directories:
+      - "/"
+      - "/modules/*"
+      - "/examples"
+      - "/examples/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "terraform"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      terraform-providers:
+        patterns:
+          - "hashicorp/*"
+        update-types:
+          - "minor"
+          - "patch"
+      terraform-modules:
+        patterns:
+          - "terraform-aws-modules/*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions used in .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "chore(ci)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+  # Default Helm chart versions (chart-versions/Chart.yaml -> read by Terraform via yamldecode)
+  - package-ecosystem: "helm"
+    directory: "/chart-versions"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Etc/UTC"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "helm"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    groups:
+      helm-charts:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

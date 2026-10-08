@@ -9,6 +9,10 @@ The provided Terraform code defines Helm charts and infrastructure components fo
 Include a reference to the directory of your Terraform environment where you configured the Amazon Elastic Kubernetes Service (EKS) cluster setup and set correct variables.
 
 Reference values could be found at [examples directory](examples).
+### Default chart versions
+Default Helm chart versions live in [chart-versions/Chart.yaml](chart-versions/Chart.yaml), a tracking chart that is never deployed. Terraform reads it via `yamldecode()` ([chart-versions.tf](chart-versions.tf)), and Dependabot (`helm` ecosystem, [.github/dependabot.yml](.github/dependabot.yml)) opens weekly PRs bumping these versions (minor/patch grouped, majors as separate PRs).
+To pin a different version, set `helm_version` for the service, e.g. `services.cluster-autoscaler.helm_version = "9.59.0"`. The `local-dns` chart is local, so its default version stays in [variables.tf](variables.tf).
+> **Note:** Dependabot resolves OCI chart repositories less reliably than HTTP ones; if `oci://public.ecr.aws/karpenter` cannot be resolved, bump the `karpenter` version in Chart.yaml manually.
 
 ### Karpenter preparation
 

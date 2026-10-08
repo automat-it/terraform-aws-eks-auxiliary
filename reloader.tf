@@ -46,7 +46,7 @@ module "reloader" {
   repository   = "https://stakater.github.io/stakater-charts"
   chart        = "reloader"
   namespace    = var.services.reloader.namespace
-  helm_version = var.services.reloader.helm_version
+  helm_version = coalesce(var.services.reloader.helm_version, local.chart_versions["reloader"])
 
   values = [
     local.reloader_helm_values,
