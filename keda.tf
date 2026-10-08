@@ -102,7 +102,7 @@ module "keda" {
   repository           = "https://kedacore.github.io/charts"
   chart                = "keda"
   namespace            = var.services.keda.namespace
-  helm_version         = var.services.keda.helm_version
+  helm_version         = coalesce(var.services.keda.helm_version, local.chart_versions["keda"])
   service_account_name = var.services.keda.service_account_name
   iam_role_name        = coalesce(var.services.keda.iam_role_name, "${var.cluster_name}-keda-iam-role")
   iam_policy_json      = try(var.services.keda.iam_policy_json, null)
