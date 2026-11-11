@@ -14,9 +14,9 @@ jobs:
     name: "Format and Validate Code"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: hashicorp/setup-terraform@v2.0.3
+      - uses: hashicorp/setup-terraform@v4.0.1
 
       - name: terraform init
         run: terraform init
@@ -28,7 +28,7 @@ jobs:
     name: "Security Scan"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Run Trivy vulnerability scanner in fs mode
         uses: aquasecurity/trivy-action@v0.36.0
