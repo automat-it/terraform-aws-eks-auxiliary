@@ -291,7 +291,7 @@ module "aws-alb-ingress-controller" {
   repository           = "https://aws.github.io/eks-charts"
   chart                = "aws-load-balancer-controller"
   namespace            = var.services.aws-alb-ingress-controller.namespace
-  helm_version         = var.services.aws-alb-ingress-controller.helm_version
+  helm_version         = coalesce(var.services.aws-alb-ingress-controller.helm_version, local.chart_versions["aws-load-balancer-controller"])
   service_account_name = var.services.aws-alb-ingress-controller.service_account_name
   iam_role_name        = coalesce(var.services.aws-alb-ingress-controller.iam_role_name, "${var.cluster_name}-aws-alb-ingress-controller-iam-role")
   iam_policy_json      = coalesce(var.services.aws-alb-ingress-controller.iam_policy_json, local.aws_lb_controller_iam_policy_json)

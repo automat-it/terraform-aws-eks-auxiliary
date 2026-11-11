@@ -112,7 +112,7 @@ module "cluster-autoscaler" {
   repository           = "https://kubernetes.github.io/autoscaler"
   chart                = "cluster-autoscaler"
   namespace            = var.services.cluster-autoscaler.namespace
-  helm_version         = var.services.cluster-autoscaler.helm_version
+  helm_version         = coalesce(var.services.cluster-autoscaler.helm_version, local.chart_versions["cluster-autoscaler"])
   service_account_name = var.services.cluster-autoscaler.service_account_name
   iam_role_name        = coalesce(var.services.cluster-autoscaler.iam_role_name, "${var.cluster_name}-cluster-autoscaler-iam-role")
   iam_policy_json      = coalesce(var.services.cluster-autoscaler.iam_policy_json, local.cluster_autoscaler_iam_policy_json)

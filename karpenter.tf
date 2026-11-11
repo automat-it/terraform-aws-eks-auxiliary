@@ -187,7 +187,7 @@ module "karpenter-helm" {
   repository   = "oci://public.ecr.aws/karpenter"
   chart        = "karpenter"
   namespace    = var.services.karpenter.namespace
-  helm_version = var.services.karpenter.helm_version
+  helm_version = coalesce(var.services.karpenter.helm_version, local.chart_versions["karpenter"])
   skip_crds    = var.services.karpenter.manage_crd
 
   values = [
@@ -208,7 +208,7 @@ module "karpenter-crd-helm" {
   repository   = "oci://public.ecr.aws/karpenter"
   chart        = "karpenter-crd"
   namespace    = var.services.karpenter.namespace
-  helm_version = var.services.karpenter.helm_version
+  helm_version = coalesce(var.services.karpenter.helm_version, local.chart_versions["karpenter"])
 
   values = [
     local.karpenter_helm_values,

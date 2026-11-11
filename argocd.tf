@@ -378,7 +378,7 @@ module "argocd" {
   repository           = "https://argoproj.github.io/argo-helm"
   chart                = "argo-cd"
   namespace            = var.services.argocd.namespace
-  helm_version         = var.services.argocd.helm_version
+  helm_version         = coalesce(var.services.argocd.helm_version, local.chart_versions["argo-cd"])
   service_account_name = var.services.argocd.service_account_name
   iam_role_name        = var.services.argocd.iam_role_name
   iam_openid_provider  = var.iam_openid_provider

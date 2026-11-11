@@ -90,7 +90,7 @@ module "external-secrets" {
   repository           = "https://charts.external-secrets.io"
   chart                = "external-secrets"
   namespace            = var.services.external-secrets.namespace
-  helm_version         = var.services.external-secrets.helm_version
+  helm_version         = coalesce(var.services.external-secrets.helm_version, local.chart_versions["external-secrets"])
   service_account_name = var.services.external-secrets.service_account_name
   iam_role_name        = coalesce(var.services.external-secrets.iam_role_name, "${var.cluster_name}-external-secrets-iam-role")
   iam_policy_json      = coalesce(var.services.external-secrets.iam_policy_json, local.external_secrets_iam_policy_json)
