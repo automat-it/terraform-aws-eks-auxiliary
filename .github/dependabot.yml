@@ -76,3 +76,9 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # public.ecr.aws/karpenter/karpenter has legacy date tags (e.g. 20221219)
+      # that Dependabot treats as the highest version, so karpenter never gets bumped.
+      # See https://github.com/dependabot/dependabot-core/issues/13869
+      - dependency-name: "karpenter"
+        versions: [">= 20000000"]
