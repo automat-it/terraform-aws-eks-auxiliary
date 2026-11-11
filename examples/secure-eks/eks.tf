@@ -99,7 +99,7 @@ resource "kubernetes_storage_class" "gp3" {
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "21.3.2"
+  version = "21.29.0"
 
   name               = local.eks_cluster_name
   kubernetes_version = "1.34"
@@ -268,7 +268,7 @@ module "eks" {
 
 module "iam_role_ebs_csi_addon" {
   source             = "terraform-aws-modules/iam/aws//modules/iam-role"
-  version            = "6.2.1"
+  version            = "6.8.2"
   create             = true
   oidc_provider_urls = [module.eks.oidc_provider]
   name               = "${local.basename}-ebs-csi-driver-role"
