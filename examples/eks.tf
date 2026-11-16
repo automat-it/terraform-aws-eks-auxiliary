@@ -59,7 +59,7 @@ data "aws_partition" "current" {}
 
 module "eks" {
   source  = "terraform-aws-modules/eks/aws"
-  version = "~> v21.3.2"
+  version = "~> v21.29.0"
 
   name                   = var.eks_cluster_name
   kubernetes_version     = "1.34"
