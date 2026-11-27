@@ -15,25 +15,25 @@ description: Tracking chart (not deployed) pinning default chart versions for te
 dependencies:
   - name: argo-cd
     repository: https://argoproj.github.io/argo-helm
-    version: 10.19.1
+    version: 10.20.0
   - name: aws-load-balancer-controller
     repository: https://aws.github.io/eks-charts
-    version: 3.6.3
+    version: 3.7.0
   - name: cluster-autoscaler
     repository: https://kubernetes.github.io/autoscaler
     version: "9.59.0"
   - name: external-dns
     repository: https://kubernetes-sigs.github.io/external-dns
-    version: 1.23.0
+    version: 1.24.0
   - name: external-secrets
     repository: https://charts.external-secrets.io
     version: 2.15.0
   - name: karpenter
     repository: oci://public.ecr.aws/karpenter
-    version: 1.15.2
+    version: 1.15.3
   - name: keda
     repository: https://kedacore.github.io/charts
-    version: 2.21.0
+    version: 2.21.1
   - name: metrics-server
     repository: https://kubernetes-sigs.github.io/metrics-server
     version: "3.14.0"
