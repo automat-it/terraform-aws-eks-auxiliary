@@ -15,7 +15,7 @@ description: Tracking chart (not deployed) pinning default chart versions for te
 dependencies:
   - name: argo-cd
     repository: https://argoproj.github.io/argo-helm
-    version: 10.18.0
+    version: 10.19.1
   - name: aws-load-balancer-controller
     repository: https://aws.github.io/eks-charts
     version: 3.6.3
